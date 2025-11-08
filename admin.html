@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ทดสอบส่งข้อมูลไป Google Sheet</title>
+</head>
+<body>
+
+    <h2>ฟอร์มทดสอบลงทะเบียนชุมนุม</h2>
+    <form id="registrationForm">
+        <label>รหัสนักเรียน:</label>
+        <input type="text" id="studentID" value="65001"><br><br>
+        
+        <label>ชื่อ-สกุล:</label>
+        <input type="text" id="studentName" value="เด็กชายทดสอบ ระบบ"><br><br>
+        
+        <label>รหัสชุมนุม:</label>
+        <input type="text" id="clubID" value="C001"><br><br>
+        
+        <label>ชื่อชุมนุม:</label>
+        <input type="text" id="clubName" value="ชุมนุมรักการอ่าน"><br><br>
+        
+        <button type="submit">ส่งข้อมูล</button>
+    </form>
+
+    <p id="statusMessage"></p>
+
+    <script>
+        // 1. วาง URL ของ Web App ที่คุณคัดลอกมา
+        const GOOGLE_SCRIPT_URL = "YOUR_WEB_APP_URL_HERE";
+
+        const form = document.getElementById('registrationForm');
+        const statusMessage = document.getElementById('statusMessage');
+
+        form.addEventListener('submit', function(e) {
+            e.preventDefault(); // ป้องกันการรีเฟรชหน้า
+            
+            statusMessage.textContent = "กำลังส่งข้อมูล...";
+
+            // 2. รวบรวมข้อมูลจากฟอร์ม
+            const data = {
+                studentID: document.getElementById('studentID').value,
+                studentName: document.getElementById('studentName').value,
+                clubID: document.getElementById('clubID').value,
+                clubName: document.getElementById('clubName').value,
+            };
+
+            // 3. ส่งข้อมูลไปยัง Google Apps Script
+            fetch(GOOGLE_SCRIPT_URL, {
+                method: 'POST',
+                mode: 'no-cors', // โหมด 'no-cors' สำหรับการส่งข้ามโดเมนแบบง่าย (จะไม่ได้รับ response กลับมา)
+                                // หากต้องการ response ให้ตั้งค่า CORS ใน Apps Script และใช้ mode: 'cors'
+                cache: 'no-cache',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data), // แปลง Object เป็น JSON string
+                redirect: 'follow'
+            })
+            .then(response => {
+                // เนื่องจากใช้ 'no-cors' เราจะไม่สามารถอ่าน response.json() ได้
+                // เราจึงสันนิษฐานว่าถ้าส่งสำเร็จ (ไม่มี error) คือสำเร็จ
+                statusMessage.textContent = "ส่งข้อมูลสำเร็จ! (กรุณาตรวจสอบ Google Sheet)";
+                form.reset();
+            })
+            .catch(error => {
+                statusMessage.textContent = "เกิดข้อผิดพลาด: " + error.message;
+            });
+        });
+    </script>
+
+</body>
+</html>
