@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Admin Dashboard - ระบบโหวต</title>
   
-  <link rel="icon" href="https://img5.pic.in.th/file/secure-sv1/IMG_602976b5b060daac652b.png" type="image/png" id="site-favicon-admin">
+  <link rel="icon" href="https://img5.pic.in.th/file/secure-sv1/IMG_602976b5b060daac652b.png" type="image/png">
   
   <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -620,7 +620,6 @@
       border-radius: var(--radius-lg);
       box-shadow: var(--shadow-sm);
       overflow: hidden;
-      /* ส่วนนี้จากระบบเก่า */
       max-height: 500px;
       overflow-y: auto;
     }
@@ -637,7 +636,6 @@
       font-weight: 600;
       color: var(--text-secondary);
       font-size: 14px;
-      /* ส่วนนี้จากระบบเก่า */
       position: sticky;
       top: 0;
       z-index: 10;
@@ -893,7 +891,8 @@
           </li>
           <li>
             <a href="#products" data-page="products">
-              <i class="fas fa-tshirt"></i> <span>จัดการแบบเสื้อ</span>
+              <i class="fas fa-tshirt"></i>
+              <span>จัดการแบบเสื้อ</span>
             </a>
           </li>
           <li>
@@ -913,7 +912,8 @@
 
       <div class="sidebar-footer">
         <div class="user-profile">
-          <i class="fas fa-user-shield"></i> <div class="user-info">
+          <i class="fas fa-user-shield"></i>
+          <div class="user-info">
             <span class="user-name" id="admin-profile-name">Admin</span>
             <span class="user-role">Administrator</span>
           </div>
@@ -1054,46 +1054,6 @@
 
           <div class="settings-container">
             
-            <div class="settings-section">
-                <h3><i class="fas fa-id-card"></i> อัตลักษณ์เว็บไซต์</h3>
-                <p style="color: var(--text-secondary); margin-bottom: 15px;">
-                    ตั้งค่าชื่อ, หัวข้อ, และโลโก้ ที่จะแสดงในหน้าโหวต
-                </p>
-                <div class="form-group">
-                    <label for="settingSiteName">ชื่อระบบ (ที่แสดงใน Header):</label>
-                    <input type="text" id="settingSiteName" placeholder="เช่น โหวตแบบเสื้อกีฬาสี">
-                </div>
-                <div class="form-group">
-                    <label for="settingSiteTitle">หัวข้อเว็บ (ที่แสดงบนแท็บเบราว์เซอร์):</label>
-                    <input type="text" id="settingSiteTitle" placeholder="เช่น ระบบโหวต PLW">
-                </div>
-                <div class="form-group">
-                    <label for="settingLogoURL">URL โลโก้:</label>
-                    <input type="text" id="settingLogoURL" placeholder="https://.../logo.png">
-                </div>
-                <div class="btn-group">
-                    <button class="btn btn-primary" id="saveSiteSettingsButton">
-                        <i class="fas fa-save"></i> บันทึกการตั้งค่า
-                    </button>
-                </div>
-            </div>
-
-            <div class="settings-section">
-                <h3><i class="fas fa-bullhorn"></i> จัดการข้อความประกาศ</h3>
-                <p style="color: var(--text-secondary); margin-bottom: 15px;">
-                    ข้อความนี้จะแสดงเป็นตัววิ่งในหน้าโหวต (vote.html)
-                </p>
-                <div class="form-group">
-                    <label for="announcementText">ข้อความ (ใส่ emoji ได้):</label>
-                    <textarea id="announcementText" rows="4" placeholder="📣 ยินดีต้อนรับสู่การโหวต..." style="width: 100%; padding: 10px; font-family: 'Kanit', sans-serif; font-size: 1.1em; border-radius: 8px; border: 1px solid var(--border-color);"></textarea>
-                </div>
-                <div class="btn-group">
-                    <button class="btn btn-primary" id="saveAnnouncementButton">
-                        <i class="fas fa-save"></i> บันทึกข้อความ
-                    </button>
-                </div>
-            </div>
-
             <div class="settings-section">
                 <h3><i class="fas fa-clock"></i> ตั้งเวลาเปิด-ปิดการโหวต</h3>
                 <div class="form-group">
@@ -1307,8 +1267,7 @@
         showLoading();
         await loadAdminData();
         await loadDashboardData();
-        // ⭐️ (ใหม่) โหลด Site Settings เพื่ออัปเดตโลโก้
-        await loadSiteSettings();
+        // ⭐️ (ลบออก) loadSiteSettings();
         hideLoading();
     }
 
@@ -1356,47 +1315,21 @@
     }
 
     async function loadVoteTime() {
-        // ⭐️ (ใหม่) เปลี่ยนมาใช้ API ใหม่
-        const result = await callApi('getPublicConfig');
+        // ⭐️ (ถอยกลับ) กลับไปใช้ API เดิม
+        const result = await callApi('getVoteTime');
         if (result.status === 'success') {
-            const config = result.config;
             const display = document.getElementById('current-vote-time');
-            display.textContent = (config.startTime && config.endTime) ?
-                `เวลาโหวต: ${new Date(config.startTime).toLocaleString('th-TH')} - ${new Date(config.endTime).toLocaleString('th-TH')}` :
+            display.textContent = (result.startTime && result.endTime) ?
+                `เวลาโหวต: ${new Date(result.startTime).toLocaleString('th-TH')} - ${new Date(result.endTime).toLocaleString('th-TH')}` :
                 'ยังไม่มีการตั้งเวลาโหวต';
             
-            if (config.startTime) document.getElementById('voteStartTime').value = config.startTime.slice(0, 16); // ปรับ format ให้ตรง
-            if (config.endTime) document.getElementById('voteEndTime').value = config.endTime.slice(0, 16); // ปรับ format ให้ตรง
+            if (result.startTime) document.getElementById('voteStartTime').value = result.startTime.slice(0, 16); // ปรับ format ให้ตรง
+            if (result.endTime) document.getElementById('voteEndTime').value = result.endTime.slice(0, 16); // ปรับ format ให้ตรง
         }
     }
     
-    // ⭐️ (ใหม่) โหลดข้อความประกาศ
-    async function loadAnnouncement() {
-        const result = await callApi('getPublicConfig'); // เปลี่ยนมาใช้ API ใหม่
-        if (result.status === 'success') {
-            document.getElementById('announcementText').value = result.config.AnnouncementText;
-        }
-    }
-
-    // ⭐️ (ใหม่) โหลดการตั้งค่าเว็บไซต์
-    async function loadSiteSettings() {
-        const result = await callApi('getPublicConfig');
-        if (result.status === 'success') {
-            const config = result.config;
-            
-            // 1. อัปเดตฟอร์มในหน้าตั้งค่า
-            document.getElementById('settingSiteName').value = config.SiteName;
-            document.getElementById('settingSiteTitle').value = config.SiteTitle;
-            document.getElementById('settingLogoURL').value = config.LogoURL;
-            
-            // 2. อัปเดตโลโก้/ชื่อ ใน Admin Panel ทันที
-            document.getElementById('sidebar-logo').src = config.LogoURL;
-            document.getElementById('login-logo').src = config.LogoURL;
-            // ⭐️ (ใหม่) อัปเดต Title ของแท็บ
-            document.title = config.SiteTitle + ' - Admin Dashboard';
-            document.getElementById('site-favicon-admin').href = config.LogoURL;
-        }
-    }
+    // ⭐️ (ลบออก) ฟังก์ชัน loadAnnouncement()
+    // ⭐️ (ลบออก) ฟังก์ชัน loadSiteSettings()
 
     async function loadAdminAccounts() {
         const result = await callApi('getAdminAccounts');
@@ -1478,8 +1411,7 @@
         const loginButton = document.getElementById('loginButton');
         const loginMessage = document.getElementById('login-message');
 
-        // ⭐️ (ใหม่) โหลดโลโก้หน้า Login ก่อน
-        loadSiteSettings();
+        // ⭐️ (ลบออก) loadSiteSettings() ถูกลบ
 
         // --- 1. ระบบ Login (จาก auth.js + ระบบเก่า) ---
         loginForm.addEventListener('submit', async (e) => {
@@ -1524,7 +1456,7 @@
         function initializeApp() {
             // โหลดข้อมูลทั้งหมดเป็นครั้งแรก
             loadAllAdminData();
-            // loadSiteSettings(); // ถูกเรียกไปแล้วใน loadAllAdminData
+            // ⭐️ (ลบออก) loadSiteSettings();
 
             // Sidebar toggle
             const sidebarToggle = document.getElementById('sidebarToggle');
@@ -1620,44 +1552,9 @@
             
             // --- ตั้งค่าระบบ (Settings Page) ---
             
-            // ⭐️ (ใหม่) บันทึก Site Settings
-            document.getElementById('saveSiteSettingsButton').addEventListener('click', async () => {
-                const settings = {
-                    siteName: document.getElementById('settingSiteName').value.trim(),
-                    siteTitle: document.getElementById('settingSiteTitle').value.trim(),
-                    logoUrl: document.getElementById('settingLogoURL').value.trim()
-                };
-                if (!settings.siteName || !settings.siteTitle || !settings.logoUrl) {
-                    showToast('กรุณากรอกข้อมูลให้ครบทุกช่อง', 'warning'); return;
-                }
-                showLoading();
-                const result = await callApi('updateSiteSettings', { settings: settings });
-                hideLoading();
-                if (result.status === 'success') {
-                    showToast('บันทึกการตั้งค่าสำเร็จ!', 'success');
-                    loadSiteSettings(); // โหลดซ้ำเพื่ออัปเดตโลโก้บน Header ของ Admin ทันที
-                } else {
-                    showToast(result.message, 'error');
-                }
-            });
-
-            // ⭐️ (ใหม่) จัดการข้อความประกาศ
-            document.getElementById('saveAnnouncementButton').addEventListener('click', async () => {
-                const newText = document.getElementById('announcementText').value.trim();
-                if (!newText) {
-                    showToast('กรุณาป้อนข้อความประกาศ', 'warning');
-                    return;
-                }
-                showLoading();
-                const result = await callApi('updateAnnouncementText', { text: newText });
-                hideLoading();
-                if (result.status === 'success') {
-                    showToast('บันทึกข้อความประกาศสำเร็จ!', 'success');
-                } else {
-                    showToast(result.message, 'error');
-                }
-            });
-
+            // ⭐️ (ลบออก) 'saveSiteSettingsButton' listener
+            // ⭐️ (ลบออก) 'saveAnnouncementButton' listener
+            
             document.getElementById('setVoteTimeButton').addEventListener('click', async () => {
                 const startTime = document.getElementById('voteStartTime').value;
                 const endTime = document.getElementById('voteEndTime').value;
@@ -1769,12 +1666,8 @@
                         const reader = new FileReader();
                         reader.onload = async (e) => {
                             try {
-                                // 1. อ่านไฟล์เป็น Base64
                                 const base64String = e.target.result.split(',')[1];
-                                
                                 uploadMessage.textContent = 'กำลังอัปโหลดและประมวลผล...';
-                                
-                                // 2. ส่ง Base64 ไปที่ Apps Script
                                 const apiResult = await callApi('importStudents', { base64Data: base64String });
                                 hideLoading();
 
@@ -1782,7 +1675,6 @@
                                     uploadMessage.textContent = apiResult.message;
                                     uploadMessage.className = 'message success';
                                     showToast('Import สำเร็จ!', 'success');
-                                    // โหลดข้อมูลหน้า Users ใหม่ (เผื่อผู้ใช้กดไปดู)
                                     loadAdminData(); 
                                 } else {
                                     uploadMessage.textContent = 'ผิดพลาด: ' + apiResult.message;
@@ -1795,14 +1687,11 @@
                                 uploadMessage.className = 'message error';
                             }
                         };
-                        
                         reader.onerror = () => {
                             hideLoading();
                             uploadMessage.textContent = 'ไม่สามารถอ่านไฟล์ได้';
                             uploadMessage.className = 'message error';
                         };
-                        
-                        // เริ่มอ่านไฟล์ (เราจะอ่านเป็น DataURL เพื่อให้ได้ Base64)
                         reader.readAsDataURL(file);
                     }
                 });
@@ -1837,7 +1726,7 @@
                 Swal.fire({ title: 'แน่ใจหรือไม่?', text: `คุณต้องการลบบัญชี '${username}' จริงๆ ใช่ไหม`, icon: 'warning', showCancelButton: true, confirmButtonColor: '#d33', cancelButtonColor: '#3085d6', confirmButtonText: 'ใช่, ลบเลย!', cancelButtonText: 'ยกเลิก'
                 }).then(async (result) => {
                     if (result.isConfirmed) {
-                        const delResult = await callApi('deleteAdminAccount', { usernameToDelete: username }); // ⭐️ แก้ไข key เป็น usernameToDelete
+                        const delResult = await callApi('deleteAdminAccount', { usernameToDelete: username });
                         if (delResult.status === 'success') { showToast(delResult.message, 'success'); loadAdminAccounts(); }
                         else { showToast(delResult.message, 'error'); }
                     }
@@ -1897,7 +1786,7 @@
                 const action = isEditMode ? 'editDesign' : 'addDesign';
                 const data = { designId: id, designName: name, imageUrl: imageUrl };
                 
-                const result = await callApi(action, data);
+                const result = await callApi('action', data);
                 hideLoading();
 
                 if (result.status === 'success') {
@@ -1935,8 +1824,8 @@
         case 'settings':
           loadVoteTime();
           loadAdminAccounts();
-          loadAnnouncement(); // ⭐️ (ใหม่) โหลดข้อความประกาศ
-          loadSiteSettings(); // ⭐️ (ใหม่) โหลดการตั้งค่าเว็บ
+          // ⭐️ (ลบออก) loadAnnouncement();
+          // ⭐️ (ลบออก) loadSiteSettings();
           break;
       }
     }
