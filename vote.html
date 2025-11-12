@@ -7,7 +7,7 @@
     
     <title>ระบบโหวตเสื้อกีฬาสี</title>
     
-    <link rel="icon" id="site-favicon" href="https://img5.pic.in.th/file/secure-sv1/IMG_602976b5b060daac652b.png" type="image/png">
+    <link rel="icon" href="https://img5.pic.in.th/file/secure-sv1/IMG_602976b5b060daac652b.png" type="image/png">
     
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
@@ -56,6 +56,7 @@
             text-align: center;
             box-sizing: border-box;
             animation: fadeIn 0.8s ease-out;
+            margin-top: 30px; /* ⭐️ (ใหม่) เพิ่มระยะห่างด้านบนเล็กน้อย */
         }
 
         @keyframes fadeIn {
@@ -90,32 +91,7 @@
             font-weight: 600;
         }
 
-        /* --- [ 3. แถบประกาศ (ปรับปรุงเล็กน้อย) ] --- */
-        .announcement-bar {
-            background-color: var(--primary-blue);
-            color: white;
-            padding: 10px 15px;
-            overflow: hidden;
-            white-space: nowrap;
-            box-shadow: 0 2px 8px var(--shadow-light);
-            width: 100%;
-            max-width: 960px;
-            box-sizing: border-box;
-            border-radius: 8px;
-            margin-bottom: 25px;
-            font-size: 1.05em;
-        }
-        .scrolling-text {
-            margin: 0;
-            display: inline-block;
-            padding-left: 100%;
-            animation: scroll-left 25s linear infinite;
-            font-weight: 500;
-        }
-        @keyframes scroll-left {
-            0% { transform: translateX(0); }
-            100% { transform: translateX(-100%); }
-        }
+        /* --- [ 3. แถบประกาศ (ลบออก) ] --- */
 
         /* --- [ 4. ส่วนแสดงสถานะ & นับถอยหลัง (ปรับปรุงใหม่) ] --- */
         .status-message {
@@ -361,8 +337,8 @@
         }
         .chart-container {
             width: 100%; 
-            max-width: 700px; /* ขยายกราฟ */
-            height: 400px; /* ขยายกราฟ */
+            max-width: 700px;
+            height: 400px;
             margin: 25px auto;
             background-color: var(--card-bg);
             padding: 20px;
@@ -382,7 +358,7 @@
             justify-content: space-between;
             align-items: center;
             padding: 12px 0;
-            border-bottom: 1px dashed rgba(253, 126, 20, 0.3); /* เส้นประสีส้ม */
+            border-bottom: 1px dashed rgba(253, 126, 20, 0.3);
             font-size: 1.05em;
         }
         .vote-item:last-child { border-bottom: none; }
@@ -393,7 +369,7 @@
         .footer {
             margin-top: 50px;
             padding: 25px;
-            background-color: #f8f9fa; /* พื้นหลังเทาอ่อน */
+            background-color: #f8f9fa;
             text-align: center;
             color: var(--text-secondary);
             font-size: 0.9em;
@@ -412,12 +388,11 @@
         /* --- [ 11. Responsive ] --- */
         @media (max-width: 768px) {
             body { padding: 10px; }
-            .main-wrapper { padding: 20px; border-radius: 10px; }
+            .main-wrapper { padding: 20px; border-radius: 10px; margin-top: 15px; }
             header { flex-direction: column; }
             .logo { height: 50px; margin-bottom: 10px; margin-right: 0; }
             h1 { font-size: 2.2em; }
             h2 { font-size: 1.8em; }
-            .announcement-bar { padding: 8px 10px; margin-bottom: 20px; border-radius: 6px; }
             .status-message { padding: 12px 15px; font-size: 1.1em; border-radius: 8px; }
             #countdown-timer { font-size: 1.4em; padding: 10px 15px; border-radius: 10px; }
             .form-step { padding: 25px; border-radius: 10px; margin-bottom: 25px; }
@@ -439,11 +414,9 @@
 
 <body>
     <script>
-        // 🚨 หมายเหตุ: ผมปิดการเด้งกลับ (//) ไว้ให้ชั่วคราว
-        // เพื่อให้คุณทดสอบหน้านี้ (F5) ได้โดยไม่เกิด Loop
-        // ถ้าต้องการให้ระบบทำงานจริง ให้ลบ "//" ออก
         if (sessionStorage.getItem('allowAppAccess') !== 'true') {
-            // window.location.replace('index.html'); 
+            // ⭐️ (เปิดใช้งาน) นี่คือเวอร์ชันที่ถูกต้องสำหรับใช้งานจริง
+            window.location.replace('index.html'); 
         }
         sessionStorage.removeItem('allowAppAccess');
     </script>
@@ -452,12 +425,6 @@
          alt="Black mourning ribbon" 
          style="position:fixed; top:0; right:0; width:80px; opacity:0.9; z-index:9999; pointer-events:none;">
     
-    <div class="announcement-bar">
-        <p class="scrolling-text">
-            📣 กำลังโหลดประกาศ...
-        </p>
-    </div>
-
     <div class="main-wrapper">
         <header>
             <img src="https://img5.pic.in.th/file/secure-sv1/IMG_60290ec6a71fd92a13d0.png" alt="โลโก้โรงเรียน" class="logo">
@@ -571,7 +538,7 @@
         
         // ฟังก์ชันตรวจสอบ ID
         studentIdInput.addEventListener('input', async () => {
-            const id = studentIdInput.value.trim(); // เพิ่ม .trim()
+            const id = studentIdInput.value.trim();
             studentIdMsg.style.display = 'block';
             const resetFields = () => {
                 fullNameInput.value = '';
@@ -634,8 +601,8 @@
                 `,
                 icon: 'question',
                 showCancelButton: true,
-                confirmButtonColor: '#28a745', // สีเขียว
-                cancelButtonColor: '#6c757d', // สีเทา
+                confirmButtonColor: '#28a745',
+                cancelButtonColor: '#6c757d',
                 confirmButtonText: 'ยืนยันการโหวต',
                 cancelButtonText: 'แก้ไขข้อมูล'
             }).then(async (result) => {
@@ -653,7 +620,7 @@
                         document.querySelectorAll('.design-card').forEach(card => card.classList.remove('selected'));
                         validateForm();
                         designOptionsDiv.classList.add('disabled');
-                        loadAppConfiguration(); // ⭐️ (ใหม่) โหลด Config ใหม่ (แทน loadInitialData)
+                        loadInitialData(); // ⭐️ โหลดข้อมูลใหม่
                     } else {
                         Swal.fire({ title: 'ผิดพลาด!', text: apiResult.message, icon: 'error' });
                         if (apiResult.message.includes('โหวตไปแล้ว')) {
@@ -698,69 +665,10 @@
             }
         }
         
-        // ⭐️ (ใหม่) ฟังก์ชันเช็คสถานะ (รับค่ามา ไม่ต้อง callApi เอง)
-        function checkVotingStatus(startTime, endTime, isVotingOpen) {
-            clearInterval(countdownInterval);
-            countdownTimerDiv.style.display = 'none';
-
-            if (isVotingOpen) {
-                registrationFormSection.style.display = 'block';
-                resultsSection.style.display = 'none';
-                votingStatusDiv.className = 'status-message open';
-                
-                if (startTime && endTime) {
-                    votingStatusDiv.innerHTML = '<i class="fas fa-check-circle"></i> เปิดให้โหวตแล้ว จะปิดในอีก';
-                    countdownTimerDiv.style.display = 'block';
-                    startCountdown(new Date(endTime).getTime());
-                } else {
-                    votingStatusDiv.innerHTML = '<i class="fas fa-check-circle"></i> เปิดให้โหวตแล้ว';
-                }
-            } else {
-                registrationFormSection.style.display = 'none';
-                resultsSection.style.display = 'block';
-                votingStatusDiv.className = 'status-message closed';
-
-                const now = new Date();
-                if (startTime && now < new Date(startTime)) {
-                    votingStatusDiv.innerHTML = '<i class="fas fa-clock"></i> ยังไม่ถึงเวลาเปิดโหวต จะเปิดในอีก';
-                    countdownTimerDiv.style.display = 'block';
-                    startCountdown(new Date(startTime).getTime());
-                } else {
-                    votingStatusDiv.innerHTML = '<i class="fas fa-times-circle"></i> ปิดรับการโหวตแล้ว';
-                }
-            }
-        }
-
-        // ⭐️ (ใหม่) ฟังก์ชันโหลด Config หลัก (แทนที่ loadInitialData)
-        async function loadAppConfiguration() {
+        // ⭐️ (กลับเป็นแบบเดิม) ฟังก์ชัน โหลดข้อมูล
+        async function loadInitialData() {
             showSkeletonLoader();
             validateForm();
-
-            // ⭐️ (ใหม่) เรียก API เดียว
-            const response = await callApi('getPublicConfig'); 
-            
-            if (response.status === 'success' && response.config) {
-                const config = response.config;
-
-                // 1. ตั้งค่าอัตลักษณ์เว็บ
-                document.title = config.SiteTitle;
-                document.querySelector('header h1').textContent = config.SiteName;
-                document.querySelector('header .logo').src = config.LogoURL;
-                document.getElementById('site-favicon').href = config.LogoURL;
-                
-                // 2. ตั้งค่าประกาศ
-                document.querySelector('.announcement-bar .scrolling-text').textContent = config.AnnouncementText;
-                
-                // 3. ตั้งค่าเวลาโหวต
-                checkVotingStatus(config.VoteStartTime, config.VoteEndTime, config.isVotingOpen);
-
-            } else {
-                // กรณี API ล่ม
-                votingStatusDiv.innerHTML = '<i class="fas fa-times-circle"></i> ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้';
-                votingStatusDiv.className = 'status-message closed';
-            }
-
-            // 4. โหลดผลโหวต (ยังต้องเรียกแยก)
             const resultsData = await callApi('getVoteResults');
             if (resultsData.status === 'success' && resultsData.results) {
                 displayDesignOptions(resultsData.results);
@@ -769,6 +677,8 @@
             } else {
                 designOptionsDiv.innerHTML = `<p class="message error">ไม่สามารถโหลดแบบเสื้อได้</p>`;
             }
+            checkVotingStatus();
+            // ⭐️ (ลบออก) ไม่มีการเรียก getAnnouncementText
         }
         
         // ฟังก์ชัน แสดงตัวเลือก
@@ -851,6 +761,50 @@
             });
         }
 
+        // ⭐️ (กลับเป็นแบบเดิม) ฟังก์ชัน เช็คเวลา
+        async function checkVotingStatus() {
+            const response = await callApi('getVoteTime');
+            if (response.status === 'success') {
+                const now = new Date();
+                const startDateTime = response.startTime ? new Date(response.startTime) : null;
+                const endDateTime = response.endTime ? new Date(response.endTime) : null;
+                clearInterval(countdownInterval);
+                countdownTimerDiv.style.display = 'none';
+                
+                let isVotingOpen = true;
+
+                if (startDateTime && now < startDateTime) {
+                    isVotingOpen = false;
+                    votingStatusDiv.innerHTML = '<i class="fas fa-clock"></i> ยังไม่ถึงเวลาเปิดโหวต จะเปิดในอีก';
+                    countdownTimerDiv.style.display = 'block';
+                    startCountdown(startDateTime.getTime());
+                } else if (endDateTime && now > endDateTime) {
+                    isVotingOpen = false;
+                    votingStatusDiv.innerHTML = '<i class="fas fa-times-circle"></i> ปิดรับการโหวตแล้ว';
+                } else {
+                    isVotingOpen = true;
+                    if (startDateTime && endDateTime) {
+                        votingStatusDiv.innerHTML = '<i class="fas fa-check-circle"></i> เปิดให้โหวตแล้ว จะปิดในอีก';
+                        countdownTimerDiv.style.display = 'block';
+                        startCountdown(endDateTime.getTime());
+                    } else {
+                        votingStatusDiv.innerHTML = '<i class="fas fa-check-circle"></i> เปิดให้โหวตแล้ว';
+                    }
+                }
+
+                if (isVotingOpen) {
+                    registrationFormSection.style.display = 'block';
+                    resultsSection.style.display = 'none';
+                    votingStatusDiv.className = 'status-message open';
+                } else {
+                    registrationFormSection.style.display = 'none';
+                    resultsSection.style.display = 'block';
+                    votingStatusDiv.className = 'status-message closed';
+                }
+
+            }
+        }
+
         // ฟังก์ชัน นับถอยหลัง
         function startCountdown(targetTime) {
             clearInterval(countdownInterval);
@@ -859,7 +813,7 @@
                 if (distance < 1000) {
                     clearInterval(countdownInterval);
                     countdownTimerDiv.style.display = 'none';
-                    loadAppConfiguration(); // ⭐️ (ใหม่) โหลด Config ใหม่ (แทน loadInitialData)
+                    loadInitialData(); // ⭐️ กลับเป็นแบบเดิม
                     return;
                 }
                 const days = Math.floor(distance / (1000 * 60 * 60 * 24));
@@ -873,7 +827,7 @@
         }
         
         // เริ่มโหลด!
-        loadAppConfiguration(); // ⭐️ (ใหม่) เปลี่ยนตัวเรียกใช้
+        loadInitialData(); // ⭐️ กลับเป็นแบบเดิม
     </script>
 </body>
 </html>
