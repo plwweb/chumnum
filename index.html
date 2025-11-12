@@ -3,14 +3,18 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  
   <title>PLW GAMES</title>
   
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600;700&display=swap" rel="stylesheet">
   
   <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
     html, body {
       font-family: 'Sarabun', sans-serif;
       color: #ffffff;
@@ -21,14 +25,16 @@
       position: relative; 
       min-height: 100vh; 
 
-      background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), 
+      /* === [ แก้ไขจุดที่ 1 ] === */
+      /* แก้ไข path รูปภาพพื้นหลัง (ถ้าจำเป็น) และเพิ่ม fallback color */
+      background: #2a2d4d linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), 
                   url('https://img5.pic.in.th/file/secure-sv1/IMG_3756d83635c360e99c14.jpeg');
       
       background-size: cover;
       background-position: center center;
       background-repeat: no-repeat;
       
-      /* === [ แก้ไขจุดที่ 1 ] === */
+      /* === [ แก้ไขจุดที่ 2 ] === */
       /* เปลี่ยนจาก fixed เป็น scroll เพื่อแก้บักซูมบนมือถือ */
       background-attachment: scroll; 
     }
@@ -62,7 +68,7 @@
 
     .main-image img {
       width: 100%; 
-      max-width: 400px; /* ⭐️ (ใหม่) จำกัดขนาดโลโก้ไม่ให้ใหญ่เกินไป */
+      max-width: 400px;
       height: auto;
       border-radius: 10px;
       box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
@@ -82,6 +88,7 @@
       box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
       transition: all 0.3s ease;
     }
+
     .enter:hover {
       background: linear-gradient(145deg, #4e5cb5, #3d4a8d);
       border-color: #7c8aff;
@@ -89,47 +96,74 @@
       transform: scale(1.03) translateY(-2px);
       box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
     }
+
     .enter:active {
       transform: scale(0.98);
       box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
     }
+
     body.fade-out {
       opacity: 0;
       transition: opacity 1s ease-out;
     }
 
-    /* หมายเหตุ: โค้ด footer ได้ถูกลบออกไปแล้วตามคำขอก่อนหน้า */
+    /* === [ แก้ไขจุดที่ 3 ] === */
+    /* ลบ Footer ออก (ถ้ามี) */
 
     @media (orientation: landscape) {
         .intro {
-            background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), 
+            /* === [ แก้ไขจุดที่ 4 ] === */
+            background: #2a2d4d linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), 
                         url('https://img2.pic.in.th/pic/IMG_3756512bf39f2a88cd7d.jpeg');
             background-size: cover;
             background-position: center center;
             background-repeat: no-repeat;
             
-            /* === [ แก้ไขจุดที่ 2 ] === */
+            /* === [ แก้ไขจุดที่ 5 ] === */
             background-attachment: scroll; /* แก้ตรงนี้ด้วย */
         }
     }
+
     @media (max-width: 768px) {
-      .content { max-width: 90%; padding: 25px; }
-      .event-title { font-size: 2.2rem; margin-bottom: 2rem; }
-      .main-image img { margin-bottom: 2.5rem; }
-      .enter { font-size: 1.1rem; padding: 14px 45px; }
+      .content {
+        max-width: 90%;
+        padding: 25px;
+      }
+      .event-title {
+        font-size: 2.2rem;
+        margin-bottom: 2rem;
+      }
+      .main-image img {
+        margin-bottom: 2.5rem;
+      }
+      .enter {
+        font-size: 1.1rem;
+        padding: 14px 45px;
+      }
     }
+
     @media (max-width: 480px) {
-      .content { padding: 20px; }
-      .event-title { font-size: 1.8rem; margin-bottom: 1.5rem; }
-      .main-image img { margin-bottom: 2rem; }
-      .enter { font-size: 1rem; padding: 12px 35px; }
+      .content {
+        padding: 20px;
+      }
+      .event-title {
+        font-size: 1.8rem;
+        margin-bottom: 1.5rem;
+      }
+      .main-image img {
+        margin-bottom: 2rem;
+      }
+      .enter {
+        font-size: 1rem;
+        padding: 12px 35px;
+      }
     }
 
   </style>
-</head>
 
-<link rel="icon" id="site-favicon" href="https://img5.pic.in.th/file/secure-sv1/IMG_602976b5b060daac652b.png" type="image/png">
+  <link rel="icon" href="https://img5.pic.in.th/file/secure-sv1/IMG_602976b5b060daac652b.png" type="image/png">
   
+</head>
 <body>
 
 <img src="https://github.com/KongNontawatDev/Black-Mourning-Ribbon/blob/2150640c0e623c7fbcca07024287b597f7999a84/ribbon_top_right.png?raw=true" 
@@ -143,74 +177,22 @@
       <div class="content">
 
         <div class="main-image">
-          <img id="site-logo" src="https://img2.pic.in.th/pic/IMG_382285f3429be8a764f2.jpeg" alt="PLW GAMES">
+          <img src="https://img2.pic.in.th/pic/IMG_382285f3429be8a764f2.jpeg" alt="PLW GAMES">
         </div>
         
-        <button class="enter" id="site-name" onclick="enterSite()">เข้าสู่หน้าหลัก</button>
+        <button class="enter" onclick="enterSite()">เข้าสู่หน้าหลัก</button>
         
       
     </div> 
   </div> <script>
-    // 🚨 (อัปเดตแล้ว!) นี่คือ URL ใหม่ที่คุณเพิ่งให้มา 🚨
-    const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbwwJzP_jTHieO4asdyGAJk1hYHxP5gYSIZu2XNp_myLqtAqxmMMsekofM4Xl3GguKlvCQ/exec';
-
-    /**
-     * ⭐️ (ใหม่) ฟังก์ชัน Call API (แบบย่อ)
-     */
-    async function callApi(action, data = {}) {
-        try {
-            const response = await fetch(WEB_APP_URL, {
-                method: 'POST',
-                headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-                body: JSON.stringify({ action, ...data }),
-            });
-            if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-            return await response.json();
-        } catch (error) {
-            console.error('Error calling API:', error);
-            return { status: 'error' };
-        }
-    }
-
-    /**
-     * ⭐️ (ใหม่) ฟังก์ชันโหลด Config
-     */
-    async function loadSiteSettings() {
-        const response = await callApi('getPublicConfig');
-        
-        if (response.status === 'success' && response.config) {
-            const config = response.config;
-            
-            // 1. ตั้งค่าอัตลักษณ์เว็บ
-            document.title = config.SiteTitle;
-            document.getElementById('site-favicon').href = config.LogoURL;
-            
-            // (ตรวจสอบว่าองค์ประกอบมีจริงหรือไม่ ก่อนอัปเดต)
-            const siteLogo = document.getElementById('site-logo');
-            if (siteLogo) {
-                siteLogo.src = config.LogoURL;
-                siteLogo.alt = config.SiteName; // ⭐️ (ใหม่) เพิ่ม alt text
-            }
-            
-            const siteName = document.getElementById('site-name');
-            if (siteName) {
-                // ถ้าเป็นปุ่ม (ตามโค้ดเก่า) ให้เปลี่ยนข้อความ
-                if (siteName.tagName === 'BUTTON') {
-                     siteName.textContent = `เข้าสู่ ${config.SiteName}`;
-                } else {
-                    siteName.textContent = config.SiteName;
-                }
-            }
-        }
-    }
-    
-    // ⭐️ (ใหม่) เรียกใช้งาน
-    loadSiteSettings();
-
-    // --- (โค้ดเก่าของคุณ) ---
     function enterSite() {
+      // 1. แจก "ตั๋ว"
       sessionStorage.setItem('allowAppAccess', 'true');
+      
+      // 2. ทำอนิเมชั่น fade out
       document.body.classList.add('fade-out');
+      
+      // 3. รอ 1 วินาที แล้วค่อยเปลี่ยนหน้า
       setTimeout(() => {
         window.location.href = "vote.html"; 
       }, 1000);
