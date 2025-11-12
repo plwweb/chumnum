@@ -979,7 +979,7 @@
           </div>
 
           <div class="settings-section">
-            <h3>Dashboard สรุปผล</h3>
+            <h3><i class="fas fa-chart-pie"></i> Dashboard สรุปผล</h3>
             <div id="dashboard-summary">
                 <p>กำลังโหลดข้อมูลสรุป...</p>
             </div>
@@ -994,28 +994,8 @@
             </button>
           </div>
 
-          <div class="settings-section" id="addDesignFormSection" style="display:none;">
-            <h3>เพิ่มแบบเสื้อใหม่</h3>
-            <div class="form-group">
-                <label for="newDesignId">Design ID (เช่น S4):</label>
-                <input type="text" id="newDesignId" placeholder="S..." required>
-            </div>
-            <div class="form-group">
-                <label for="newDesignName">ชื่อแบบเสื้อ:</label>
-                <input type="text" id="newDesignName" placeholder="เสื้อแบบที่ 4..." required>
-            </div>
-            <div class="form-group">
-                <label for="newDesignImageUrl">URL รูปภาพแบบเสื้อ:</label>
-                <input type="text" id="newDesignImageUrl" placeholder="https://example.com/image.png">
-            </div>
-            <div class="btn-group">
-                <button class="btn btn-primary" id="saveNewDesignButton">บันทึก</button>
-                <button class="btn btn-secondary" id="cancelNewDesignButton">ยกเลิก</button>
-            </div>
-          </div>
-
           <div class="settings-section">
-            <h3>ผลโหวตปัจจุบัน (ตาราง)</h3>
+            <h3><i class="fas fa-poll"></i> ผลโหวตปัจจุบัน (ตาราง)</h3>
             <div class="table-container">
                 <table class="data-table" id="adminVoteResultsTable">
                     <thead>
@@ -1029,7 +1009,7 @@
           <div class="charts-grid">
             <div class="chart-card">
               <div class="chart-header">
-                <h3>กราฟผลโหวต</h3>
+                <h3><i class="fas fa-chart-bar"></i> กราฟผลโหวต</h3>
               </div>
               <canvas id="voteChart"></canvas>
             </div>
@@ -1071,8 +1051,25 @@
           </div>
 
           <div class="settings-container">
+            
             <div class="settings-section">
-                <h3>ตั้งเวลาเปิด-ปิดการโหวต</h3>
+                <h3><i class="fas fa-bullhorn"></i> จัดการข้อความประกาศ</h3>
+                <p style="color: var(--text-secondary); margin-bottom: 15px;">
+                    ข้อความนี้จะแสดงเป็นตัววิ่งในหน้าโหวต (vote.html)
+                </p>
+                <div class="form-group">
+                    <label for="announcementText">ข้อความ (ใส่ emoji ได้):</label>
+                    <textarea id="announcementText" rows="4" placeholder="📣 ยินดีต้อนรับสู่การโหวต..." style="width: 100%; padding: 10px; font-family: 'Kanit', sans-serif; font-size: 1.1em; border-radius: 8px; border: 1px solid var(--border-color);"></textarea>
+                </div>
+                <div class="btn-group">
+                    <button class="btn btn-primary" id="saveAnnouncementButton">
+                        <i class="fas fa-save"></i> บันทึกข้อความ
+                    </button>
+                </div>
+            </div>
+
+            <div class="settings-section">
+                <h3><i class="fas fa-clock"></i> ตั้งเวลาเปิด-ปิดการโหวต</h3>
                 <div class="form-group">
                     <label for="voteStartTime">เวลาเริ่มต้น:</label>
                     <input type="datetime-local" id="voteStartTime">
@@ -1089,7 +1086,7 @@
             </div>
 
             <div class="settings-section">
-                <h3>จัดการบัญชีผู้ดูแล</h3>
+                <h3><i class="fas fa-user-shield"></i> จัดการบัญชีผู้ดูแล</h3>
                 <div class="form-group">
                     <label for="newAdminUsername">Username ใหม่:</label>
                     <input type="text" id="newAdminUsername" placeholder="username" required>
@@ -1116,10 +1113,20 @@
             </div>
 
             <div class="settings-section">
-                <h3>เครื่องมือผู้ดูแล</h3>
-                <div class="btn-group">
-                    <button id="resetVotesButton" class="btn btn-danger">รีเซ็ตคะแนนโหวตทั้งหมด</button>
-                    <button id="clearUsersButton" class="btn btn-danger">ล้างข้อมูลผู้ใช้งานทั้งหมด</button>
+                <h3><i class="fas fa-tools"></i> เครื่องมือผู้ดูแล</h3>
+                <p style="color: var(--text-secondary); margin-bottom: 15px;">
+                    ใช้เครื่องมือเหล่านี้ด้วยความระมัดระวัง ข้อมูลอาจไม่สามารถกู้คืนได้
+                </p>
+                <div class="btn-group" style="flex-wrap: wrap;">
+                    <button id="recalculateVotesButton" class="btn btn-primary" style="background-color: var(--warning-color); color: white;">
+                        <i class="fas fa-calculator"></i> คำนวณคะแนนโหวตใหม่
+                    </button>
+                    <button id="resetVotesButton" class="btn btn-danger">
+                        <i class="fas fa-history"></i> รีเซ็ตคะแนน (เป็น 0)
+                    </button>
+                    <button id="clearUsersButton" class="btn btn-danger">
+                        <i class="fas fa-user-times"></i> ล้างข้อมูลผู้โหวต
+                    </button>
                 </div>
             </div>
             
@@ -1204,6 +1211,7 @@
     }
 
     /* === [ JS: api.js (แทนที่ด้วยระบบเก่า) ] === */
+    // 🚨 (อัปเดตแล้ว!) นี่คือ URL ใหม่ที่คุณเพิ่งให้มา 🚨
     const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbwwJzP_jTHieO4asdyGAJk1hYHxP5gYSIZu2XNp_myLqtAqxmMMsekofM4Xl3GguKlvCQ/exec';
     let currentAdminUser = '';
     let allUsersData = [];
@@ -1255,8 +1263,9 @@
         showLoading();
         await loadAdminData();
         await loadDashboardData();
-        await loadVoteTime();
-        await loadAdminAccounts();
+        // การโหลด VoteTime และ AdminAccounts จะถูกเรียกเมื่อเปิดหน้า Settings
+        // await loadVoteTime(); 
+        // await loadAdminAccounts();
         hideLoading();
     }
 
@@ -1311,8 +1320,16 @@
                 `เวลาโหวต: ${new Date(result.startTime).toLocaleString('th-TH')} - ${new Date(result.endTime).toLocaleString('th-TH')}` :
                 'ยังไม่มีการตั้งเวลาโหวต';
             
-            if (result.startTime) document.getElementById('voteStartTime').value = result.startTime;
-            if (result.endTime) document.getElementById('voteEndTime').value = result.endTime;
+            if (result.startTime) document.getElementById('voteStartTime').value = result.startTime.slice(0, 16); // ปรับ format ให้ตรง
+            if (result.endTime) document.getElementById('voteEndTime').value = result.endTime.slice(0, 16); // ปรับ format ให้ตรง
+        }
+    }
+    
+    // ⭐️ (ใหม่) โหลดข้อความประกาศ
+    async function loadAnnouncement() {
+        const result = await callApi('getAnnouncementText');
+        if (result.status === 'success') {
+            document.getElementById('announcementText').value = result.text;
         }
     }
 
@@ -1533,6 +1550,24 @@
             userSearchInput.addEventListener('input', filterAndSearchUsers);
             
             // --- ตั้งค่าระบบ (Settings Page) ---
+            
+            // ⭐️ (ใหม่) จัดการข้อความประกาศ
+            document.getElementById('saveAnnouncementButton').addEventListener('click', async () => {
+                const newText = document.getElementById('announcementText').value.trim();
+                if (!newText) {
+                    showToast('กรุณาป้อนข้อความประกาศ', 'warning');
+                    return;
+                }
+                showLoading();
+                const result = await callApi('updateAnnouncementText', { text: newText });
+                hideLoading();
+                if (result.status === 'success') {
+                    showToast('บันทึกข้อความประกาศสำเร็จ!', 'success');
+                } else {
+                    showToast(result.message, 'error');
+                }
+            });
+
             document.getElementById('setVoteTimeButton').addEventListener('click', async () => {
                 const startTime = document.getElementById('voteStartTime').value;
                 const endTime = document.getElementById('voteEndTime').value;
@@ -1566,8 +1601,34 @@
                     document.getElementById('newAdminFullName').value = '';
                 } else { showToast(result.message, 'error'); }
             });
+            
+            // ⭐️ (ใหม่) ปุ่มคำนวณคะแนนใหม่
+            document.getElementById('recalculateVotesButton').addEventListener('click', () => {
+                Swal.fire({
+                    title: 'ยืนยันการคำนวณคะแนนใหม่?',
+                    text: "ระบบจะนับคะแนนใหม่ทั้งหมดจากชีตรายชื่อนักเรียน (Master_Students) เพื่อให้แน่ใจว่าผลโหวตถูกต้อง",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#f59e0b',
+                    confirmButtonText: 'ใช่, คำนวณใหม่!',
+                    cancelButtonText: 'ยกเลิก'
+                }).then(async (result) => {
+                    if (result.isConfirmed) {
+                        showLoading();
+                        const apiResult = await callApi('recalculateVotes');
+                        hideLoading();
+                        if(apiResult.status === 'success') {
+                            showToast(apiResult.message, 'success');
+                            loadAllAdminData(); 
+                        } else {
+                            showToast(apiResult.message, 'error');
+                        }
+                    }
+                });
+            });
+
             document.getElementById('resetVotesButton').addEventListener('click', () => {
-                Swal.fire({ title: 'ยืนยันการรีเซ็ตคะแนน?', text: "การกระทำนี้จะลบคะแนนโหวตทั้งหมดและไม่สามารถย้อนกลับได้!", icon: 'warning', showCancelButton: true, confirmButtonColor: '#d33', cancelButtonColor: '#3085d6', confirmButtonText: 'ใช่, รีเซ็ตเลย!', cancelButtonText: 'ยกเลิก'
+                Swal.fire({ title: 'ยืนยันการรีเซ็ตคะแนน?', text: "การกระทำนี้จะลบคะแนนโหวตทั้งหมด (ตั้งเป็น 0) และไม่สามารถย้อนกลับได้!", icon: 'warning', showCancelButton: true, confirmButtonColor: '#d33', cancelButtonColor: '#3085d6', confirmButtonText: 'ใช่, รีเซ็ตเลย!', cancelButtonText: 'ยกเลิก'
                 }).then(async (result) => {
                     if (result.isConfirmed) {
                         showLoading();
@@ -1578,7 +1639,7 @@
                 });
             });
             document.getElementById('clearUsersButton').addEventListener('click', () => {
-                Swal.fire({ title: 'ยืนยันการล้างข้อมูลผู้ใช้?', text: "ข้อมูลผู้โหวตทั้งหมดจะถูกลบและไม่สามารถย้อนกลับได้!", icon: 'warning', showCancelButton: true, confirmButtonColor: '#d33', cancelButtonColor: '#3085d6', confirmButtonText: 'ใช่, ล้างข้อมูล!', cancelButtonText: 'ยกเลิก'
+                Swal.fire({ title: 'ยืนยันการล้างข้อมูลผู้ใช้?', text: "ข้อมูลผู้โหวตทั้งหมดในชีต Master_Students จะถูกล้างสถานะและไม่สามารถย้อนกลับได้!", icon: 'warning', showCancelButton: true, confirmButtonColor: '#d33', cancelButtonColor: '#3085d6', confirmButtonText: 'ใช่, ล้างข้อมูล!', cancelButtonText: 'ยกเลิก'
                 }).then(async (result) => {
                     if (result.isConfirmed) {
                         showLoading();
@@ -1603,7 +1664,7 @@
                 if (!target) return;
                 const row = target.closest('tr');
                 const studentId = row.dataset.studentId;
-                Swal.fire({ title: 'ยืนยันการลบ?', text: `คุณต้องการลบข้อมูลของนักเรียนรหัส '${studentId}' ใช่ไหม?`, icon: 'warning', showCancelButton: true, confirmButtonColor: '#d33', cancelButtonColor: '#3085d6', confirmButtonText: 'ใช่, ลบเลย!', cancelButtonText: 'ยกเลิก'
+                Swal.fire({ title: 'ยืนยันการลบ?', text: `คุณต้องการลบข้อมูลของนักเรียนรหัส '${studentId}' ใช่ไหม? (คะแนนโหวตจะไม่ลดตามอัตโนมัติ ให้ใช้ปุ่ม 'คำนวณคะแนนใหม่' เพื่ออัปเดต)`, icon: 'warning', showCancelButton: true, confirmButtonColor: '#d33', cancelButtonColor: '#3085d6', confirmButtonText: 'ใช่, ลบเลย!', cancelButtonText: 'ยกเลิก'
                 }).then(async (result) => {
                     if (result.isConfirmed) {
                         const apiResult = await callApi('deleteUser', { studentId: studentId });
@@ -1618,7 +1679,7 @@
                 Swal.fire({ title: 'แน่ใจหรือไม่?', text: `คุณต้องการลบบัญชี '${username}' จริงๆ ใช่ไหม`, icon: 'warning', showCancelButton: true, confirmButtonColor: '#d33', cancelButtonColor: '#3085d6', confirmButtonText: 'ใช่, ลบเลย!', cancelButtonText: 'ยกเลิก'
                 }).then(async (result) => {
                     if (result.isConfirmed) {
-                        const delResult = await callApi('deleteAdminAccount', { username: username });
+                        const delResult = await callApi('deleteAdminAccount', { usernameToDelete: username }); // ⭐️ แก้ไข key เป็น usernameToDelete
                         if (delResult.status === 'success') { showToast(delResult.message, 'success'); loadAdminAccounts(); }
                         else { showToast(delResult.message, 'error'); }
                     }
@@ -1626,7 +1687,6 @@
             });
 
             // --- จัดการแบบเสื้อ (Products Page) ---
-            // ปุ่ม "เพิ่มแบบเสื้อใหม่" (ปุ่มหลัก)
             document.getElementById('addDesignBtn').addEventListener('click', () => {
                 document.getElementById('designForm').reset();
                 document.getElementById('designModalTitle').textContent = 'เพิ่มแบบเสื้อใหม่';
@@ -1634,10 +1694,7 @@
                 document.getElementById('designIdInput').disabled = false;
                 openModal('designModal');
             });
-            // ปุ่ม "เพิ่มแบบเสื้อ" (ที่ซ่อนไว้) - เลิกใช้
-            // document.getElementById('saveNewDesignButton').addEventListener('click', ...);
             
-            // ปุ่ม "แก้ไข" และ "ลบ" ในตารางแบบเสื้อ
             document.querySelector('#adminVoteResultsTable tbody').addEventListener('click', async (event) => {
                 const target = event.target.closest('button');
                 if (!target) return;
@@ -1658,7 +1715,7 @@
                     openModal('designModal');
                 }
                 if (target.classList.contains('delete-design-button')) {
-                    Swal.fire({ title: 'ยืนยันการลบ?', text: `คุณต้องการลบแบบเสื้อ '${designId}' ใช่ไหม?`, icon: 'warning', showCancelButton: true, confirmButtonColor: '#d33', confirmButtonText: 'ใช่, ลบเลย!', cancelButtonText: 'ยกเลิก'
+                    Swal.fire({ title: 'ยืนยันการลบ?', text: `คุณต้องการลบแบบเสื้อ '${designId}' ใช่ไหม? (คะแนนที่โหวตให้แบบนี้ไปแล้วจะค้างอยู่ ควรใช้ปุ่ม 'คำนวณคะแนนใหม่' หลังลบ)`, icon: 'warning', showCancelButton: true, confirmButtonColor: '#d33', confirmButtonText: 'ใช่, ลบเลย!', cancelButtonText: 'ยกเลิก'
                     }).then(async (result) => {
                         if (result.isConfirmed) {
                             const apiResult = await callApi('deleteDesign', { designId: designId });
@@ -1720,6 +1777,7 @@
         case 'settings':
           loadVoteTime();
           loadAdminAccounts();
+          loadAnnouncement(); // ⭐️ (ใหม่) โหลดข้อความประกาศ
           break;
       }
     }
