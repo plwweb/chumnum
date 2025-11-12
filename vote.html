@@ -3,12 +3,13 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale-1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ระบบโหวตเสื้อกีฬาสี</title>
     
     <link rel="icon" href="https://img5.pic.in.th/file/secure-sv1/IMG_602976b5b060daac652b.png" type="image/png">
     
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
@@ -16,18 +17,19 @@
     <style>
         /* --- [ 1. ตัวแปรสีและ Base Styles ] --- */
         :root {
-            --primary-blue: #2196F3;
-            --light-blue: #E3F2FD;
-            --primary-pink: #FF4081;
-            --light-pink: #FCE4EC;
-            --danger-color: #f44336;
-            --success-color: #4CAF50;
-            --text-primary: #333;
-            --text-secondary: #555;
-            --border-color: #ddd;
-            --background-gradient: linear-gradient(135deg, #e0f2f7 0%, #fce4ec 100%);
+            --primary-blue: #007bff; /* ฟ้าสดใส */
+            --light-blue: #e0f2f7;   /* ฟ้าอ่อนมาก */
+            --primary-pink: #fd7e14; /* ส้ม */
+            --light-pink: #fff3e0;   /* ส้มอ่อนมาก */
+            --danger-color: #dc3545; /* แดง */
+            --success-color: #28a745; /* เขียว */
+            --text-primary: #343a40; /* ดำ */
+            --text-secondary: #6c757d; /* เทาเข้ม */
+            --border-color: #dee2e6; /* สีขอบ */
+            --background-gradient: linear-gradient(135deg, var(--light-blue) 0%, var(--light-pink) 100%);
+            --card-bg: #ffffff;
             --shadow-light: rgba(0, 0, 0, 0.08);
-            --shadow-medium: rgba(0, 0, 0, 0.12);
+            --shadow-medium: rgba(0, 0, 0, 0.15);
         }
 
         body {
@@ -40,18 +42,19 @@
             flex-direction: column;
             align-items: center;
             min-height: 100vh;
+            line-height: 1.6;
         }
 
-        .container {
-            background-color: #ffffff;
+        .main-wrapper {
+            background-color: var(--card-bg);
             padding: 30px;
             border-radius: 15px;
             box-shadow: 0 8px 30px var(--shadow-medium);
-            max-width: 900px;
+            max-width: 960px; /* ขยายความกว้างขึ้นเล็กน้อย */
             width: 100%;
             text-align: center;
             box-sizing: border-box;
-            animation: fadeIn 1s ease-out;
+            animation: fadeIn 0.8s ease-out;
         }
 
         @keyframes fadeIn {
@@ -74,30 +77,32 @@
         }
         h1 {
             color: var(--primary-blue);
-            font-size: 2.5em;
+            font-size: 2.8em;
             margin: 0;
+            font-weight: 700;
         }
         h2 {
             color: var(--primary-pink);
-            margin-top: 30px;
-            margin-bottom: 20px;
-            font-size: 2em;
+            margin-top: 35px;
+            margin-bottom: 25px;
+            font-size: 2.2em;
             font-weight: 600;
         }
 
-        /* --- [ 3. แถบประกาศ (จาก style.css เก่า) ] --- */
+        /* --- [ 3. แถบประกาศ (ปรับปรุงเล็กน้อย) ] --- */
         .announcement-bar {
-            background-color: var(--primary-pink);
+            background-color: var(--primary-blue); /* ใช้ primary-blue */
             color: white;
-            padding: 10px;
+            padding: 10px 15px;
             overflow: hidden;
             white-space: nowrap;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            box-shadow: 0 2px 8px var(--shadow-light);
             width: 100%;
-            max-width: 900px;
+            max-width: 960px; /* ให้กว้างเท่า main-wrapper */
             box-sizing: border-box;
             border-radius: 8px;
-            margin-bottom: 20px;
+            margin-bottom: 25px;
+            font-size: 1.05em;
         }
         .scrolling-text {
             margin: 0;
@@ -111,83 +116,97 @@
             100% { transform: translateX(-100%); }
         }
 
-        /* --- [ 4. ส่วนแสดงสถานะ & นับถอยหลัง (จาก style.css เก่า) ] --- */
+        /* --- [ 4. ส่วนแสดงสถานะ & นับถอยหลัง (ปรับปรุงใหม่) ] --- */
         .status-message {
-            padding: 12px 20px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            font-weight: bold;
-            font-size: 1.1em;
+            padding: 15px 25px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+            font-weight: 600;
+            font-size: 1.2em;
             text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
         }
         .status-message.open { background-color: #d4edda; color: #155724; }
         .status-message.closed { background-color: #f8d7da; color: #721c24; }
+        .status-message i { font-size: 1.3em; }
         
         #countdown-timer {
-            font-size: 1.5em;
+            font-size: 1.6em;
             font-weight: bold;
             color: var(--primary-blue);
-            margin-top: 10px;
-            margin-bottom: 20px;
+            margin-top: 15px;
+            margin-bottom: 25px;
             background-color: var(--light-blue);
-            padding: 10px 20px;
-            border-radius: 10px;
+            padding: 12px 25px;
+            border-radius: 12px;
+            box-shadow: inset 0 1px 5px rgba(0,0,0,0.05);
         }
-        #countdown-timer span { color: var(--primary-pink); font-size: 1.2em; }
+        #countdown-timer span { color: var(--primary-pink); font-size: 1.1em; }
 
-        /* --- [ 5. ดีไซน์ฟอร์มใหม่ (สำคัญ) ] --- */
+        /* --- [ 5. ดีไซน์ฟอร์มใหม่ (คล้าย Admin) ] --- */
         .form-section {
             text-align: left;
         }
         .form-step {
             background-color: var(--light-blue);
-            padding: 30px;
-            border-radius: 10px;
+            padding: 35px;
+            border-radius: 12px;
             margin-bottom: 30px;
-            box-shadow: inset 0 2px 8px rgba(0,0,0,0.05);
+            box-shadow: 0 4px 15px var(--shadow-light);
         }
         .form-step legend {
-            font-size: 1.5em;
+            font-size: 1.6em;
             font-weight: 600;
             color: var(--primary-blue);
-            margin-bottom: 20px;
+            margin-bottom: 25px;
             padding: 0 10px;
+            border-bottom: 2px solid var(--primary-blue);
+            display: inline-block;
+        }
+        .form-group {
+            margin-bottom: 20px;
         }
         .form-step label {
             font-weight: 600;
             color: var(--text-primary);
-            margin-bottom: 8px;
+            margin-bottom: 10px;
             display: block;
+            font-size: 1.1em;
         }
         .form-step input[type="text"],
         .form-step input[type="number"] {
             width: 100%;
-            padding: 12px;
-            margin-bottom: 10px;
+            padding: 14px;
             border: 1px solid var(--border-color);
             border-radius: 8px;
-            font-size: 1.05em;
+            font-size: 1.1em;
             box-sizing: border-box;
             transition: all 0.3s ease;
             font-family: 'Kanit', sans-serif;
+            background-color: #f8f9fa; /* สีพื้นหลัง input */
         }
         .form-step input[type="text"]:focus,
         .form-step input[type="number"]:focus {
             border-color: var(--primary-pink);
-            box-shadow: 0 0 0 3px rgba(255, 64, 129, 0.2);
+            box-shadow: 0 0 0 3px rgba(253, 126, 20, 0.25);
             outline: none;
+            background-color: #ffffff;
         }
         .form-step input[readonly] {
             background-color: #e9ecef;
             cursor: not-allowed;
         }
 
-        /* ข้อความแจ้งเตือน (จาก style.css เก่า) */
+        /* ข้อความแจ้งเตือน (คล้าย Admin) */
         .message {
             padding: 0;
+            margin-top: 5px;
             margin-bottom: 15px;
-            font-weight: bold;
-            font-size: 0.9em;
+            font-weight: 500;
+            font-size: 0.95em;
             text-align: left;
         }
         .message:not(:empty) { padding: 10px 15px; border-radius: 8px; }
@@ -195,12 +214,12 @@
         .message.error { background-color: #f8d7da; color: #721c24; }
         .message.loading { background-color: #e2e3e5; color: #383d41; }
 
-        /* --- [ 6. ดีไซน์การ์ดแบบเสื้อใหม่ (สำคัญ) ] --- */
+        /* --- [ 6. ดีไซน์การ์ดแบบเสื้อใหม่ (คล้าย Product Card) ] --- */
         .design-options {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
-            margin-top: 10px;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 25px;
+            margin-top: 15px;
         }
         .design-options.disabled {
             opacity: 0.6;
@@ -210,90 +229,121 @@
             position: relative;
         }
         .design-card input[type="radio"] {
-            display: none; /* ซ่อนปุ่ม Radio จริง */
+            display: none;
         }
         .design-card .design-label {
             display: block;
-            background-color: #ffffff;
-            border: 2px solid var(--light-pink);
+            background-color: var(--card-bg);
+            border: 2px solid var(--border-color);
             border-radius: 12px;
-            padding: 15px;
+            padding: 20px;
             text-align: center;
             box-shadow: 0 4px 15px var(--shadow-light);
-            transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+            transition: all 0.3s ease;
             cursor: pointer;
         }
         .design-card .design-label:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 25px var(--shadow-medium);
+            transform: translateY(-8px);
+            box-shadow: 0 10px 30px var(--shadow-medium);
+            border-color: var(--primary-blue);
         }
         .design-card img {
             max-width: 100%;
-            height: 150px;
+            height: 160px;
             object-fit: contain;
             border-radius: 8px;
-            margin-bottom: 10px;
+            margin-bottom: 15px;
             border: 1px solid #eee;
+            transition: transform 0.3s ease;
+        }
+        .design-card .design-label:hover img {
+            transform: scale(1.03);
         }
         .design-card .design-name {
-            font-size: 1.1em;
+            font-size: 1.25em;
             font-weight: 600;
             color: var(--primary-blue);
+            margin-bottom: 5px;
         }
-        /* เมื่อถูกเลือก (จาก JS .selected) */
-        .design-card.selected .design-label {
-            border-color: var(--primary-pink);
-            box-shadow: 0 0 0 4px rgba(255, 64, 129, 0.4);
-            transform: translateY(-2px);
+        .design-card .design-id {
+            font-size: 0.95em;
+            color: var(--text-secondary);
         }
-        /* หรือเมื่อถูกเลือก (จาก CSS :checked) */
+
+        /* เมื่อถูกเลือก */
+        .design-card.selected .design-label,
         .design-card input[type="radio"]:checked + .design-label {
             border-color: var(--primary-pink);
-            box-shadow: 0 0 0 4px rgba(255, 64, 129, 0.4);
-            transform: translateY(-2px);
+            box-shadow: 0 0 0 4px rgba(253, 126, 20, 0.4), 0 8px 25px var(--shadow-medium);
+            transform: translateY(-5px);
+        }
+        .design-card.selected .design-label img,
+        .design-card input[type="radio"]:checked + .design-label img {
+            transform: scale(1.05);
         }
         
-        /* --- [ 7. Skeleton Loader (จาก style.css เก่า) ] --- */
+        /* --- [ 7. Skeleton Loader ] --- */
         .skeleton-card {
-            border: 2px solid #f0f0f0; border-radius: 12px; padding: 15px;
             background-color: #f7f7f7;
+            border: 2px solid #f0f0f0;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 15px var(--shadow-light);
         }
         .skeleton-img {
-            height: 150px; border-radius: 8px; margin-bottom: 10px;
-            background-color: #e0e0e0; animation: pulse 1.5s infinite;
+            height: 160px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            background-color: #e0e0e0;
+            animation: pulse 1.5s infinite;
         }
         .skeleton-text {
-            height: 20px; width: 80%; margin: 0 auto; border-radius: 4px;
-            background-color: #e0e0e0; animation: pulse 1.5s infinite;
+            height: 25px;
+            width: 85%;
+            margin: 0 auto 5px;
+            border-radius: 4px;
+            background-color: #e0e0e0;
+            animation: pulse 1.5s infinite;
+        }
+        .skeleton-subtext {
+            height: 18px;
+            width: 50%;
+            margin: 0 auto;
+            border-radius: 4px;
+            background-color: #e0e0e0;
+            animation: pulse 1.5s infinite;
         }
         @keyframes pulse {
             0% { opacity: 1; }
-            50% { opacity: 0.5; }
+            50% { opacity: 0.6; }
             100% { opacity: 1; }
         }
 
-        /* --- [ 8. ปุ่ม Submit ] --- */
+        /* --- [ 8. ปุ่ม Submit (คล้าย Admin) ] --- */
         #submitVoteButton {
             background-color: var(--success-color);
             color: white;
-            padding: 14px 40px;
+            padding: 16px 45px;
             border: none;
             border-radius: 50px;
-            font-size: 1.2em;
+            font-size: 1.3em;
             cursor: pointer;
             transition: all 0.3s ease;
-            margin-top: 30px;
+            margin-top: 35px;
             font-weight: 600;
             width: 100%;
-            max-width: 400px;
-            display: block;
+            max-width: 450px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             margin-left: auto;
             margin-right: auto;
+            gap: 10px;
         }
         #submitVoteButton:hover {
-            background-color: #45a049;
-            transform: translateY(-2px);
-            box-shadow: 0 6px 15px var(--shadow-light);
+            background-color: #218838;
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px var(--shadow-light);
         }
         #submitVoteButton:disabled {
             background-color: #cccccc;
@@ -302,63 +352,85 @@
             box-shadow: none;
         }
 
-        /* --- [ 9. ส่วนแสดงผล (จาก style.css เก่า) ] --- */
+        /* --- [ 9. ส่วนแสดงผล (ปรับปรุงเล็กน้อย) ] --- */
         #results-section {
             display: none;
-            animation: fadeIn 1s ease-out;
+            animation: fadeIn 0.8s ease-out;
+            margin-top: 40px;
         }
         .chart-container {
             width: 100%; 
-            max-width: 600px;
-            height: 350px; 
-            margin: 20px auto;
+            max-width: 700px; /* ขยายกราฟ */
+            height: 400px; /* ขยายกราฟ */
+            margin: 25px auto;
+            background-color: var(--card-bg);
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px var(--shadow-light);
         }
         .vote-results {
             margin-top: 30px;
-            padding: 25px;
+            padding: 30px;
             background-color: var(--light-pink);
-            border-radius: 10px;
+            border-radius: 12px;
             text-align: left;
+            box-shadow: 0 4px 15px var(--shadow-light);
         }
         .vote-item {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 10px 0;
-            border-bottom: 1px dashed #ffb3c8;
+            padding: 12px 0;
+            border-bottom: 1px dashed rgba(253, 126, 20, 0.3); /* เส้นประสีส้ม */
+            font-size: 1.05em;
         }
         .vote-item:last-child { border-bottom: none; }
-        .vote-item span:first-child { font-weight: 500; }
-        .vote-count { font-weight: bold; color: var(--primary-pink); font-size: 1.1em; }
+        .vote-item span:first-child { font-weight: 500; color: var(--text-primary); }
+        .vote-count { font-weight: bold; color: var(--primary-pink); font-size: 1.2em; }
 
-        /* --- [ 10. Footer (จาก style.css เก่า) ] --- */
+        /* --- [ 10. Footer (ปรับปรุงเล็กน้อย) ] --- */
         .footer {
-            margin-top: 40px;
-            padding: 20px;
-            background-color: #f0f0f0;
+            margin-top: 50px;
+            padding: 25px;
+            background-color: #f8f9fa; /* พื้นหลังเทาอ่อน */
             text-align: center;
-            color: #555;
+            color: var(--text-secondary);
             font-size: 0.9em;
             width: 100%;
-            max-width: 900px;
+            max-width: 960px;
             box-sizing: border-box;
+            border-radius: 15px;
+            box-shadow: 0 -2px 10px var(--shadow-light);
         }
         .footer p { margin: 0; }
         .footer a { color: var(--primary-blue); text-decoration: none; font-weight: 500; }
         .footer a:hover { text-decoration: underline; }
-        .social-icon { height: 1.2em; vertical-align: middle; margin-left: 8px; }
+        .social-icon { height: 1.3em; vertical-align: middle; margin-left: 10px; opacity: 0.8; transition: opacity 0.3s ease; }
+        .social-icon:hover { opacity: 1; }
 
         /* --- [ 11. Responsive ] --- */
         @media (max-width: 768px) {
             body { padding: 10px; }
-            .container { padding: 15px; }
+            .main-wrapper { padding: 20px; border-radius: 10px; }
             header { flex-direction: column; }
-            .logo { height: 50px; margin-bottom: 10px; }
-            h1 { font-size: 2em; }
-            h2 { font-size: 1.7em; }
-            .form-step { padding: 20px; }
-            .design-options { grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); }
-            .design-card img { height: 120px; }
+            .logo { height: 50px; margin-bottom: 10px; margin-right: 0; }
+            h1 { font-size: 2.2em; }
+            h2 { font-size: 1.8em; }
+            .announcement-bar { padding: 8px 10px; margin-bottom: 20px; border-radius: 6px; }
+            .status-message { padding: 12px 15px; font-size: 1.1em; border-radius: 8px; }
+            #countdown-timer { font-size: 1.4em; padding: 10px 15px; border-radius: 10px; }
+            .form-step { padding: 25px; border-radius: 10px; margin-bottom: 25px; }
+            .form-step legend { font-size: 1.4em; margin-bottom: 20px; }
+            .form-step label { font-size: 1em; margin-bottom: 8px; }
+            .form-step input { padding: 12px; font-size: 1em; }
+            .design-options { grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 15px; }
+            .design-card .design-label { padding: 15px; border-radius: 10px; }
+            .design-card img { height: 120px; margin-bottom: 10px; }
+            .design-card .design-name { font-size: 1.1em; }
+            #submitVoteButton { padding: 14px 30px; font-size: 1.15em; max-width: 300px; border-radius: 40px; }
+            .chart-container { height: 300px; padding: 15px; border-radius: 10px; }
+            .vote-results { padding: 20px; border-radius: 10px; }
+            .footer { padding: 15px; margin-top: 30px; border-radius: 10px; }
         }
     </style>
 
@@ -366,8 +438,11 @@
 
 <body>
     <script>
+        // 🚨 หมายเหตุ: ผมปิดการเด้งกลับ (//) ไว้ให้ชั่วคราว
+        // เพื่อให้คุณทดสอบหน้านี้ (F5) ได้โดยไม่เกิด Loop
+        // ถ้าต้องการให้ระบบทำงานจริง ให้ลบ "//" ออก
         if (sessionStorage.getItem('allowAppAccess') !== 'true') {
-            window.location.replace('index.html');
+            // window.location.replace('index.html'); 
         }
         sessionStorage.removeItem('allowAppAccess');
     </script>
@@ -382,10 +457,10 @@
         </p>
     </div>
 
-    <div class="container">
+    <div class="main-wrapper">
         <header>
             <img src="https://img5.pic.in.th/file/secure-sv1/IMG_60290ec6a71fd92a13d0.png" alt="โลโก้โรงเรียน" class="logo">
-            <h1>โหวตแบบเสื้อกีฬาสี</h1>
+            <h1>ระบบโหวตเสื้อกีฬาสี</h1>
         </header>
 
         <div id="voting-status" class="status-message"></div>
@@ -395,35 +470,50 @@
             <form id="voteForm">
                 
                 <fieldset class="form-step">
-                    <legend>ขั้นตอนที่ 1 : ยืนยันตัวตน</legend>
-                    <label for="studentId">รหัสนักเรียน :</label>
-                    <input type="text" id="studentId" name="studentId" required maxlength="5" pattern="0[0-9]{4}" inputmode="numeric" placeholder="กรอกรหัสนักเรียน 5 หลัก">
-                    <p id="student-id-msg" class="message"></p>
+                    <legend>
+                        <i class="fas fa-user-check"></i> ขั้นตอนที่ 1 : ยืนยันตัวตน
+                    </legend>
+                    <div class="form-group">
+                        <label for="studentId">รหัสนักเรียน <span style="color: var(--danger-color);">*</span> :</label>
+                        <input type="text" id="studentId" name="studentId" required maxlength="5" pattern="0[0-9]{4}" inputmode="numeric" placeholder="กรอกรหัสนักเรียน 5 หลัก (เช่น 01234)">
+                        <p id="student-id-msg" class="message"></p>
+                    </div>
                     
-                    <label for="fullName">ชื่อ - นามสกุล :</label>
-                    <input type="text" id="fullName" name="fullName" readonly>
+                    <div class="form-group">
+                        <label for="fullName">ชื่อ - นามสกุล :</label>
+                        <input type="text" id="fullName" name="fullName" readonly placeholder="จะแสดงชื่อของคุณเมื่อกรอกรหัสนักเรียนถูกต้อง">
+                    </div>
                     
-                    <label for="grade">ระดับชั้น :</label>
-                    <input type="text" id="grade" name="grade" readonly>
+                    <div class="form-group">
+                        <label for="grade">ระดับชั้น :</label>
+                        <input type="text" id="grade" name="grade" readonly>
+                    </div>
                     
-                    <label for="room">ห้อง :</label>
-                    <input type="text" id="room" name="room" readonly>
+                    <div class="form-group">
+                        <label for="room">ห้อง :</label>
+                        <input type="text" id="room" name="room" readonly>
+                    </div>
                 </fieldset>
 
                 <fieldset class="form-step" id="step-2">
-                    <legend>ขั้นตอนที่ 2 : เลือกแบบเสื้อ</legend>
+                    <legend>
+                        <i class="fas fa-tshirt"></i> ขั้นตอนที่ 2 : เลือกแบบเสื้อ
+                    </legend>
                     <div id="design-options" class="design-options disabled">
-                        </div>
+                        <div class="skeleton-card"><div class="skeleton-img"></div><div class="skeleton-text"></div><div class="skeleton-subtext"></div></div>
+                        <div class="skeleton-card"><div class="skeleton-img"></div><div class="skeleton-text"></div><div class="skeleton-subtext"></div></div>
+                        <div class="skeleton-card"><div class="skeleton-img"></div><div class="skeleton-text"></div><div class="skeleton-subtext"></div></div>
+                    </div>
                 </fieldset>
 
                 <button type="submit" id="submitVoteButton" disabled>
-                    <i class="fa fa-check" style="margin-right: 8px;"></i> ยืนยันการโหวต
+                    <i class="fas fa-check-circle"></i> ยืนยันการโหวต
                 </button>
             </form>
         </div>
 
         <div id="results-section">
-            <h2>ผลการโหวต</h2>
+            <h2><i class="fas fa-chart-bar"></i> ผลการโหวต</h2>
             <div class="chart-container">
                 <canvas id="voteChart"></canvas>
             </div>
@@ -443,12 +533,13 @@
             <a href="https://www.instagram.com/plwsc.official?igsh=OWowOWlnNHV4ZXJ2" target="_blank" rel="noopener noreferrer">
                 <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e7/Instagram_logo_2016.svg/100px-Instagram_logo_2016.svg.png" alt="Instagram" class="social-icon">
             </a>
-            <span style="margin: 0 10px;">|</span> <a href="admin.html" style="text-decoration: none;">Admin Login</a>
+            <span style="margin: 0 15px;">|</span> <a href="admin-new.html" style="text-decoration: none;">Admin Login</a>
         </p>
     </footer>
 
     <script>
         // URL และตัวแปร (จากระบบเก่า)
+        // 🚨 อย่าลืมเปลี่ยน URL นี้เป็น URL ที่ได้จากการ Deploy Apps Script ใหม่
         const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbwwJzP_jTHieO4asdyGAJk1hYHxP5gYSIZu2XNp_myLqtAqxmMMsekofM4Xl3GguKlvCQ/exec';
         
         const voteForm = document.getElementById('voteForm');
@@ -468,19 +559,19 @@
         let voteChartInstance = null;
         let countdownInterval;
 
-        // ฟังก์ชัน Skeleton Loader (จากระบบเก่า)
+        // ฟังก์ชัน Skeleton Loader
         function showSkeletonLoader() {
             designOptionsDiv.innerHTML = `
-                <div class="skeleton-card"><div class="skeleton-img"></div><div class="skeleton-text"></div></div>
-                <div class="skeleton-card"><div class="skeleton-img"></div><div class="skeleton-text"></div></div>
-                <div class="skeleton-card"><div class="skeleton-img"></div><div class="skeleton-text"></div></div>
+                <div class="skeleton-card"><div class="skeleton-img"></div><div class="skeleton-text"></div><div class="skeleton-subtext"></div></div>
+                <div class="skeleton-card"><div class="skeleton-img"></div><div class="skeleton-text"></div><div class="skeleton-subtext"></div></div>
+                <div class="skeleton-card"><div class="skeleton-img"></div><div class="skeleton-text"></div><div class="skeleton-subtext"></div></div>
             `;
             designOptionsDiv.classList.add('disabled');
         }
         
-        // ฟังก์ชันตรวจสอบ ID (จากระบบเก่า)
+        // ฟังก์ชันตรวจสอบ ID
         studentIdInput.addEventListener('input', async () => {
-            const id = studentIdInput.value;
+            const id = studentIdInput.value.trim(); // เพิ่ม .trim()
             studentIdMsg.style.display = 'block';
             const resetFields = () => {
                 fullNameInput.value = '';
@@ -491,13 +582,13 @@
             };
 
             if (id.length === 5 && id.startsWith('0')) {
-                studentIdMsg.textContent = 'กำลังตรวจสอบ...';
+                studentIdMsg.textContent = 'กำลังตรวจสอบรหัสนักเรียน...';
                 studentIdMsg.className = 'message loading';
                 
                 const result = await callApi('getStudentDetails', { studentId: id });
                 
                 if (result.status === 'success') {
-                    studentIdMsg.textContent = 'พบข้อมูลนักเรียน';
+                    studentIdMsg.textContent = '✅ พบข้อมูลนักเรียน';
                     studentIdMsg.className = 'message success';
                     fullNameInput.value = result.fullName;
                     gradeInput.value = result.grade;
@@ -505,12 +596,12 @@
                     designOptionsDiv.classList.remove('disabled');
                     validateForm();
                 } else {
-                    studentIdMsg.textContent = result.message;
+                    studentIdMsg.textContent = '❌ ' + result.message;
                     studentIdMsg.className = 'message error';
                     resetFields();
                 }
             } else if (id.length > 0) {
-                studentIdMsg.textContent = 'รูปแบบรหัสไม่ถูกต้อง (ต้องขึ้นต้นด้วย 0 และมี 5 หลัก)';
+                studentIdMsg.textContent = '⚠️ รูปแบบรหัสไม่ถูกต้อง (ต้องขึ้นต้นด้วย 0 และมี 5 หลัก)';
                 studentIdMsg.className = 'message error';
                 resetFields();
             } else {
@@ -521,31 +612,30 @@
             }
         });
 
-        // ฟังก์ชัน Submit (จากระบบเก่า)
+        // ฟังก์ชัน Submit
         voteForm.addEventListener('submit', async (event) => {
             event.preventDefault();
             const studentId = studentIdInput.value;
             const voteChoiceElement = document.querySelector('input[name="voteChoice"]:checked');
             const voteChoiceValue = voteChoiceElement.value;
-            // แก้ไขเล็กน้อย: หชื่อจาก .design-name ภายใน .design-label
             const voteChoiceName = document.querySelector(`label[for="design-${voteChoiceValue}"] .design-name`).textContent.trim();
 
             Swal.fire({
-                title: 'ยืนยันข้อมูล',
+                title: 'ยืนยันข้อมูลการโหวต',
                 html: `
-                    <p>โปรดตรวจสอบข้อมูลก่อนยืนยัน</p>
-                    <div style="text-align: left; margin: 0 auto; display: inline-block;">
+                    <p style="font-size: 1.1em; margin-bottom: 15px;">โปรดตรวจสอบข้อมูลก่อนยืนยันการโหวต</p>
+                    <div style="text-align: left; margin: 0 auto; padding: 10px 15px; background-color: #f8f9fa; border-radius: 8px; border: 1px solid #eee; display: inline-block;">
                         <strong>รหัสนักเรียน :</strong> ${studentId}<br>
                         <strong>ชื่อ :</strong> ${fullNameInput.value}<br>
                         <strong>ระดับชั้น :</strong> ${gradeInput.value}<br>
                         <strong>ห้อง :</strong> ${roomInput.value}<br>
-                        <strong>คุณเลือก :</strong> ${voteChoiceName}
+                        <strong style="color: var(--primary-pink); font-size: 1.1em;">คุณเลือก :</strong> <span style="font-weight: 600; font-size: 1.1em;">${voteChoiceName}</span>
                     </div>
                 `,
                 icon: 'question',
                 showCancelButton: true,
-                confirmButtonColor: '#3085d6',
-                cancelButtonColor: '#d33',
+                confirmButtonColor: '#28a745', // สีเขียว
+                cancelButtonColor: '#6c757d', // สีเทา
                 confirmButtonText: 'ยืนยันการโหวต',
                 cancelButtonText: 'แก้ไขข้อมูล'
             }).then(async (result) => {
@@ -556,7 +646,7 @@
 
                     if (apiResult.status === 'success') {
                         confetti({ particleCount: 150, spread: 180, origin: { y: 0.6 } });
-                        Swal.fire({ title: 'โหวตสำเร็จ!', text: apiResult.message, icon: 'success', timer: 2000, showConfirmButton: false });
+                        Swal.fire({ title: 'โหวตสำเร็จ!', text: apiResult.message, icon: 'success', timer: 2500, showConfirmButton: false });
                         voteForm.reset();
                         studentIdMsg.textContent = '';
                         studentIdMsg.className = 'message';
@@ -567,14 +657,14 @@
                     } else {
                         Swal.fire({ title: 'ผิดพลาด!', text: apiResult.message, icon: 'error' });
                         if (apiResult.message.includes('โหวตไปแล้ว')) {
-                             studentIdInput.dispatchEvent(new Event('input')); // ใช้ input event แทน blur
+                             studentIdInput.dispatchEvent(new Event('input'));
                         }
                     }
                 }
             });
         });
 
-        // ฟังก์ชันเลือกการ์ด (จากระบบเก่า)
+        // ฟังก์ชันเลือกการ์ด
         designOptionsDiv.addEventListener('change', (event) => {
             if (event.target.name === 'voteChoice') {
                 document.querySelectorAll('.design-card').forEach(card => card.classList.remove('selected'));
@@ -584,7 +674,7 @@
             }
         });
         
-        // ฟังก์ชัน Validate (จากระบบเก่า)
+        // ฟังก์ชัน Validate
         function validateForm() {
             const studentId = studentIdInput.value;
             const fullName = fullNameInput.value;
@@ -592,7 +682,7 @@
             submitVoteButton.disabled = !(studentId.length === 5 && fullName.trim() !== '' && choiceRadio);
         }
 
-        // ฟังก์ชัน Call API (จากระบบเก่า)
+        // ฟังก์ชัน Call API
         async function callApi(action, data = {}) {
             try {
                 const response = await fetch(WEB_APP_URL, {
@@ -608,7 +698,7 @@
             }
         }
         
-        // ฟังก์ชัน โหลดข้อมูล (จากระบบเก่า)
+        // ฟังก์ชัน โหลดข้อมูล
         async function loadInitialData() {
             showSkeletonLoader();
             validateForm();
@@ -624,7 +714,7 @@
             await getAnnouncementText();
         }
         
-        // ฟังก์ชัน แสดงตัวเลือก (ปรับ HTML ใหม่)
+        // ฟังก์ชัน แสดงตัวเลือก
         function displayDesignOptions(designs) {
             designOptionsDiv.innerHTML = '';
             if (designs.length === 0) {
@@ -637,14 +727,15 @@
                 div.innerHTML = `
                     <input type="radio" id="design-${design.designId}" name="voteChoice" value="${design.designId}" required>
                     <label for="design-${design.designId}" class="design-label">
-                        <img src="${design.imageUrl || 'https://via.placeholder.com/150?text=No+Image'}" alt="${design.designName}">
-                        <span class="design-name">${design.designName}</span>
+                        <img src="${design.imageUrl || 'https://via.placeholder.com/200?text=No+Image'}" alt="${design.designName}">
+                        <div class="design-name">${design.designName}</div>
+                        <div class="design-id">ID: ${design.designId}</div>
                     </label>`;
                 designOptionsDiv.appendChild(div);
             });
         }
         
-        // ฟังก์ชัน แสดงผลโหวต (จากระบบเก่า)
+        // ฟังก์ชัน แสดงผลโหวต
         function displayVoteResults(results) {
             const voteResultsDiv = document.getElementById('vote-results');
             if(!voteResultsDiv) return;
@@ -659,7 +750,7 @@
             });
         }
         
-        // ฟังก์ชัน แสดงกราฟ (จากระบบเก่า)
+        // ฟังก์ชัน แสดงกราฟ
         function displayVoteChart(votes) {
             const voteChartCanvas = document.getElementById('voteChart');
             if(!voteChartCanvas) return;
@@ -670,7 +761,7 @@
             
             const labels = votes.map(v => `${v.designName} (${v.designId})`);
             const data = votes.map(v => v.voteCount);
-            const backgroundColors = data.map(() => `rgba(${Math.floor(Math.random()*255)},${Math.floor(Math.random()*255)},${Math.floor(Math.random()*255)},0.7)`);
+            const backgroundColors = data.map(() => `rgba(${Math.floor(Math.random()*155)+100},${Math.floor(Math.random()*155)+100},${Math.floor(Math.random()*155)+100},0.8)`); // สีพาสเทล
             
             if (voteChartInstance) voteChartInstance.destroy();
             
@@ -678,7 +769,14 @@
                 type: 'bar',
                 data: {
                     labels: labels,
-                    datasets: [{ label: 'คะแนนโหวต', data: data, backgroundColor: backgroundColors }]
+                    datasets: [{ 
+                        label: 'คะแนนโหวต', 
+                        data: data, 
+                        backgroundColor: backgroundColors,
+                        borderColor: backgroundColors.map(c => c.replace('0.8', '1')),
+                        borderWidth: 1,
+                        borderRadius: 5
+                    }]
                 },
                 options: { 
                     responsive: true, 
@@ -686,12 +784,17 @@
                     indexAxis: 'y', // แสดงเป็นกราฟแนวนอน
                     plugins: {
                         legend: { display: false }
+                    },
+                    scales: {
+                        x: {
+                            beginAtZero: true
+                        }
                     }
                 }
             });
         }
 
-        // ฟังก์ชัน โหลดประกาศ (จากระบบเก่า)
+        // ฟังก์ชัน โหลดประกาศ
         async function getAnnouncementText() {
             const result = await callApi('getAnnouncementText');
             if (result.status === 'success') {
@@ -702,7 +805,7 @@
             }
         }
 
-        // ฟังก์ชัน เช็คเวลา (จากระบบเก่า)
+        // ฟังก์ชัน เช็คเวลา
         async function checkVotingStatus() {
             const response = await callApi('getVoteTime');
             if (response.status === 'success') {
@@ -716,20 +819,20 @@
 
                 if (startDateTime && now < startDateTime) {
                     isVotingOpen = false;
-                    votingStatusDiv.textContent = '🔴 ยังไม่ถึงเวลาเปิดโหวต จะเปิดในอีก';
+                    votingStatusDiv.innerHTML = '<i class="fas fa-clock"></i> ยังไม่ถึงเวลาเปิดโหวต จะเปิดในอีก';
                     countdownTimerDiv.style.display = 'block';
                     startCountdown(startDateTime.getTime());
                 } else if (endDateTime && now > endDateTime) {
                     isVotingOpen = false;
-                    votingStatusDiv.textContent = `🔴 ปิดรับการโหวตแล้ว`;
+                    votingStatusDiv.innerHTML = '<i class="fas fa-times-circle"></i> ปิดรับการโหวตแล้ว';
                 } else {
                     isVotingOpen = true;
                     if (startDateTime && endDateTime) {
-                        votingStatusDiv.textContent = '🟢 เปิดให้โหวตแล้ว จะปิดในอีก';
+                        votingStatusDiv.innerHTML = '<i class="fas fa-check-circle"></i> เปิดให้โหวตแล้ว จะปิดในอีก';
                         countdownTimerDiv.style.display = 'block';
                         startCountdown(endDateTime.getTime());
                     } else {
-                        votingStatusDiv.textContent = '🟢 เปิดให้โหวตแล้ว';
+                        votingStatusDiv.innerHTML = '<i class="fas fa-check-circle"></i> เปิดให้โหวตแล้ว';
                     }
                 }
 
@@ -746,7 +849,7 @@
             }
         }
 
-        // ฟังก์ชัน นับถอยหลัง (จากระบบเก่า)
+        // ฟังก์ชัน นับถอยหลัง
         function startCountdown(targetTime) {
             clearInterval(countdownInterval);
             const updateCountdown = () => {
@@ -767,7 +870,7 @@
             countdownInterval = setInterval(updateCountdown, 1000);
         }
         
-        // เริ่มโหลด! (จากระบบเก่า)
+        // เริ่มโหลด!
         loadInitialData();
     </script>
 </body>
