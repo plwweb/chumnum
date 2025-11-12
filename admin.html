@@ -774,6 +774,16 @@
       .modal-content {
         width: 95%;
       }
+      
+      /* ⭐️⭐️⭐️ นี่คือ CSS ที่แก้ไขปัญหาปุ่มล้น ⭐️⭐️⭐️ */
+      .settings-section .btn-group {
+        flex-direction: column; /*- ให้ปุ่มเรียงกันแนวตั้ง */
+        align-items: stretch;   /*- ให้ปุ่มยืดเต็มความกว้าง */
+      }
+      .settings-section .btn-group .btn {
+        width: 100%;            /*- ทำให้ปุ่มเต็มความกว้าง */
+        justify-content: center; /*- จัดข้อความในปุ่มให้อยู่กลาง */
+      }
     }
 
     /* === [ CSS: ส่วนเพิ่มเติมจากระบบเก่า ] === */
@@ -1411,7 +1421,7 @@
         const loginButton = document.getElementById('loginButton');
         const loginMessage = document.getElementById('login-message');
 
-        // ⭐️ (ลบออก) loadSiteSettings() ถูกลบ
+        // ⭐️ (ลบออก) loadSiteSettings();
 
         // --- 1. ระบบ Login (จาก auth.js + ระบบเก่า) ---
         loginForm.addEventListener('submit', async (e) => {
@@ -1786,7 +1796,7 @@
                 const action = isEditMode ? 'editDesign' : 'addDesign';
                 const data = { designId: id, designName: name, imageUrl: imageUrl };
                 
-                const result = await callApi('action', data);
+                const result = await callApi(action, data);
                 hideLoading();
 
                 if (result.status === 'success') {
@@ -1816,10 +1826,10 @@
           loadDashboardData();
           break;
         case 'products':
-          loadAdminData(); // โหลดตารางแบบเสื้อ/กราฟ
+          loadAdminData();
           break;
         case 'users':
-          loadAdminData(); // โหลดตารางผู้ใช้
+          loadAdminData();
           break;
         case 'settings':
           loadVoteTime();
