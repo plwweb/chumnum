@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Admin Dashboard - ระบบโหวต</title>
   
-  <link rel="icon" href="https://img5.pic.in.th/file/secure-sv1/IMG_602976b5b060daac652b.png" type="image/png">
+  <link rel="icon" href="https://img5.pic.in.th/file/secure-sv1/IMG_602976b5b060daac652b.png" type="image/png" id="site-favicon-admin">
   
   <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -267,7 +267,8 @@
     /* === [ CSS: dashboard.css (ใหม่) ] === */
     .dashboard-container {
       display: flex;
-      height: 100vh;
+      height: 100vh; /* Fallback */
+      height: 100dvh; /* ⭐️ แก้ไข (1) */
       overflow: hidden;
     }
     .sidebar {
@@ -714,7 +715,8 @@
       .sidebar {
         position: fixed;
         left: -260px;
-        height: 100vh;
+        height: 100vh; /* Fallback */
+        height: 100dvh; /* ⭐️ แก้ไข (2) */
         z-index: 1000;
       }
       .sidebar.active {
@@ -1354,15 +1356,17 @@
     }
 
     async function loadVoteTime() {
-        const result = await callApi('getVoteTime');
+        // ⭐️ (ใหม่) เปลี่ยนมาใช้ API ใหม่
+        const result = await callApi('getPublicConfig');
         if (result.status === 'success') {
+            const config = result.config;
             const display = document.getElementById('current-vote-time');
-            display.textContent = (result.startTime && result.endTime) ?
-                `เวลาโหวต: ${new Date(result.startTime).toLocaleString('th-TH')} - ${new Date(result.endTime).toLocaleString('th-TH')}` :
+            display.textContent = (config.startTime && config.endTime) ?
+                `เวลาโหวต: ${new Date(config.startTime).toLocaleString('th-TH')} - ${new Date(config.endTime).toLocaleString('th-TH')}` :
                 'ยังไม่มีการตั้งเวลาโหวต';
             
-            if (result.startTime) document.getElementById('voteStartTime').value = result.startTime.slice(0, 16); // ปรับ format ให้ตรง
-            if (result.endTime) document.getElementById('voteEndTime').value = result.endTime.slice(0, 16); // ปรับ format ให้ตรง
+            if (config.startTime) document.getElementById('voteStartTime').value = config.startTime.slice(0, 16); // ปรับ format ให้ตรง
+            if (config.endTime) document.getElementById('voteEndTime').value = config.endTime.slice(0, 16); // ปรับ format ให้ตรง
         }
     }
     
@@ -1388,6 +1392,9 @@
             // 2. อัปเดตโลโก้/ชื่อ ใน Admin Panel ทันที
             document.getElementById('sidebar-logo').src = config.LogoURL;
             document.getElementById('login-logo').src = config.LogoURL;
+            // ⭐️ (ใหม่) อัปเดต Title ของแท็บ
+            document.title = config.SiteTitle + ' - Admin Dashboard';
+            document.getElementById('site-favicon-admin').href = config.LogoURL;
         }
     }
 
