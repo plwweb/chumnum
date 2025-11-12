@@ -268,7 +268,7 @@
     .dashboard-container {
       display: flex;
       height: 100vh; /* Fallback */
-      height: 100dvh; /* ⭐️ แก้ไข (1) */
+      height: 100dvh; 
       overflow: hidden;
     }
     .sidebar {
@@ -714,7 +714,7 @@
         position: fixed;
         left: -260px;
         height: 100vh; /* Fallback */
-        height: 100dvh; /* ⭐️ แก้ไข (2) */
+        height: 100dvh;
         z-index: 1000;
       }
       .sidebar.active {
@@ -760,6 +760,16 @@
       .toast {
         min-width: auto;
       }
+      
+      /* ⭐️⭐️⭐️ นี่คือ CSS ที่แก้ไขปัญหาปุ่มล้น (ย้ายมาจาก 480px) ⭐️⭐️⭐️ */
+      .settings-section .btn-group {
+        flex-direction: column; /*- ให้ปุ่มเรียงกันแนวตั้ง */
+        align-items: stretch;   /*- ให้ปุ่มยืดเต็มความกว้าง */
+      }
+      .settings-section .btn-group .btn {
+        width: 100%;            /*- ทำให้ปุ่มเต็มความกว้าง */
+        justify-content: center; /*- จัดข้อความในปุ่มให้อยู่กลาง */
+      }
     }
     @media (max-width: 480px) {
       .navbar-right {
@@ -774,16 +784,7 @@
       .modal-content {
         width: 95%;
       }
-      
-      /* ⭐️⭐️⭐️ นี่คือ CSS ที่แก้ไขปัญหาปุ่มล้น ⭐️⭐️⭐️ */
-      .settings-section .btn-group {
-        flex-direction: column; /*- ให้ปุ่มเรียงกันแนวตั้ง */
-        align-items: stretch;   /*- ให้ปุ่มยืดเต็มความกว้าง */
-      }
-      .settings-section .btn-group .btn {
-        width: 100%;            /*- ทำให้ปุ่มเต็มความกว้าง */
-        justify-content: center; /*- จัดข้อความในปุ่มให้อยู่กลาง */
-      }
+      /* ⭐️ (ลบออก) ย้ายโค้ด .btn-group ไปที่ 768px แล้ว */
     }
 
     /* === [ CSS: ส่วนเพิ่มเติมจากระบบเก่า ] === */
