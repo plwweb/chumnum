@@ -1113,6 +1113,24 @@
             </div>
 
             <div class="settings-section">
+                <h3><i class="fas fa-file-csv"></i> Import รายชื่อนักเรียน (CSV)</h3>
+                <p style="color: var(--text-secondary); margin-bottom: 15px;">
+                    อัปโหลดไฟล์ `.csv` ที่มีรายชื่อนักเรียนทั้งหมด
+                    <strong style="color: var(--danger-color);">(คำเตือน: การกระทำนี้จะลบรายชื่อนักเรียนเก่าทั้งหมด)</strong>
+                </p>
+                <div class="form-group">
+                    <label for="csvFile">เลือกไฟล์ .csv (ต้องมี 4 คอลัมน์: StudentID, FullName, Grade, Room)</label>
+                    <input type="file" id="csvFile" accept=".csv" style="padding: 10px; background-color: var(--bg-tertiary); border-radius: 8px; border: 1px solid var(--border-color); width: 100%;">
+                </div>
+                <div class="btn-group">
+                    <button class="btn btn-primary" id="uploadCsvButton" style="background-color: var(--success-color);">
+                        <i class="fas fa-upload"></i> อัปโหลดและแทนที่ข้อมูล
+                    </button>
+                </div>
+                <p id="upload-csv-message" class="message"></p>
+            </div>
+
+            <div class="settings-section">
                 <h3><i class="fas fa-tools"></i> เครื่องมือผู้ดูแล</h3>
                 <p style="color: var(--text-secondary); margin-bottom: 15px;">
                     ใช้เครื่องมือเหล่านี้ด้วยความระมัดระวัง ข้อมูลอาจไม่สามารถกู้คืนได้
@@ -1646,6 +1664,74 @@
                         const apiResult = await callApi('clearUsers');
                         hideLoading();
                         if(apiResult.status === 'success') { showToast(apiResult.message, 'success'); loadAllAdminData(); } else { showToast(apiResult.message, 'error'); }
+                    }
+                });
+            });
+
+            // ⭐️ (ใหม่) Import CSV (Settings Page)
+            document.getElementById('uploadCsvButton').addEventListener('click', () => {
+                const fileInput = document.getElementById('csvFile');
+                const file = fileInput.files[0];
+                const uploadMessage = document.getElementById('upload-csv-message');
+
+                if (!file) {
+                    uploadMessage.textContent = 'กรุณาเลือกไฟล์ .csv ก่อนครับ';
+                    uploadMessage.className = 'message error';
+                    return;
+                }
+
+                Swal.fire({
+                    title: 'ยืนยันการ Import ข้อมูล?',
+                    text: "ข้อมูลนักเรียนเก่าทั้งหมดจะถูกลบ และแทนที่ด้วยข้อมูลจากไฟล์นี้! การกระทำนี้ย้อนกลับไม่ได้",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#d33',
+                    confirmButtonText: 'ใช่, ลบและ Import ใหม่!',
+                    cancelButtonText: 'ยกเลิก'
+                }).then(async (result) => {
+                    if (result.isConfirmed) {
+                        showLoading();
+                        uploadMessage.textContent = 'กำลังอ่านไฟล์...';
+                        uploadMessage.className = 'message loading';
+
+                        const reader = new FileReader();
+                        reader.onload = async (e) => {
+                            try {
+                                // 1. อ่านไฟล์เป็น Base64
+                                const base64String = e.target.result.split(',')[1];
+                                
+                                uploadMessage.textContent = 'กำลังอัปโหลดและประมวลผล...';
+                                
+                                // 2. ส่ง Base64 ไปที่ Apps Script
+                                const apiResult = await callApi('importStudents', { base64Data: base64String });
+                                hideLoading();
+
+                                if(apiResult.status === 'success') {
+                                    uploadMessage.textContent = apiResult.message;
+                                    uploadMessage.className = 'message success';
+                                    showToast('Import สำเร็จ!', 'success');
+                                    // โหลดข้อมูลหน้า Users ใหม่ (เผื่อผู้ใช้กดไปดู)
+                                    loadAdminData(); 
+                                } else {
+                                    uploadMessage.textContent = 'ผิดพลาด: ' + apiResult.message;
+                                    uploadMessage.className = 'message error';
+                                    showToast(apiResult.message, 'error');
+                                }
+                            } catch (err) {
+                                hideLoading();
+                                uploadMessage.textContent = 'เกิดข้อผิดพลาดในการอ่านไฟล์: ' + err.message;
+                                uploadMessage.className = 'message error';
+                            }
+                        };
+                        
+                        reader.onerror = () => {
+                            hideLoading();
+                            uploadMessage.textContent = 'ไม่สามารถอ่านไฟล์ได้';
+                            uploadMessage.className = 'message error';
+                        };
+                        
+                        // เริ่มอ่านไฟล์ (เราจะอ่านเป็น DataURL เพื่อให้ได้ Base64)
+                        reader.readAsDataURL(file);
                     }
                 });
             });
