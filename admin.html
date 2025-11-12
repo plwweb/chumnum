@@ -847,7 +847,7 @@
   <div id="login-page">
     <div class="login-box">
         <div class="login-header">
-            <img src="https://img5.pic.in.th/file/secure-sv1/IMG_60290ec6a71fd92a13d0.png" alt="โลโก้โรงเรียน">
+            <img src="https://img5.pic.in.th/file/secure-sv1/IMG_60290ec6a71fd92a13d0.png" alt="โลโก้โรงเรียน" id="login-logo">
             <h2>Admin Panel - ระบบโหวต</h2>
         </div>
         <form id="loginForm">
@@ -873,7 +873,7 @@
     <aside class="sidebar" id="sidebar">
       <div class="sidebar-header">
         <div class="logo">
-          <img src="https://img5.pic.in.th/file/secure-sv1/IMG_60290ec6a71fd92a13d0.png" alt="Logo">
+          <img src="https://img5.pic.in.th/file/secure-sv1/IMG_60290ec6a71fd92a13d0.png" alt="Logo" id="sidebar-logo">
           <span>Admin Panel</span>
         </div>
         <button class="sidebar-toggle" id="sidebarToggle">
@@ -1052,6 +1052,30 @@
 
           <div class="settings-container">
             
+            <div class="settings-section">
+                <h3><i class="fas fa-id-card"></i> อัตลักษณ์เว็บไซต์</h3>
+                <p style="color: var(--text-secondary); margin-bottom: 15px;">
+                    ตั้งค่าชื่อ, หัวข้อ, และโลโก้ ที่จะแสดงในหน้าโหวต
+                </p>
+                <div class="form-group">
+                    <label for="settingSiteName">ชื่อระบบ (ที่แสดงใน Header):</label>
+                    <input type="text" id="settingSiteName" placeholder="เช่น โหวตแบบเสื้อกีฬาสี">
+                </div>
+                <div class="form-group">
+                    <label for="settingSiteTitle">หัวข้อเว็บ (ที่แสดงบนแท็บเบราว์เซอร์):</label>
+                    <input type="text" id="settingSiteTitle" placeholder="เช่น ระบบโหวต PLW">
+                </div>
+                <div class="form-group">
+                    <label for="settingLogoURL">URL โลโก้:</label>
+                    <input type="text" id="settingLogoURL" placeholder="https://.../logo.png">
+                </div>
+                <div class="btn-group">
+                    <button class="btn btn-primary" id="saveSiteSettingsButton">
+                        <i class="fas fa-save"></i> บันทึกการตั้งค่า
+                    </button>
+                </div>
+            </div>
+
             <div class="settings-section">
                 <h3><i class="fas fa-bullhorn"></i> จัดการข้อความประกาศ</h3>
                 <p style="color: var(--text-secondary); margin-bottom: 15px;">
@@ -1281,9 +1305,8 @@
         showLoading();
         await loadAdminData();
         await loadDashboardData();
-        // การโหลด VoteTime และ AdminAccounts จะถูกเรียกเมื่อเปิดหน้า Settings
-        // await loadVoteTime(); 
-        // await loadAdminAccounts();
+        // ⭐️ (ใหม่) โหลด Site Settings เพื่ออัปเดตโลโก้
+        await loadSiteSettings();
         hideLoading();
     }
 
@@ -1345,9 +1368,26 @@
     
     // ⭐️ (ใหม่) โหลดข้อความประกาศ
     async function loadAnnouncement() {
-        const result = await callApi('getAnnouncementText');
+        const result = await callApi('getPublicConfig'); // เปลี่ยนมาใช้ API ใหม่
         if (result.status === 'success') {
-            document.getElementById('announcementText').value = result.text;
+            document.getElementById('announcementText').value = result.config.AnnouncementText;
+        }
+    }
+
+    // ⭐️ (ใหม่) โหลดการตั้งค่าเว็บไซต์
+    async function loadSiteSettings() {
+        const result = await callApi('getPublicConfig');
+        if (result.status === 'success') {
+            const config = result.config;
+            
+            // 1. อัปเดตฟอร์มในหน้าตั้งค่า
+            document.getElementById('settingSiteName').value = config.SiteName;
+            document.getElementById('settingSiteTitle').value = config.SiteTitle;
+            document.getElementById('settingLogoURL').value = config.LogoURL;
+            
+            // 2. อัปเดตโลโก้/ชื่อ ใน Admin Panel ทันที
+            document.getElementById('sidebar-logo').src = config.LogoURL;
+            document.getElementById('login-logo').src = config.LogoURL;
         }
     }
 
@@ -1431,6 +1471,9 @@
         const loginButton = document.getElementById('loginButton');
         const loginMessage = document.getElementById('login-message');
 
+        // ⭐️ (ใหม่) โหลดโลโก้หน้า Login ก่อน
+        loadSiteSettings();
+
         // --- 1. ระบบ Login (จาก auth.js + ระบบเก่า) ---
         loginForm.addEventListener('submit', async (e) => {
             e.preventDefault();
@@ -1474,6 +1517,7 @@
         function initializeApp() {
             // โหลดข้อมูลทั้งหมดเป็นครั้งแรก
             loadAllAdminData();
+            // loadSiteSettings(); // ถูกเรียกไปแล้วใน loadAllAdminData
 
             // Sidebar toggle
             const sidebarToggle = document.getElementById('sidebarToggle');
@@ -1569,6 +1613,27 @@
             
             // --- ตั้งค่าระบบ (Settings Page) ---
             
+            // ⭐️ (ใหม่) บันทึก Site Settings
+            document.getElementById('saveSiteSettingsButton').addEventListener('click', async () => {
+                const settings = {
+                    siteName: document.getElementById('settingSiteName').value.trim(),
+                    siteTitle: document.getElementById('settingSiteTitle').value.trim(),
+                    logoUrl: document.getElementById('settingLogoURL').value.trim()
+                };
+                if (!settings.siteName || !settings.siteTitle || !settings.logoUrl) {
+                    showToast('กรุณากรอกข้อมูลให้ครบทุกช่อง', 'warning'); return;
+                }
+                showLoading();
+                const result = await callApi('updateSiteSettings', { settings: settings });
+                hideLoading();
+                if (result.status === 'success') {
+                    showToast('บันทึกการตั้งค่าสำเร็จ!', 'success');
+                    loadSiteSettings(); // โหลดซ้ำเพื่ออัปเดตโลโก้บน Header ของ Admin ทันที
+                } else {
+                    showToast(result.message, 'error');
+                }
+            });
+
             // ⭐️ (ใหม่) จัดการข้อความประกาศ
             document.getElementById('saveAnnouncementButton').addEventListener('click', async () => {
                 const newText = document.getElementById('announcementText').value.trim();
@@ -1864,6 +1929,7 @@
           loadVoteTime();
           loadAdminAccounts();
           loadAnnouncement(); // ⭐️ (ใหม่) โหลดข้อความประกาศ
+          loadSiteSettings(); // ⭐️ (ใหม่) โหลดการตั้งค่าเว็บ
           break;
       }
     }
