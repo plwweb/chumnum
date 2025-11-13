@@ -22,6 +22,11 @@
             --light-blue: #e0f2f7;   /* ฟ้าอ่อนมาก */
             --primary-pink: #fd7e14; /* ส้ม */
             --light-pink: #fff3e0;   /* ส้มอ่อนมาก */
+
+            /* ⭐️ (เพิ่มใหม่) สีชมพู ⭐️ */
+            --custom-pink-light: #FCE4EC; /* ชมพูอ่อน (พื้นหลัง) */
+            --custom-pink-dark: #D81B60;  /* ชมพูเข้ม (ตัวอักษร) */
+
             --danger-color: #dc3545; /* แดง */
             --success-color: #28a745; /* เขียว */
             --text-primary: #343a40; /* ดำ */
@@ -36,7 +41,7 @@
         body {
             font-family: 'Kanit', sans-serif;
             margin: 0;
-            padding: 0; /* ⭐️ (แก้ไข) เอา padding body ออก */
+            padding: 0; 
             background: var(--background-gradient);
             color: var(--text-primary);
             display: flex;
@@ -57,7 +62,7 @@
             box-sizing: border-box;
             animation: fadeIn 0.8s ease-out;
             margin-top: 30px; 
-            margin-bottom: 30px; /* ⭐️ (เพิ่ม) */
+            margin-bottom: 30px; 
         }
 
         @keyframes fadeIn {
@@ -92,32 +97,52 @@
             font-weight: 600;
         }
 
-        /* ⭐️ (เพิ่มใหม่) สไตล์สำหรับแถบเลื่อนประกาศ ⭐️ */
+        /* ⭐️ (อัปเดต) สไตล์สำหรับแถบเลื่อนประกาศ (โมเดิร์น) ⭐️ */
         #announcement-bar {
             position: sticky;
             top: 0;
             left: 0;
             width: 100%;
             z-index: 1000;
-            background-color: var(--light-pink); /* สีส้มอ่อน */
-            color: var(--primary-pink); /* สีส้มเข้ม */
+            
+            /* --- [1] เปลี่ยนเป็นสีชมพู --- */
+            background-color: var(--custom-pink-light); 
+            color: var(--custom-pink-dark); 
+
             padding: 12px 0;
             overflow: hidden;
             white-space: nowrap;
             box-sizing: border-box;
-            font-weight: 600;
-            font-size: 1.1em;
-            border-bottom: 2px solid rgba(253, 126, 20, 0.2);
+            
+            /* --- [2] ความทันสมัย (ฟอนต์) --- */
+            font-weight: 500; /* ลดความหนาลงเล็กน้อย */
+            font-size: 1.0em; /* ปรับขนาดให้พอดี */
+            
+            /* --- [3] ความทันสมัย (Fade ขอบ) --- */
+            mask-image: linear-gradient(
+                to right,
+                transparent 0%,  /* จางซ้ายสุด */
+                black 5%,        /* เริ่มชัด */
+                black 95%,       /* ชัดเกือบสุด */
+                transparent 100% /* จางขวาสุด */
+            );
+            /* สำหรับ Firefox */
+            -webkit-mask-image: linear-gradient(to right, transparent 0%, black 5%, black 95%, transparent 100%);
         }
+
         .announcement-content {
             display: inline-block;
-            padding-left: 100%; /* เริ่มต้นนอกจอทางขวา */
-            animation: marquee 20s linear infinite;
+            
+            /* --- [4] ลดความเร็ว (เพิ่มจาก 20s เป็น 35s) --- */
+            animation: marquee 35s linear infinite;
         }
+
         @keyframes marquee {
-            0%   { transform: translateX(0); }
-            100% { transform: translateX(-100%); }
+            /* --- [5] แก้ไขอนิเมชั่นให้ทันสมัย --- */
+            0%   { transform: translateX(100vw); } /* เริ่มต้นขวาสุด (100% ของหน้าจอ) */
+            100% { transform: translateX(-100%); } /* จบซ้ายสุด (100% ของความกว้างตัวเอง) */
         }
+        /* ⭐️ (จบส่วนอัปเดตแถบประกาศ) ⭐️ */
 
 
         /* --- [ 4. ส่วนแสดงสถานะ & นับถอยหลัง (ปรับปรุงใหม่) ] --- */
@@ -217,7 +242,7 @@
         .message.success { background-color: #d4edda; color: #155724; }
         .message.error { background-color: #f8d7da; color: #721c24; }
         .message.loading { background-color: #e2e3e5; color: #383d41; }
-        /* (ลบ .message.info ออก เพราะย้ายไป #announcement-bar แล้ว) */
+        .message.info { background-color: #fff3e0; color: #fd7e14; }
 
         /* --- [ 6. ดีไซน์การ์ดแบบเสื้อใหม่ (คล้าย Product Card) ] --- */
         .design-options {
@@ -395,7 +420,7 @@
 
         /* --- [ 10. Footer (ปรับปรุงเล็กน้อย) ] --- */
         .footer {
-            margin-top: auto; /* ⭐️ (แก้ไข) ให้ footer อยู่ล่างสุดเสมอ */
+            margin-top: auto; 
             padding: 25px;
             background-color: #f8f9fa;
             text-align: center;
@@ -403,7 +428,7 @@
             font-size: 0.9em;
             width: 100%;
             box-sizing: border-box;
-            border-top: 1px solid var(--border-color); /* ⭐️ (แก้ไข) */
+            border-top: 1px solid var(--border-color); 
         }
         .footer p { margin: 0; }
         .footer a { color: var(--primary-blue); text-decoration: none; font-weight: 500; }
@@ -416,9 +441,9 @@
             body { padding: 0; }
             .main-wrapper { 
                 padding: 20px; 
-                border-radius: 0; /* ⭐️ (แก้ไข) */
-                margin-top: 0; /* ⭐️ (แก้ไข) */
-                margin-bottom: 0; /* ⭐️ (แก้ไข) */
+                border-radius: 0; 
+                margin-top: 0; 
+                margin-bottom: 0; 
                 border-bottom: 1px solid var(--border-color);
                 box-shadow: none;
             }
@@ -451,7 +476,6 @@
 <body>
     <script>
         if (sessionStorage.getItem('allowAppAccess') !== 'true') {
-            // ⭐️ (เปิดใช้งาน) นี่คือเวอร์ชันที่ถูกต้องสำหรับใช้งานจริง
             window.location.replace('index.html'); 
         }
         sessionStorage.removeItem('allowAppAccess');
@@ -763,7 +787,7 @@
             if(!voteResultsDiv) return;
             voteResultsDiv.innerHTML = '';
             if (results.length === 0) { voteResultsDiv.innerHTML = '<p class="message">ยังไม่มีผลการโหวต</p>'; return; }
-            results.sort((a, b) => b.voteCount - a.voteCount);
+            results.sort((a, b) => b.voteCount - a[2]);
             results.forEach(item => {
                 const div = document.createElement('div');
                 div.classList.add('vote-item');
