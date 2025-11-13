@@ -267,7 +267,8 @@
     /* === [ CSS: dashboard.css (ใหม่) ] === */
     .dashboard-container {
       display: flex;
-      height: 100vh; /* ⭐️ (ย้อนกลับ) นี่คือเวอร์ชัน 100vh เดิม */
+      height: 100vh; /* Fallback */
+      height: 100dvh; /* ⭐️ (แก้ไข 1) */
       overflow: hidden;
     }
     .sidebar {
@@ -712,7 +713,8 @@
       .sidebar {
         position: fixed;
         left: -260px;
-        height: 100vh; /* ⭐️ (ย้อนกลับ) นี่คือเวอร์ชัน 100vh เดิม */
+        height: 100vh; /* Fallback */
+        height: 100dvh;
         z-index: 1000;
       }
       .sidebar.active {
@@ -758,7 +760,16 @@
       .toast {
         min-width: auto;
       }
-      /* ⭐️ (ย้อนกลับ) ลบ CSS แก้ไขปุ่มออกจาก 768px */
+      
+      /* ⭐️⭐️⭐️ นี่คือ CSS ที่แก้ไขปัญหาปุ่มล้น (ย้ายมาจาก 480px) ⭐️⭐️⭐️ */
+      .settings-section .btn-group {
+        flex-direction: column; /*- ให้ปุ่มเรียงกันแนวตั้ง */
+        align-items: stretch;   /*- ให้ปุ่มยืดเต็มความกว้าง */
+      }
+      .settings-section .btn-group .btn {
+        width: 100%;            /*- ทำให้ปุ่มเต็มความกว้าง */
+        justify-content: center; /*- จัดข้อความในปุ่มให้อยู่กลาง */
+      }
     }
     @media (max-width: 480px) {
       .navbar-right {
@@ -773,15 +784,7 @@
       .modal-content {
         width: 95%;
       }
-      /* ⭐️ (ย้อนกลับ) CSS แก้ไขปุ่ม กลับมาอยู่ที่ 480px */
-      .settings-section .btn-group {
-        flex-direction: column;
-        align-items: stretch;
-      }
-      .settings-section .btn-group .btn {
-        width: 100%;
-        justify-content: center;
-      }
+      /* ⭐️ (ย้าย) โค้ด .btn-group ถูกย้ายไปที่ 768px แล้ว */
     }
 
     /* === [ CSS: ส่วนเพิ่มเติมจากระบบเก่า ] === */
@@ -1118,7 +1121,7 @@
                 </div>
                 <div class="btn-group">
                     <button class="btn btn-primary" id="uploadCsvButton" style="background-color: var(--success-color);">
-                        <i class="fas fa-upload"></i> อัปโหลดและแทนที่ข้อมูล
+                        <i class="fas fa-upload"></i> Import ข้อมูล (CSV)
                     </button>
                 </div>
                 <p id="upload-csv-message" class="message"></p>
@@ -1131,13 +1134,13 @@
                 </p>
                 <div class="btn-group" style="flex-wrap: wrap;">
                     <button id="recalculateVotesButton" class="btn btn-primary" style="background-color: var(--warning-color); color: white;">
-                        <i class="fas fa-calculator"></i> คำนวณคะแนนโหวตใหม่
+                        <i class="fas fa-calculator"></i> คำนวณคะแนนใหม่
                     </button>
                     <button id="resetVotesButton" class="btn btn-danger">
-                        <i class="fas fa-history"></i> รีเซ็ตคะแนน (เป็น 0)
+                        <i class="fas fa-history"></i> รีเซ็ตคะแนน
                     </button>
                     <button id="clearUsersButton" class="btn btn-danger">
-                        <i class="fas fa-user-times"></i> ล้างข้อมูลผู้โหวต
+                        <i class="fas fa-user-times"></i> ล้างข้อมูลผู้ใช้
                     </button>
                 </div>
             </div>
