@@ -3,14 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ผลโหวตสด - เสื้อกีฬาสี</title>
+    <title>ผลโหวตสด (Live Race) - เสื้อกีฬาสี</title>
     
     <link rel="icon" href="https://img5.pic.in.th/file/secure-sv1/IMG_602976b5b060daac652b.png" type="image/png">
     
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
+    
     <style>
         :root {
             --primary-blue: #007bff;
@@ -65,14 +64,63 @@
             margin: 0;
             font-weight: 700;
         }
-        .chart-container {
-            width: 100%; 
-            height: 60vh; /* ทำให้กราฟสูงขึ้น */
-            min-height: 400px;
-            max-height: 600px;
-            margin: 20px auto;
+        
+        /* ⭐️ (เพิ่มใหม่) CSS สำหรับ "ม้าแข่ง" ⭐️ */
+        .race-container {
+            width: 100%;
+            padding: 20px 0;
+            box-sizing: border-box;
+        }
+
+        .horse-track {
+            margin-bottom: 15px;
+            background-color: var(--bg-tertiary, #f3f4f6);
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+        }
+
+        .horse-bar {
+            height: 50px;
+            width: 0%; /* ⭐️ เริ่มต้นที่ 0 */
+            background: linear-gradient(90deg, #6366f1 0%, #8b5cf6 100%);
+            
+            /* ⭐️ (สำคัญ) นี่คือ Animation ⭐️ */
+            transition: width 1.5s cubic-bezier(0.23, 1, 0.32, 1); 
+            
+            border-radius: 0 8px 8px 0;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            color: white;
+            font-weight: 600;
+            font-size: 1.2em;
+            overflow: visible; /* ⭐️ ให้คะแนนแสดงผลได้ แม้บาร์จะสั้น */
             position: relative;
         }
+
+        .horse-label {
+            padding: 0 10px;
+            white-space: nowrap;
+            text-align: left;
+            font-size: 1.1em;
+            font-weight: 500;
+            color: var(--text-primary);
+            margin-bottom: 5px;
+        }
+
+        .horse-score {
+            position: absolute;
+            right: -50px; /* ⭐️ ให้คะแนนอยู่ต่อท้ายบาร์ */
+            padding-left: 10px;
+            color: var(--text-primary);
+            font-weight: 700;
+            font-size: 1.1em;
+        }
+        
+        /* ⭐️ (จบส่วน CSS ใหม่) ⭐️ */
+
+
         .status-bar {
             margin-top: 25px;
             color: var(--text-secondary);
@@ -101,7 +149,8 @@
             body { padding: 15px; }
             .container { padding: 20px; }
             h1 { font-size: 2em; }
-            .chart-container { height: 50vh; }
+            .horse-bar { height: 40px; font-size: 1em; }
+            .horse-label { font-size: 1em; }
         }
     </style>
 </head>
@@ -110,12 +159,11 @@
     <div class="container">
         <header>
             <img src="https://img5.pic.in.th/file/secure-sv1/IMG_60290ec6a71fd92a13d0.png" alt="โลโก้โรงเรียน" class="logo">
-            <h1>ผลการโหวต (Live)</h1>
+            <h1>ผลการโหวต (Live Race)</h1>
         </header>
 
-        <div class="chart-container">
-            <canvas id="voteChart"></canvas>
-        </div>
+        <div class="race-container" id="race-container">
+            </div>
 
         <div class="status-bar">
             <div class="spinner" id="loading-spinner"></div>
@@ -127,11 +175,11 @@
         // 🚨 (อัปเดตแล้ว!) นี่คือ URL ที่คุณเพิ่งให้มา 🚨
         const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbwwJzP_jTHieO4asdyGAJk1hYHxP5gYSIZu2XNp_myLqtAqxmMMsekofM4Xl3GguKlvCQ/exec';
         
-        const REFRESH_INTERVAL = 30000; // อัปเดตทุก 30 วินาที
-        let voteChartInstance = null;
-        const ctx = document.getElementById('voteChart').getContext('2d');
+        const REFRESH_INTERVAL = 10000; // ⭐️ (อัปเดต) 10 วินาที
+        const raceContainer = document.getElementById('race-container');
         const statusText = document.getElementById('last-updated');
         const loadingSpinner = document.getElementById('loading-spinner');
+        let isFirstLoad = true; // ⭐️ (เพิ่มใหม่)
 
         /**
          * ฟังก์ชัน Call API (แบบง่าย)
@@ -153,64 +201,79 @@
         }
 
         /**
-         * ฟังก์ชันวาดกราฟ
+         * ⭐️ (ใหม่) ฟังก์ชันวาดกราฟม้าแข่ง ⭐️
          */
-        function displayVoteChart(votes) {
+        function displayVoteRace(votes) {
             if (votes.length === 0) { 
                 statusText.textContent = 'ยังไม่มีข้อมูลการโหวต';
                 return;
             }
             
-            votes.sort((a, b) => b.voteCount - a.voteCount); // เรียงลำดับก่อนแสดงผล
-            
-            const labels = votes.map(v => `${v.designName} (${v.designId})`);
-            const data = votes.map(v => v.voteCount);
-            const backgroundColors = data.map(() => `rgba(${Math.floor(Math.random()*155)+100},${Math.floor(Math.random()*155)+100},${Math.floor(Math.random()*155)+100},0.8)`);
-            
-            if (voteChartInstance) {
-                // ถ้ามีกราฟอยู่แล้ว ให้อัปเดตข้อมูล (จะได้มี Animation)
-                voteChartInstance.data.labels = labels;
-                voteChartInstance.data.datasets[0].data = data;
-                voteChartInstance.data.datasets[0].backgroundColor = backgroundColors;
-                voteChartInstance.update();
-            } else {
-                // ถ้ายังไม่มี ให้สร้างใหม่
-                voteChartInstance = new Chart(ctx, {
-                    type: 'bar', // แนะนำเป็น bar (แนวตั้ง) หรือ 'line'
-                    data: {
-                        labels: labels,
-                        datasets: [{ 
-                            label: 'คะแนนโหวต', 
-                            data: data, 
-                            backgroundColor: backgroundColors,
-                            borderRadius: 5
-                        }]
-                    },
-                    options: { 
-                        responsive: true, 
-                        maintainAspectRatio: false,
-                        indexAxis: 'y', // 'x' = แนวตั้ง, 'y' = แนวนอน
-                        plugins: {
-                            legend: { display: false },
-                            title: {
-                                display: true,
-                                text: 'สรุปผลคะแนนโหวตแบบ Real-time',
-                                font: { size: 18, family: 'Kanit' }
-                            }
-                        },
-                        scales: {
-                            x: {
-                                beginAtZero: true,
-                                ticks: { font: { family: 'Kanit' } }
-                            },
-                            y: {
-                                ticks: { font: { family: 'Kanit' } }
-                            }
-                        }
+            // 1. เรียงลำดับและหาคะแนนสูงสุด
+            votes.sort((a, b) => b.voteCount - a.voteCount);
+            const maxVotes = Math.max(1, votes[0].voteCount); // ⭐️ (ป้องกันการหารด้วย 0)
+
+            // 2. วนลูปเพื่อสร้าง/อัปเดตแท่งกราฟ
+            votes.forEach((vote, index) => {
+                const percentage = (vote.voteCount / maxVotes) * 100;
+                
+                // ⭐️ พยายามหาแท่งเดิม
+                let track = document.getElementById(`track-${vote.designId}`);
+                let bar, score;
+
+                if (!track) {
+                    // ⭐️ ถ้าไม่มี ก็สร้างใหม่
+                    track = document.createElement('div');
+                    track.id = `track-${vote.designId}`;
+                    track.className = 'horse-track';
+                    
+                    track.innerHTML = `
+                        <div class="horse-label">${vote.designName} (${vote.designId})</div>
+                        <div class="horse-bar" id="bar-${vote.designId}">
+                            <span class="horse-score">${vote.voteCount}</span>
+                        </div>
+                    `;
+                    raceContainer.appendChild(track);
+                    bar = track.querySelector('.horse-bar');
+                    score = track.querySelector('.horse-score');
+
+                    // ⭐️ ถ้าเป็นการโหลดครั้งแรก ให้เริ่มจาก 0 แล้วค่อยๆ วิ่ง
+                    if (isFirstLoad) {
+                        setTimeout(() => {
+                            bar.style.width = percentage + '%';
+                        }, 100 * (index + 1)); // ⭐️ หน่วงเวลาเล็กน้อยให้ดูเหมือนเริ่มไม่พร้อมกัน
+                    } else {
+                        bar.style.width = percentage + '%';
                     }
-                });
-            }
+
+                } else {
+                    // ⭐️ ถ้ามีอยู่แล้ว ให้อัปเดต
+                    bar = track.querySelector('.horse-bar');
+                    score = track.querySelector('.horse-score');
+                    
+                    // อัปเดตคะแนนและ % ความกว้าง (CSS Transition จะจัดการ Animation เอง)
+                    score.textContent = vote.voteCount;
+                    bar.style.width = percentage + '%';
+                }
+                
+                // ⭐️ อัปเดตสี (ถ้าต้องการ)
+                const colors = [
+                    'linear-gradient(90deg, #6366f1 0%, #8b5cf6 100%)', // ม่วง
+                    'linear-gradient(90deg, #10b981 0%, #3b82f6 100%)', // เขียวไปฟ้า
+                    'linear-gradient(90deg, #f59e0b 0%, #ef4444 100%)', // ส้มไปแดง
+                    'linear-gradient(90deg, #22d3ee 0%, #0e7490 100%)'  // ฟ้าอ่อนไปเข้ม
+                ];
+                bar.style.background = colors[index % colors.length];
+
+                // ⭐️ เน้นผู้ชนะ (ถ้าคะแนนมากกว่า 0)
+                if (index === 0 && vote.voteCount > 0) {
+                    bar.style.background = 'linear-gradient(90deg, #fde047 0%, #f97316 100%)'; // ⭐️ สีทอง
+                }
+            });
+
+            isFirstLoad = false; // ⭐️ ตั้งค่าว่าโหลดครั้งแรกเสร็จแล้ว
         }
+
 
         /**
          * ฟังก์ชันหลักในการโหลดข้อมูล
@@ -221,7 +284,7 @@
             const response = await callApi('getVoteResults');
             
             if (response.status === 'success' && response.results) {
-                displayVoteChart(response.results);
+                displayVoteRace(response.results); // ⭐️ (แก้ไข) เรียกฟังก์ชันใหม่
                 const now = new Date();
                 statusText.textContent = `อัปเดตล่าสุด: ${now.toLocaleTimeString('th-TH')}`;
             } else {
@@ -233,7 +296,7 @@
 
         // เริ่มทำงาน!
         loadData(); // โหลดครั้งแรกทันที
-        setInterval(loadData, REFRESH_INTERVAL); // ตั้งเวลาโหลดซ้ำทุก 30 วินาที
+        setInterval(loadData, REFRESH_INTERVAL); // ⭐️ ตั้งเวลาโหลดซ้ำทุก 10 วินาที
 
     </script>
 
