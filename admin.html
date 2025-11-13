@@ -944,12 +944,6 @@
             </a>
           </li>
           <li>
-            <a href="#settings" data-page="settings">
-              <i class="fas fa-cog"></i>
-              <span>ตั้งค่าระบบ</span>
-            </a>
-          </li>
-          <li>
             <a href="#accounts" data-page="accounts">
               <i class="fas fa-user-shield"></i>
               <span>จัดการบัญชีผู้ดูแล</span>
@@ -959,6 +953,12 @@
             <a href="#tools" data-page="tools">
               <i class="fas fa-tools"></i>
               <span>เครื่องมือผู้ดูแล</span>
+            </a>
+          </li>
+          <li>
+            <a href="#settings" data-page="settings">
+              <i class="fas fa-cog"></i>
+              <span>ตั้งค่าระบบ</span>
             </a>
           </li>
         </ul>
@@ -1156,25 +1156,7 @@
                 </div>
             </div>
 
-            <div class="settings-section">
-                <h3><i class="fas fa-file-csv"></i> Import รายชื่อนักเรียน (CSV)</h3>
-                <p style="color: var(--text-secondary); margin-bottom: 15px;">
-                    อัปโหลดไฟล์ `.csv` ที่มีรายชื่อนักเรียนทั้งหมด
-                    <strong style="color: var(--danger-color);">(คำเตือน: การกระทำนี้จะลบรายชื่อนักเรียนเก่าทั้งหมด)</strong>
-                </p>
-                <div class="form-group">
-                    <label for="csvFile">เลือกไฟล์ .csv (ต้องมี 4 คอลัมน์: StudentID, FullName, Grade, Room)</label>
-                    <input type="file" id="csvFile" accept=".csv" style="padding: 10px; background-color: var(--bg-tertiary); border-radius: 8px; border: 1px solid var(--border-color); width: 100%;">
-                </div>
-                <div class="btn-group">
-                    <button class="btn btn-primary" id="uploadCsvButton" style="background-color: var(--success-color);">
-                        <i class="fas fa-upload"></i> Import ข้อมูล (CSV)
-                    </button>
-                </div>
-                <p id="upload-csv-message" class="message"></p>
             </div>
-            
-          </div>
         </div>
         
         <div class="page" id="accounts-page">
@@ -1248,20 +1230,63 @@
                         <label for="manualFullName">ชื่อ - นามสกุล:</label>
                         <input type="text" id="manualFullName" placeholder="เช่น เด็กชายรักเรียน เพียรวิชา" required>
                     </div>
+                    
                     <div class="form-group">
                         <label for="manualGrade">ระดับชั้น:</label>
-                        <input type="text" id="manualGrade" placeholder="เช่น ม.1">
+                        <select id="manualGrade">
+                            <option value="">-- เลือกระดับชั้น --</option>
+                            <option value="ม.1">ม.1</option>
+                            <option value="ม.2">ม.2</option>
+                            <option value="ม.3">ม.3</option>
+                            <option value="ม.4">ม.4</option>
+                            <option value="ม.5">ม.5</option>
+                            <option value="ม.6">ม.6</option>
+                        </select>
                     </div>
+                    
                     <div class="form-group">
                         <label for="manualRoom">ห้อง:</label>
-                        <input type="text" id="manualRoom" placeholder="เช่น 1">
+                        <select id="manualRoom">
+                            <option value="">-- เลือกห้อง --</option>
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                            <option value="5">5</option>
+                            <option value="6">6</option>
+                            <option value="7">7</option>
+                            <option value="8">8</option>
+                            <option value="9">9</option>
+                            <option value="10">10</option>
+                            <option value="11">11</option>
+                            <option value="12">12</option>
+                        </select>
                     </div>
+                    
                     <div class="btn-group">
                         <button type="submit" class="btn btn-primary" id="saveStudentButton">
                             <i class="fas fa-save"></i> บันทึกข้อมูลนักเรียน
                         </button>
                     </div>
                 </form>
+            </div>
+
+            <div class="settings-section">
+                <h3><i class="fas fa-file-csv"></i> Import รายชื่อนักเรียน (CSV)</h3>
+                <p style="color: var(--text-secondary); margin-bottom: 15px;">
+                    อัปโหลดไฟล์ `.csv` ที่มีรายชื่อนักเรียนทั้งหมด
+                    <strong style="color: var(--danger-color);">(คำเตือน: การกระทำนี้จะลบรายชื่อนักเรียนเก่าทั้งหมด)</strong>
+                </p>
+                <div class="form-group">
+                    <label for="csvFile">เลือกไฟล์ .csv (ต้องมี 4 คอลัมน์: StudentID, FullName, Grade, Room)</label>
+                    <input type="file" id="csvFile" accept=".csv" style="padding: 10px; background-color: var(--bg-tertiary); border-radius: 8px; border: 1px solid var(--border-color); width: 100%;">
+                </div>
+                <div class="btn-group">
+                    <button class="btn btn-primary" id="uploadCsvButton" style="background-color: var(--success-color);">
+                        <i class="fas fa-upload"></i> Import ข้อมูล (CSV)
+                    </button>
+                </div>
+                <p id="upload-csv-message" class="message"></p>
             </div>
           </div>
         </div>
@@ -1913,7 +1938,7 @@
                 }
             });
 
-            // ⭐️ (ยังอยู่หน้า settings-page) ⭐️
+            // ⭐️ (ย้ายมานี่) โค้ด Import CSV ⭐️
             document.getElementById('uploadCsvButton').addEventListener('click', () => {
                 const fileInput = document.getElementById('csvFile');
                 const file = fileInput.files[0];
