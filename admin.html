@@ -1277,7 +1277,7 @@
     let currentAdminUser = '';
     let allUsersData = [];
     async function callApi(action, data = {}) {
-        if (currentAdminUser) { data.username = currentAdminUser; }
+        if (currentAdminUser) { data.username = currentAdminUser; } // ⭐️ นี่คือ 'username' ของผู้ดูแลที่ล็อกอินอยู่
         try {
             const response = await fetch(WEB_APP_URL, {
                 method: 'POST',
@@ -1648,20 +1648,33 @@
                 });
             });
 
-            // ⭐️ (ย้ายไปอยู่หน้า accounts-page แต่ยังทำงานได้จากที่นี่) ⭐️
+            // ⭐️ (แก้ไข) ⭐️
             document.getElementById('addAdminButton').addEventListener('click', async () => {
                 const username = document.getElementById('newAdminUsername').value.trim();
                 const password = document.getElementById('newAdminPassword').value.trim();
                 const fullName = document.getElementById('newAdminFullName').value.trim();
-                if (!username || !password || !fullName) { showToast('กรุณากรอกข้อมูลให้ครบถ้วน', 'warning'); return; }
-                const result = await callApi('addAdminAccount', { username, password, fullName });
+                
+                if (!username || !password || !fullName) { 
+                    showToast('กรุณากรอกข้อมูลให้ครบถ้วน', 'warning'); 
+                    return; 
+                }
+                
+                // ⭐️ (แก้ไข) เปลี่ยนชื่อตัวแปรไม่ให้ซ้ำกับ 'username' ที่ระบบส่งไป
+                const result = await callApi('addAdminAccount', { 
+                    usernameToAdd: username, 
+                    passwordToAdd: password, 
+                    fullNameToAdd: fullName 
+                });
+                
                 if (result.status === 'success') {
                     showToast('เพิ่มบัญชีสำเร็จ!', 'success');
                     loadAdminAccounts();
                     document.getElementById('newAdminUsername').value = '';
                     document.getElementById('newAdminPassword').value = '';
                     document.getElementById('newAdminFullName').value = '';
-                } else { showToast(result.message, 'error'); }
+                } else {
+                    showToast(result.message, 'error');
+                }
             });
             
             // ⭐️ (ย้ายไปอยู่หน้า tools-page แต่ยังทำงานได้จากที่นี่) ⭐️
