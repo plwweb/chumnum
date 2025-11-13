@@ -190,6 +190,8 @@
         .message.success { background-color: #d4edda; color: #155724; }
         .message.error { background-color: #f8d7da; color: #721c24; }
         .message.loading { background-color: #e2e3e5; color: #383d41; }
+        /* ⭐️ (เพิ่มใหม่) สไตล์สำหรับแถบประกาศ ⭐️ */
+        .message.info { background-color: #fff3e0; color: #fd7e14; }
 
         /* --- [ 6. ดีไซน์การ์ดแบบเสื้อใหม่ (คล้าย Product Card) ] --- */
         .design-options {
@@ -421,15 +423,14 @@
         sessionStorage.removeItem('allowAppAccess');
     </script>
 
-    <img src="https://github.com/KongNontawatDev/Black-Mourning-Ribbon/blob/2150640c0e623c7fbcca07024287b597f7999a84/ribbon_top_right.png?raw=true" 
-         alt="Black mourning ribbon" 
-         style="position:fixed; top:0; right:0; width:80px; opacity:0.9; z-index:9999; pointer-events:none;">
-    
+
     <div class="main-wrapper">
         <header>
             <img src="https://img5.pic.in.th/file/secure-sv1/IMG_60290ec6a71fd92a13d0.png" alt="โลโก้โรงเรียน" class="logo">
             <h1>ระบบโหวตเสื้อกีฬาสี</h1>
         </header>
+
+        <div id="announcement-bar" class="message info" style="display: none; margin-top: 0; margin-bottom: 25px; text-align: center; font-size: 1.1em; background-color: #fff3e0; color: #fd7e14;"></div>
 
         <div id="voting-status" class="status-message"></div>
         <div id="countdown-timer" style="display: none;"></div>
@@ -496,7 +497,7 @@
         <p>
             &copy;2025 Student Council of Phu Luang Witthaya School
             <a href="https://www.facebook.com/plwsc.official" target="_blank" rel="noopener noreferrer">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/b8/2021_Facebook_icon.svg/100px-2021_Facebook_icon.svg.png" alt="Facebook" class="social-icon">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/b8/2021_Facebook_icon.svg/100px-2021_Facebook_icon.svg" alt="Facebook" class="social-icon">
             </a>
             <a href="https://www.instagram.com/plwsc.official?igsh=OWowOWlnNHV4ZXJ2" target="_blank" rel="noopener noreferrer">
                 <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e7/Instagram_logo_2016.svg/100px-Instagram_logo_2016.png" alt="Instagram" class="social-icon">
@@ -665,10 +666,25 @@
             }
         }
         
-        // ⭐️ (กลับเป็นแบบเดิม) ฟังก์ชัน โหลดข้อมูล
+        // ⭐️ (เพิ่มใหม่) ฟังก์ชัน โหลดข้อความประกาศ ⭐️
+        async function loadAnnouncement() {
+            const bar = document.getElementById('announcement-bar');
+            const response = await callApi('getAnnouncementText');
+            if (response.status === 'success' && response.text.trim() !== '') {
+                bar.textContent = response.text;
+                bar.style.display = 'block';
+            } else {
+                bar.style.display = 'none';
+            }
+        }
+        
+        // ฟังก์ชัน โหลดข้อมูล
         async function loadInitialData() {
             showSkeletonLoader();
             validateForm();
+            
+            loadAnnouncement(); // ⭐️ (เพิ่มใหม่) เรียกใช้ฟังก์ชัน
+            
             const resultsData = await callApi('getVoteResults');
             if (resultsData.status === 'success' && resultsData.results) {
                 displayDesignOptions(resultsData.results);
@@ -678,7 +694,6 @@
                 designOptionsDiv.innerHTML = `<p class="message error">ไม่สามารถโหลดแบบเสื้อได้</p>`;
             }
             checkVotingStatus();
-            // ⭐️ (ลบออก) ไม่มีการเรียก getAnnouncementText
         }
         
         // ฟังก์ชัน แสดงตัวเลือก
@@ -761,7 +776,7 @@
             });
         }
 
-        // ⭐️ (กลับเป็นแบบเดิม) ฟังก์ชัน เช็คเวลา
+        // ฟังก์ชัน เช็คเวลา
         async function checkVotingStatus() {
             const response = await callApi('getVoteTime');
             if (response.status === 'success') {
@@ -813,7 +828,7 @@
                 if (distance < 1000) {
                     clearInterval(countdownInterval);
                     countdownTimerDiv.style.display = 'none';
-                    loadInitialData(); // ⭐️ กลับเป็นแบบเดิม
+                    loadInitialData(); 
                     return;
                 }
                 const days = Math.floor(distance / (1000 * 60 * 60 * 24));
@@ -827,7 +842,7 @@
         }
         
         // เริ่มโหลด!
-        loadInitialData(); // ⭐️ กลับเป็นแบบเดิม
+        loadInitialData(); 
     </script>
 </body>
 </html>
