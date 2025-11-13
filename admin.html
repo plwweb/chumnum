@@ -1217,7 +1217,7 @@
           </div>
           <div class="settings-container">
              <div class="settings-section">
-                <h3><i class="fas fa-tools"></i> เครื่องมือผู้ดูแล</h3>
+                <h3><i class="fas fa-tools"></i> เครื่องมือจัดการคะแนน</h3>
                 <p style="color: var(--text-secondary); margin-bottom: 15px;">
                     ใช้เครื่องมือเหล่านี้ด้วยความระมัดระวัง ข้อมูลอาจไม่สามารถกู้คืนได้
                 </p>
@@ -1232,6 +1232,36 @@
                         <i class="fas fa-user-times"></i> ล้างข้อมูลผู้ใช้
                     </button>
                 </div>
+            </div>
+
+            <div class="settings-section">
+                <h3><i class="fas fa-user-edit"></i> เพิ่ม หรือ แก้ไขนักเรียน</h3>
+                <p style="color: var(--text-secondary); margin-bottom: 15px;">
+                    กรอกรหัสนักเรียน หากมีอยู่ ระบบจะอัปเดตชื่อ/ห้องให้ หากไม่มี ระบบจะเพิ่มเป็นนักเรียนใหม่
+                </p>
+                <form id="student-form">
+                    <div class="form-group">
+                        <label for="manualStudentId">รหัสนักเรียน (5 หลัก):</label>
+                        <input type="text" id="manualStudentId" placeholder="เช่น 01234" required maxlength="5">
+                    </div>
+                    <div class="form-group">
+                        <label for="manualFullName">ชื่อ - นามสกุล:</label>
+                        <input type="text" id="manualFullName" placeholder="เช่น เด็กชายรักเรียน เพียรวิชา" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="manualGrade">ระดับชั้น:</label>
+                        <input type="text" id="manualGrade" placeholder="เช่น ม.1">
+                    </div>
+                    <div class="form-group">
+                        <label for="manualRoom">ห้อง:</label>
+                        <input type="text" id="manualRoom" placeholder="เช่น 1">
+                    </div>
+                    <div class="btn-group">
+                        <button type="submit" class="btn btn-primary" id="saveStudentButton">
+                            <i class="fas fa-save"></i> บันทึกข้อมูลนักเรียน
+                        </button>
+                    </div>
+                </form>
             </div>
           </div>
         </div>
@@ -1855,6 +1885,32 @@
                         if(apiResult.status === 'success') { showToast(apiResult.message, 'success'); loadAllAdminData(); } else { showToast(apiResult.message, 'error'); }
                     }
                 });
+            });
+
+            // ⭐️ (เพิ่มใหม่) ฟอร์มเพิ่ม/แก้ไขนักเรียน (หน้า tools-page) ⭐️
+            document.getElementById('student-form').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const studentId = document.getElementById('manualStudentId').value.trim();
+                const fullName = document.getElementById('manualFullName').value.trim();
+                const grade = document.getElementById('manualGrade').value.trim();
+                const room = document.getElementById('manualRoom').value.trim();
+
+                if (!studentId || !fullName) {
+                    showToast('กรุณากรอกรหัสนักเรียนและชื่อ', 'warning');
+                    return;
+                }
+
+                showLoading();
+                const result = await callApi('addOrUpdateStudent', { studentId, fullName, grade, room });
+                hideLoading();
+
+                if (result.status === 'success') {
+                    showToast(result.message, 'success');
+                    document.getElementById('student-form').reset();
+                    loadAdminData(); // โหลดข้อมูลนักเรียนใหม่
+                } else {
+                    showToast(result.message, 'error');
+                }
             });
 
             // ⭐️ (ยังอยู่หน้า settings-page) ⭐️
