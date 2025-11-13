@@ -36,7 +36,7 @@
         body {
             font-family: 'Kanit', sans-serif;
             margin: 0;
-            padding: 20px;
+            padding: 0; /* ⭐️ (แก้ไข) เอา padding body ออก */
             background: var(--background-gradient);
             color: var(--text-primary);
             display: flex;
@@ -56,7 +56,8 @@
             text-align: center;
             box-sizing: border-box;
             animation: fadeIn 0.8s ease-out;
-            margin-top: 30px; /* ⭐️ (ใหม่) เพิ่มระยะห่างด้านบนเล็กน้อย */
+            margin-top: 30px; 
+            margin-bottom: 30px; /* ⭐️ (เพิ่ม) */
         }
 
         @keyframes fadeIn {
@@ -91,7 +92,33 @@
             font-weight: 600;
         }
 
-        /* --- [ 3. แถบประกาศ (ลบออก) ] --- */
+        /* ⭐️ (เพิ่มใหม่) สไตล์สำหรับแถบเลื่อนประกาศ ⭐️ */
+        #announcement-bar {
+            position: sticky;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 1000;
+            background-color: var(--light-pink); /* สีส้มอ่อน */
+            color: var(--primary-pink); /* สีส้มเข้ม */
+            padding: 12px 0;
+            overflow: hidden;
+            white-space: nowrap;
+            box-sizing: border-box;
+            font-weight: 600;
+            font-size: 1.1em;
+            border-bottom: 2px solid rgba(253, 126, 20, 0.2);
+        }
+        .announcement-content {
+            display: inline-block;
+            padding-left: 100%; /* เริ่มต้นนอกจอทางขวา */
+            animation: marquee 20s linear infinite;
+        }
+        @keyframes marquee {
+            0%   { transform: translateX(0); }
+            100% { transform: translateX(-100%); }
+        }
+
 
         /* --- [ 4. ส่วนแสดงสถานะ & นับถอยหลัง (ปรับปรุงใหม่) ] --- */
         .status-message {
@@ -190,8 +217,7 @@
         .message.success { background-color: #d4edda; color: #155724; }
         .message.error { background-color: #f8d7da; color: #721c24; }
         .message.loading { background-color: #e2e3e5; color: #383d41; }
-        /* ⭐️ (เพิ่มใหม่) สไตล์สำหรับแถบประกาศ ⭐️ */
-        .message.info { background-color: #fff3e0; color: #fd7e14; }
+        /* (ลบ .message.info ออก เพราะย้ายไป #announcement-bar แล้ว) */
 
         /* --- [ 6. ดีไซน์การ์ดแบบเสื้อใหม่ (คล้าย Product Card) ] --- */
         .design-options {
@@ -369,17 +395,15 @@
 
         /* --- [ 10. Footer (ปรับปรุงเล็กน้อย) ] --- */
         .footer {
-            margin-top: 50px;
+            margin-top: auto; /* ⭐️ (แก้ไข) ให้ footer อยู่ล่างสุดเสมอ */
             padding: 25px;
             background-color: #f8f9fa;
             text-align: center;
             color: var(--text-secondary);
             font-size: 0.9em;
             width: 100%;
-            max-width: 960px;
             box-sizing: border-box;
-            border-radius: 15px;
-            box-shadow: 0 -2px 10px var(--shadow-light);
+            border-top: 1px solid var(--border-color); /* ⭐️ (แก้ไข) */
         }
         .footer p { margin: 0; }
         .footer a { color: var(--primary-blue); text-decoration: none; font-weight: 500; }
@@ -389,8 +413,15 @@
 
         /* --- [ 11. Responsive ] --- */
         @media (max-width: 768px) {
-            body { padding: 10px; }
-            .main-wrapper { padding: 20px; border-radius: 10px; margin-top: 15px; }
+            body { padding: 0; }
+            .main-wrapper { 
+                padding: 20px; 
+                border-radius: 0; /* ⭐️ (แก้ไข) */
+                margin-top: 0; /* ⭐️ (แก้ไข) */
+                margin-bottom: 0; /* ⭐️ (แก้ไข) */
+                border-bottom: 1px solid var(--border-color);
+                box-shadow: none;
+            }
             header { flex-direction: column; }
             .logo { height: 50px; margin-bottom: 10px; margin-right: 0; }
             h1 { font-size: 2.2em; }
@@ -408,7 +439,10 @@
             #submitVoteButton { padding: 14px 30px; font-size: 1.15em; max-width: 300px; border-radius: 40px; }
             .chart-container { height: 300px; padding: 15px; border-radius: 10px; }
             .vote-results { padding: 20px; border-radius: 10px; }
-            .footer { padding: 15px; margin-top: 30px; border-radius: 10px; }
+            .footer { 
+                padding: 15px; 
+                border-radius: 0;
+            }
         }
     </style>
 
@@ -423,14 +457,16 @@
         sessionStorage.removeItem('allowAppAccess');
     </script>
 
+    <div id="announcement-bar" style="display: none;">
+        <div class="announcement-content"></div>
+    </div>
+
 
     <div class="main-wrapper">
         <header>
             <img src="https://img5.pic.in.th/file/secure-sv1/IMG_60290ec6a71fd92a13d0.png" alt="โลโก้โรงเรียน" class="logo">
             <h1>ระบบโหวตเสื้อกีฬาสี</h1>
         </header>
-
-        <div id="announcement-bar" class="message info" style="display: none; margin-top: 0; margin-bottom: 25px; text-align: center; font-size: 1.1em; background-color: #fff3e0; color: #fd7e14;"></div>
 
         <div id="voting-status" class="status-message"></div>
         <div id="countdown-timer" style="display: none;"></div>
@@ -666,15 +702,19 @@
             }
         }
         
-        // ⭐️ (เพิ่มใหม่) ฟังก์ชัน โหลดข้อความประกาศ ⭐️
+        // ⭐️ (แก้ไข) ฟังก์ชัน โหลดข้อความประกาศ ⭐️
         async function loadAnnouncement() {
-            const bar = document.getElementById('announcement-bar');
+            const barContainer = document.getElementById('announcement-bar');
+            const barContent = barContainer.querySelector('.announcement-content'); // ⭐️ เลือก div ด้านใน
+            if (!barContainer || !barContent) return;
+            
             const response = await callApi('getAnnouncementText');
+            
             if (response.status === 'success' && response.text.trim() !== '') {
-                bar.textContent = response.text;
-                bar.style.display = 'block';
+                barContent.textContent = response.text; // ⭐️ ใส่ข้อความใน div ด้านใน
+                barContainer.style.display = 'block'; // ⭐️ แสดง div ด้านนอก
             } else {
-                bar.style.display = 'none';
+                barContainer.style.display = 'none';
             }
         }
         
@@ -683,7 +723,7 @@
             showSkeletonLoader();
             validateForm();
             
-            loadAnnouncement(); // ⭐️ (เพิ่มใหม่) เรียกใช้ฟังก์ชัน
+            loadAnnouncement(); // ⭐️ (เรียกใช้เหมือนเดิม)
             
             const resultsData = await callApi('getVoteResults');
             if (resultsData.status === 'success' && resultsData.results) {
