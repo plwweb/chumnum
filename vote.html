@@ -420,18 +420,53 @@
         .footer a:hover { text-decoration: underline; }
         .social-icon { height: 1.3em; vertical-align: middle; margin-left: 10px; opacity: 0.8; transition: opacity 0.3s ease; }
         .social-icon:hover { opacity: 1; }
+        
+        /* ⭐️ (เพิ่มใหม่) CSS สำหรับ Stats Dashboard ⭐️ */
+        #stats-dashboard {
+            background-color: var(--light-blue);
+            border: 1px solid var(--primary-blue);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 25px;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+        }
+        .stat-box {
+            background-color: rgba(255, 255, 255, 0.5);
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+        }
+        .stat-box h3 {
+            margin: 0 0 8px 0;
+            font-size: 1.1em;
+            color: var(--primary-blue);
+        }
+        .stat-box p {
+            margin: 0;
+            font-size: 1.6em;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+        .stat-box p.small {
+            font-size: 1.2em;
+            font-weight: 600;
+        }
+        /* ⭐️ (จบส่วน CSS ใหม่) ⭐️ */
+
 
         /* --- [ 11. Responsive ] --- */
         @media (max-width: 768px) {
             body { padding: 20px; } 
             .announcement-bar {
-                margin-top: 0; /* ⭐️ (แก้ไข) ให้ติดขอบบนในมือถือ */
+                margin-top: 0; 
                 margin-bottom: 20px;
             }
             .main-wrapper { 
                 padding: 20px; 
                 border-radius: 10px; 
-                margin-top: 0; /* ⭐️ (แก้ไข) */
+                margin-top: 0; 
                 margin-bottom: 30px; 
                 box-shadow: 0 8px 30px var(--shadow-medium);
             }
@@ -458,6 +493,13 @@
                 max-width: 960px;
                 margin-top: 0;
             }
+            /* ⭐️ (เพิ่มใหม่) Responsive Stats ⭐️ */
+            #stats-dashboard {
+                grid-template-columns: 1fr; /* เรียงแนวตั้งในมือถือ */
+            }
+            .stat-box p {
+                font-size: 1.4em;
+            }
         }
     </style>
 
@@ -481,6 +523,21 @@
             <img src="https://img5.pic.in.th/file/secure-sv1/IMG_60290ec6a71fd92a13d0.png" alt="โลโก้โรงเรียน" class="logo">
             <h1>ระบบโหวตเสื้อกีฬาสี</h1>
         </header>
+
+        <div id="stats-dashboard" style="display: none;">
+            <div class="stat-box">
+                <h3>ผู้มาใช้สิทธิ์</h3>
+                <p id="stat-voted-count">... / ...</p>
+            </div>
+            <div class="stat-box">
+                <h3>เปอร์เซ็นต์</h3>
+                <p id="stat-turnout">...%</p>
+            </div>
+            <div class="stat-box">
+                <h3>ระดับชั้นที่โหวตสูงสุด</h3>
+                <p id="stat-top-grade" class="small">...</p>
+            </div>
+        </div>
 
         <div id="voting-status" class="status-message"></div>
         <div id="countdown-timer" style="display: none;"></div>
@@ -732,12 +789,29 @@
             }
         }
         
+        // ⭐️ (เพิ่มใหม่) ฟังก์ชัน โหลดสถิติ ⭐️
+        async function loadPublicStats() {
+            const dashboard = document.getElementById('stats-dashboard');
+            const response = await callApi('getPublicStats');
+            
+            if (response.status === 'success') {
+                document.getElementById('stat-voted-count').textContent = `${response.votedCount.toLocaleString()} / ${response.totalStudents.toLocaleString()}`;
+                document.getElementById('stat-turnout').textContent = `${response.turnoutPercentage.toFixed(1)}%`;
+                document.getElementById('stat-top-grade').textContent = response.topGrade;
+                dashboard.style.display = 'grid'; // ⭐️ เปิดการแสดงผล
+            } else {
+                dashboard.style.display = 'none'; // ⭐️ ซ่อนถ้าโหลดไม่สำเร็จ
+            }
+        }
+
+        
         // ฟังก์ชัน โหลดข้อมูล
         async function loadInitialData() {
             showSkeletonLoader();
             validateForm();
             
-            loadAnnouncement(); // ⭐️ (เรียกใช้เหมือนเดิม)
+            loadAnnouncement(); 
+            loadPublicStats(); // ⭐️ (เพิ่มใหม่) เรียกใช้ฟังก์ชัน
             
             const resultsData = await callApi('getVoteResults');
             if (resultsData.status === 'success' && resultsData.results) {
@@ -865,10 +939,12 @@
                     registrationFormSection.style.display = 'block';
                     resultsSection.style.display = 'none';
                     votingStatusDiv.className = 'status-message open';
+                    document.getElementById('stats-dashboard').style.display = 'grid'; // ⭐️ (เพิ่มใหม่)
                 } else {
                     registrationFormSection.style.display = 'none';
                     resultsSection.style.display = 'block';
                     votingStatusDiv.className = 'status-message closed';
+                    document.getElementById('stats-dashboard').style.display = 'none'; // ⭐️ (เพิ่มใหม่)
                 }
 
             }
