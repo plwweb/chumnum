@@ -923,6 +923,18 @@
               <span>ตั้งค่าระบบ</span>
             </a>
           </li>
+          <li>
+            <a href="#accounts" data-page="accounts">
+              <i class="fas fa-user-shield"></i>
+              <span>จัดการบัญชีผู้ดูแล</span>
+            </a>
+          </li>
+          <li>
+            <a href="#tools" data-page="tools">
+              <i class="fas fa-tools"></i>
+              <span>เครื่องมือผู้ดูแล</span>
+            </a>
+          </li>
         </ul>
       </nav>
 
@@ -1102,7 +1114,33 @@
             </div>
 
             <div class="settings-section">
-                <h3><i class="fas fa-user-shield"></i> จัดการบัญชีผู้ดูแล</h3>
+                <h3><i class="fas fa-file-csv"></i> Import รายชื่อนักเรียน (CSV)</h3>
+                <p style="color: var(--text-secondary); margin-bottom: 15px;">
+                    อัปโหลดไฟล์ `.csv` ที่มีรายชื่อนักเรียนทั้งหมด
+                    <strong style="color: var(--danger-color);">(คำเตือน: การกระทำนี้จะลบรายชื่อนักเรียนเก่าทั้งหมด)</strong>
+                </p>
+                <div class="form-group">
+                    <label for="csvFile">เลือกไฟล์ .csv (ต้องมี 4 คอลัมน์: StudentID, FullName, Grade, Room)</label>
+                    <input type="file" id="csvFile" accept=".csv" style="padding: 10px; background-color: var(--bg-tertiary); border-radius: 8px; border: 1px solid var(--border-color); width: 100%;">
+                </div>
+                <div class="btn-group">
+                    <button class="btn btn-primary" id="uploadCsvButton" style="background-color: var(--success-color);">
+                        <i class="fas fa-upload"></i> Import ข้อมูล (CSV)
+                    </button>
+                </div>
+                <p id="upload-csv-message" class="message"></p>
+            </div>
+
+             </div>
+        </div>
+        
+        <div class="page" id="accounts-page">
+          <div class="page-header">
+            <h1>จัดการบัญชีผู้ดูแล</h1>
+          </div>
+          <div class="settings-container">
+            <div class="settings-section">
+                <h3><i class="fas fa-user-plus"></i> เพิ่มบัญชีผู้ดูแล</h3>
                 <div class="form-group">
                     <label for="newAdminUsername">Username ใหม่:</label>
                     <input type="text" id="newAdminUsername" placeholder="username" required>
@@ -1127,26 +1165,15 @@
                     </table>
                 </div>
             </div>
+          </div>
+        </div>
 
-            <div class="settings-section">
-                <h3><i class="fas fa-file-csv"></i> Import รายชื่อนักเรียน (CSV)</h3>
-                <p style="color: var(--text-secondary); margin-bottom: 15px;">
-                    อัปโหลดไฟล์ `.csv` ที่มีรายชื่อนักเรียนทั้งหมด
-                    <strong style="color: var(--danger-color);">(คำเตือน: การกระทำนี้จะลบรายชื่อนักเรียนเก่าทั้งหมด)</strong>
-                </p>
-                <div class="form-group">
-                    <label for="csvFile">เลือกไฟล์ .csv (ต้องมี 4 คอลัมน์: StudentID, FullName, Grade, Room)</label>
-                    <input type="file" id="csvFile" accept=".csv" style="padding: 10px; background-color: var(--bg-tertiary); border-radius: 8px; border: 1px solid var(--border-color); width: 100%;">
-                </div>
-                <div class="btn-group">
-                    <button class="btn btn-primary" id="uploadCsvButton" style="background-color: var(--success-color);">
-                        <i class="fas fa-upload"></i> Import ข้อมูล (CSV)
-                    </button>
-                </div>
-                <p id="upload-csv-message" class="message"></p>
-            </div>
-
-            <div class="settings-section">
+        <div class="page" id="tools-page">
+          <div class="page-header">
+            <h1>เครื่องมือผู้ดูแล</h1>
+          </div>
+          <div class="settings-container">
+             <div class="settings-section">
                 <h3><i class="fas fa-tools"></i> เครื่องมือผู้ดูแล</h3>
                 <p style="color: var(--text-secondary); margin-bottom: 15px;">
                     ใช้เครื่องมือเหล่านี้ด้วยความระมัดระวัง ข้อมูลอาจไม่สามารถกู้คืนได้
@@ -1163,9 +1190,9 @@
                     </button>
                 </div>
             </div>
-            
           </div>
         </div>
+
       </div>
     </main>
   </div>
@@ -1620,6 +1647,8 @@
                     }
                 });
             });
+
+            // ⭐️ (ย้ายไปอยู่หน้า accounts-page แต่ยังทำงานได้จากที่นี่) ⭐️
             document.getElementById('addAdminButton').addEventListener('click', async () => {
                 const username = document.getElementById('newAdminUsername').value.trim();
                 const password = document.getElementById('newAdminPassword').value.trim();
@@ -1635,7 +1664,7 @@
                 } else { showToast(result.message, 'error'); }
             });
             
-            // ⭐️ (ใหม่) ปุ่มคำนวณคะแนนใหม่
+            // ⭐️ (ย้ายไปอยู่หน้า tools-page แต่ยังทำงานได้จากที่นี่) ⭐️
             document.getElementById('recalculateVotesButton').addEventListener('click', () => {
                 Swal.fire({
                     title: 'ยืนยันการคำนวณคะแนนใหม่?',
@@ -1683,7 +1712,7 @@
                 });
             });
 
-            // ⭐️ (ใหม่) Import CSV (Settings Page)
+            // ⭐️ (ยังอยู่หน้า settings-page) ⭐️
             document.getElementById('uploadCsvButton').addEventListener('click', () => {
                 const fileInput = document.getElementById('csvFile');
                 const file = fileInput.files[0];
@@ -1765,6 +1794,8 @@
                     }
                 });
             });
+            
+            // ⭐️ (ย้ายไปอยู่หน้า accounts-page แต่ยังทำงานได้จากที่นี่) ⭐️
             document.querySelector('#adminAccountsTable tbody').addEventListener('click', (e) => {
                 const target = e.target.closest('.delete-admin-button');
                 if(!target) return;
@@ -1847,6 +1878,7 @@
     });
 
     // --- Navigation (จาก app.js) ---
+    // ⭐️ (อัปเดต) แก้ไขฟังก์ชันนำทาง ⭐️
     function navigateToPage(pageName) {
       document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
       const targetPage = document.getElementById(`${pageName}-page`);
@@ -1869,8 +1901,14 @@
           break;
         case 'settings':
           loadVoteTime();
+          loadAnnouncement(); 
+          // ⭐️ (ย้ายออก) loadAdminAccounts();
+          break;
+        case 'accounts': // ⭐️ (เพิ่มใหม่)
           loadAdminAccounts();
-          loadAnnouncement(); // ⭐️ (เพิ่มบรรทัดนี้) ⭐️
+          break;
+        case 'tools': // ⭐️ (เพิ่มใหม่)
+          // หน้านี้ไม่ต้องโหลดอะไรเป็นพิเศษ
           break;
       }
     }
