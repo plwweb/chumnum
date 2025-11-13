@@ -1088,6 +1088,20 @@
             </div>
 
             <div class="settings-section">
+                <h3><i class="fas fa-bullhorn"></i> ตั้งค่าข้อความประกาศ</h3>
+                <p style="color: var(--text-secondary); margin-bottom: 15px;">
+                    ข้อความนี้จะแสดงผลที่หน้าโหวต (vote.html)
+                </p>
+                <div class="form-group">
+                    <label for="announcementText">ข้อความประกาศ:</label>
+                    <textarea id="announcementText" rows="4" placeholder="เช่น 📣 ปิดโหวตเวลา 16:00 น. นี้!"></textarea>
+                </div>
+                <div class="btn-group">
+                    <button class="btn btn-primary" id="saveAnnouncementButton">บันทึกข้อความประกาศ</button>
+                </div>
+            </div>
+
+            <div class="settings-section">
                 <h3><i class="fas fa-user-shield"></i> จัดการบัญชีผู้ดูแล</h3>
                 <div class="form-group">
                     <label for="newAdminUsername">Username ใหม่:</label>
@@ -1344,8 +1358,13 @@
         }
     }
     
-    // ⭐️ (ลบออก) ฟังก์ชัน loadAnnouncement()
-    // ⭐️ (ลบออก) ฟังก์ชัน loadSiteSettings()
+    // ⭐️ (เพิ่มใหม่) ⭐️
+    async function loadAnnouncement() {
+        const result = await callApi('getAnnouncementText');
+        if (result.status === 'success') {
+            document.getElementById('announcementText').value = result.text;
+        }
+    }
 
     async function loadAdminAccounts() {
         const result = await callApi('getAdminAccounts');
@@ -1568,9 +1587,6 @@
             
             // --- ตั้งค่าระบบ (Settings Page) ---
             
-            // ⭐️ (ลบออก) 'saveSiteSettingsButton' listener
-            // ⭐️ (ลบออก) 'saveAnnouncementButton' listener
-            
             document.getElementById('setVoteTimeButton').addEventListener('click', async () => {
                 const startTime = document.getElementById('voteStartTime').value;
                 const endTime = document.getElementById('voteEndTime').value;
@@ -1581,6 +1597,20 @@
                 if (result.status === 'success') { showToast('ตั้งเวลาสำเร็จ!', 'success'); loadVoteTime(); }
                 else { showToast(result.message, 'error'); }
             });
+
+            // ⭐️ (เพิ่มใหม่) ⭐️
+            document.getElementById('saveAnnouncementButton').addEventListener('click', async () => {
+                const text = document.getElementById('announcementText').value;
+                showLoading();
+                const result = await callApi('updateAnnouncementText', { text: text });
+                hideLoading();
+                if (result.status === 'success') {
+                    showToast('บันทึกประกาศสำเร็จ!', 'success');
+                } else {
+                    showToast(result.message, 'error');
+                }
+            });
+
             document.getElementById('closeVotingNowButton').addEventListener('click', () => {
                 Swal.fire({ title: 'ยืนยันการปิดโหวต?', text: "คุณต้องการปิดรับการโหวตทั้งหมดทันทีใช่ไหม?", icon: 'warning', showCancelButton: true, confirmButtonColor: '#d33', confirmButtonText: 'ใช่, ปิดทันที!', cancelButtonText: 'ยกเลิก'
                 }).then(async (result) => {
@@ -1840,8 +1870,7 @@
         case 'settings':
           loadVoteTime();
           loadAdminAccounts();
-          // ⭐️ (ลบออก) loadAnnouncement();
-          // ⭐️ (ลบออก) loadSiteSettings();
+          loadAnnouncement(); // ⭐️ (เพิ่มบรรทัดนี้) ⭐️
           break;
       }
     }
