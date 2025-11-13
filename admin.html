@@ -118,7 +118,6 @@
       font-weight: 500;
       color: var(--text-primary);
       font-size: 14px;
-      /* ⭐️⭐️⭐️ (แก้ไข 1) บังคับตัดคำใน Label ⭐️⭐️⭐️ */
       word-wrap: break-word;
       overflow-wrap: break-word;
     }
@@ -142,7 +141,6 @@
       border-color: var(--primary-color);
       box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
     }
-    /* ⭐️⭐️⭐️ (แก้ไข 2) บังคับ input ที่มีปัญหาให้พอดี ⭐️⭐️⭐️ */
     .form-group input[type="datetime-local"],
     .form-group input[type="file"] {
         max-width: 100%;
@@ -709,6 +707,34 @@
         margin-top: 15px;
     }
 
+    /* ⭐️ (เพิ่มใหม่) CSS สำหรับ Tabs ⭐️ */
+    .tab-controls {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+      border-bottom: 2px solid var(--border-color);
+    }
+    .tab-btn {
+      padding: 12px 20px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 16px;
+      font-weight: 500;
+      color: var(--text-secondary);
+      border-bottom: 3px solid transparent;
+      transition: var(--transition);
+    }
+    .tab-btn:hover {
+      background-color: var(--bg-secondary);
+    }
+    .tab-btn.active {
+      color: var(--primary-color);
+      border-bottom-color: var(--primary-color);
+    }
+    /* ⭐️ (จบส่วน CSS ใหม่) ⭐️ */
+
+
     /* === [ CSS: responsive.css (ใหม่) ] === */
     @media (max-width: 1024px) {
       .stats-grid {
@@ -1048,12 +1074,20 @@
 
         <div class="page" id="users-page">
           <div class="page-header">
-            <h1>ข้อมูลผู้โหวต</h1>
-            <div class="btn-group">
+            <h1>ข้อมูลนักเรียน</h1> <div class="btn-group">
                 <button class="btn btn-primary" id="exportUsersPdfButton">
                     <i class="fas fa-file-pdf"></i> ส่งออกผู้ใช้งาน (.pdf)
                 </button>
             </div>
+          </div>
+
+          <div class="tab-controls" id="userTabs">
+            <button class="tab-btn active" data-status="voted">
+              <i class="fas fa-user-check"></i> โหวตแล้ว (<span id="voted-count">0</span>)
+            </button>
+            <button class="tab-btn" data-status="unvoted">
+              <i class="fas fa-user-clock"></i> ยังไม่โหวต (<span id="unvoted-count">0</span>)
+            </button>
           </div>
 
           <div class="table-controls">
@@ -1069,12 +1103,21 @@
 
           <div class="table-container">
             <table class="data-table" id="adminUsersTable">
-                 <thead><tr><th>Student ID</th><th>Full Name</th><th>Grade</th><th>Room</th><th>Timestamp</th><th>Vote Choice</th><th>Actions</th></tr></thead>
+                 <thead>
+                   <tr>
+                     <th>Student ID</th>
+                     <th>Full Name</th>
+                     <th>Grade</th>
+                     <th>Room</th>
+                     <th class="voted-col">Timestamp</th>
+                     <th class="voted-col">Vote Choice</th>
+                     <th class="voted-col">Actions</th>
+                   </tr>
+                 </thead>
                  <tbody></tbody>
             </table>
           </div>
         </div>
-
         <div class="page" id="settings-page">
           <div class="page-header">
             <h1>ตั้งค่าระบบ</h1>
@@ -1130,8 +1173,8 @@
                 </div>
                 <p id="upload-csv-message" class="message"></p>
             </div>
-
-             </div>
+            
+          </div>
         </div>
         
         <div class="page" id="accounts-page">
@@ -1275,7 +1318,11 @@
     // 🚨 (อัปเดตแล้ว!) นี่คือ URL ใหม่ที่คุณเพิ่งให้มา 🚨
     const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbwwJzP_jTHieO4asdyGAJk1hYHxP5gYSIZu2XNp_myLqtAqxmMMsekofM4Xl3GguKlvCQ/exec';
     let currentAdminUser = '';
-    let allUsersData = [];
+    
+    // ⭐️ (อัปเดต) เปลี่ยนชื่อตัวแปร ⭐️
+    let allStudentsData = [];
+    let currentUserView = 'voted'; // ⭐️ (เพิ่มใหม่) สถานะแท็บปัจจุบัน
+
     async function callApi(action, data = {}) {
         if (currentAdminUser) { data.username = currentAdminUser; } // ⭐️ นี่คือ 'username' ของผู้ดูแลที่ล็อกอินอยู่
         try {
@@ -1324,7 +1371,6 @@
         showLoading();
         await loadAdminData();
         await loadDashboardData();
-        // ⭐️ (ลบออก) loadSiteSettings();
         hideLoading();
     }
 
@@ -1361,18 +1407,23 @@
         }
     }
 
+    // ⭐️ (อัปเดต) ⭐️
     async function loadAdminData() {
         const result = await callApi('getAdminData');
         if (result.status === 'success') {
             displayAdminVoteResults(result.votes);
-            allUsersData = result.users;
-            displayAdminUsers(allUsersData);
+            
+            // ⭐️ (แก้ไข) เก็บข้อมูลนักเรียนทั้งหมด
+            allStudentsData = result.allStudents; 
+            
+            // ⭐️ (แก้ไข) แสดงผลตามแท็บที่เลือกไว้ (ค่าเริ่มต้นคือ 'voted')
+            filterAndSearchUsers(); 
+            
             displayVoteChart(result.votes);
         }
     }
 
     async function loadVoteTime() {
-        // ⭐️ (ถอยกลับ) กลับไปใช้ API เดิม
         const result = await callApi('getVoteTime');
         if (result.status === 'success') {
             const display = document.getElementById('current-vote-time');
@@ -1385,7 +1436,6 @@
         }
     }
     
-    // ⭐️ (เพิ่มใหม่) ⭐️
     async function loadAnnouncement() {
         const result = await callApi('getAnnouncementText');
         if (result.status === 'success') {
@@ -1433,35 +1483,71 @@
         });
     }
 
+    // ⭐️ (อัปเดต) ฟังก์ชันแสดงผลข้อมูลนักเรียน ⭐️
     function displayAdminUsers(users) {
         const tbody = document.querySelector('#adminUsersTable tbody');
+        const table = document.getElementById('adminUsersTable');
         tbody.innerHTML = '';
+        
+        // [6] คือ hasVoted (boolean)
+        const isVotedView = currentUserView === 'voted'; 
+
+        // ⭐️ (ใหม่) สลับการแสดงผลคอลัมน์
+        table.querySelectorAll('.voted-col').forEach(col => {
+            col.style.display = isVotedView ? '' : 'none';
+        });
+
         if (users.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="7">ไม่พบข้อมูลผู้ใช้งาน</td></tr>';
+            const colCount = isVotedView ? 7 : 4;
+            tbody.innerHTML = `<tr><td colspan="${colCount}">ไม่พบข้อมูลนักเรียน</td></tr>`;
             return;
         }
+
         users.forEach(row => {
             const tr = document.createElement('tr');
-            tr.dataset.studentId = row[0];
-            tr.innerHTML = `
-                <td>${row[0]}</td><td>${row[1]}</td><td>${row[2]}</td><td>${row[3]}</td>
-                <td>${new Date(row[4]).toLocaleString('th-TH')}</td>
-                <td>${row[5]}</td>
-                <td class="table-actions-cell">
-                    <button class="action-btn delete delete-user-button" title="Delete"><i class="fas fa-trash"></i></button>
-                </td>`;
+            tr.dataset.studentId = row[0]; // [0] ID
+            
+            // ⭐️ (อัปเดต) สร้าง HTML ของแถว
+            let rowHtml = `
+                <td>${row[0]}</td> <td>${row[1]}</td> <td>${row[2]}</td> <td>${row[3]}</td> `;
+
+            if (isVotedView) {
+                rowHtml += `
+                    <td class="voted-col">${new Date(row[4]).toLocaleString('th-TH')}</td> <td class="voted-col">${row[5]}</td> <td class="voted-col table-actions-cell">
+                        <button class="action-btn delete delete-user-button" title="Delete"><i class="fas fa-trash"></i></button>
+                    </td>
+                `;
+            }
+            
+            tr.innerHTML = rowHtml;
             tbody.appendChild(tr);
         });
     }
     
+    // ⭐️ (อัปเดต) ฟังก์ชันฟิลเตอร์ ⭐️
     function filterAndSearchUsers() {
         const selectedGrade = gradeFilterSelect.value;
         const searchTerm = userSearchInput.value.toLowerCase().trim();
-        const filteredUsers = allUsersData.filter(user => {
+        const isVoted = currentUserView === 'voted';
+
+        // 1. กรองจากข้อมูลทั้งหมด
+        const filteredUsers = allStudentsData.filter(user => {
+            // [6] คือ hasVoted (boolean)
+            const statusMatch = user[6] === isVoted; 
             const gradeMatch = selectedGrade === 'all' || user[2] === selectedGrade;
-            const searchMatch = user[0].toLowerCase().includes(searchTerm) || user[1].toLowerCase().includes(searchTerm);
-            return gradeMatch && searchMatch;
+            // [0] ID, [1] Name
+            const searchMatch = user[0].toLowerCase().includes(searchTerm) || user[1].toLowerCase().includes(searchTerm); 
+            
+            return statusMatch && gradeMatch && searchMatch;
         });
+
+        // 2. อัปเดตยอดรวม
+        const votedCount = allStudentsData.filter(user => user[6] === true).length;
+        const unvotedCount = allStudentsData.filter(user => user[6] === false).length;
+        document.getElementById('voted-count').textContent = votedCount;
+        document.getElementById('unvoted-count').textContent = unvotedCount;
+
+        // 3. แสดงผลลัพธ์
         displayAdminUsers(filteredUsers);
     }
 
@@ -1472,8 +1558,6 @@
         const loginForm = document.getElementById('loginForm');
         const loginButton = document.getElementById('loginButton');
         const loginMessage = document.getElementById('login-message');
-
-        // ⭐️ (ลบออก) loadSiteSettings();
 
         // --- 1. ระบบ Login (จาก auth.js + ระบบเก่า) ---
         loginForm.addEventListener('submit', async (e) => {
@@ -1518,7 +1602,6 @@
         function initializeApp() {
             // โหลดข้อมูลทั้งหมดเป็นครั้งแรก
             loadAllAdminData();
-            // ⭐️ (ลบออก) loadSiteSettings();
 
             // Sidebar toggle
             const sidebarToggle = document.getElementById('sidebarToggle');
@@ -1609,8 +1692,25 @@
                 showToast('กำลังรีเฟรชข้อมูล...', 'info');
                 loadAllAdminData().then(() => showToast('ข้อมูลอัปเดตแล้ว!', 'success'));
             });
+            
+            // ⭐️ (อัปเดต) Event Listeners สำหรับหน้า Users ⭐️
             gradeFilterSelect.addEventListener('change', filterAndSearchUsers);
             userSearchInput.addEventListener('input', filterAndSearchUsers);
+            document.getElementById('userTabs').addEventListener('click', (e) => {
+                const target = e.target.closest('.tab-btn');
+                if (!target) return;
+                
+                // 1. อัปเดตสถานะ
+                currentUserView = target.dataset.status;
+
+                // 2. อัปเดต UI ของแท็บ
+                document.querySelectorAll('#userTabs .tab-btn').forEach(btn => btn.classList.remove('active'));
+                target.classList.add('active');
+
+                // 3. กรองและแสดงผลใหม่
+                filterAndSearchUsers();
+            });
+            
             
             // --- ตั้งค่าระบบ (Settings Page) ---
             
@@ -1625,7 +1725,6 @@
                 else { showToast(result.message, 'error'); }
             });
 
-            // ⭐️ (เพิ่มใหม่) ⭐️
             document.getElementById('saveAnnouncementButton').addEventListener('click', async () => {
                 const text = document.getElementById('announcementText').value;
                 showLoading();
@@ -1648,7 +1747,7 @@
                 });
             });
 
-            // ⭐️ (แก้ไข) ⭐️
+            // ⭐️ (หน้า accounts-page) ⭐️
             document.getElementById('addAdminButton').addEventListener('click', async () => {
                 const username = document.getElementById('newAdminUsername').value.trim();
                 const password = document.getElementById('newAdminPassword').value.trim();
@@ -1659,7 +1758,6 @@
                     return; 
                 }
                 
-                // ⭐️ (แก้ไข) เปลี่ยนชื่อตัวแปรไม่ให้ซ้ำกับ 'username' ที่ระบบส่งไป
                 const result = await callApi('addAdminAccount', { 
                     usernameToAdd: username, 
                     passwordToAdd: password, 
@@ -1677,7 +1775,7 @@
                 }
             });
             
-            // ⭐️ (ย้ายไปอยู่หน้า tools-page แต่ยังทำงานได้จากที่นี่) ⭐️
+            // ⭐️ (หน้า tools-page) ⭐️
             document.getElementById('recalculateVotesButton').addEventListener('click', () => {
                 Swal.fire({
                     title: 'ยืนยันการคำนวณคะแนนใหม่?',
@@ -1799,16 +1897,21 @@
                 if (!target) return;
                 const row = target.closest('tr');
                 const studentId = row.dataset.studentId;
-                Swal.fire({ title: 'ยืนยันการลบ?', text: `คุณต้องการลบข้อมูลของนักเรียนรหัส '${studentId}' ใช่ไหม? (คะแนนโหวตจะไม่ลดตามอัตโนมัติ ให้ใช้ปุ่ม 'คำนวณคะแนนใหม่' เพื่ออัปเดต)`, icon: 'warning', showCancelButton: true, confirmButtonColor: '#d33', cancelButtonColor: '#3085d6', confirmButtonText: 'ใช่, ลบเลย!', cancelButtonText: 'ยกเลิก'
+                Swal.fire({ title: 'ยืนยันการลบ?', text: `คุณต้องการลบข้อมูลของนักเรียนรหัส '${studentId}' ใช่ไหม? (ระบบจะอัปเดตคะแนนโหวตให้ทันที)`, icon: 'warning', showCancelButton: true, confirmButtonColor: '#d33', cancelButtonColor: '#3085d6', confirmButtonText: 'ใช่, ลบเลย!', cancelButtonText: 'ยกเลิก'
                 }).then(async (result) => {
                     if (result.isConfirmed) {
                         const apiResult = await callApi('deleteUser', { studentId: studentId });
-                        if (apiResult.status === 'success') { showToast(apiResult.message, 'success'); loadAllAdminData(); } else { showToast(apiResult.message, 'error'); }
+                        if (apiResult.status === 'success') { 
+                            showToast(apiResult.message, 'success'); 
+                            loadAllAdminData(); // ⭐️ (สำคัญ) โหลดใหม่ทั้งหมดเพื่อให้คะแนน Dashboard อัปเดต
+                        } else { 
+                            showToast(apiResult.message, 'error'); 
+                        }
                     }
                 });
             });
             
-            // ⭐️ (ย้ายไปอยู่หน้า accounts-page แต่ยังทำงานได้จากที่นี่) ⭐️
+            // ⭐️ (หน้า accounts-page) ⭐️
             document.querySelector('#adminAccountsTable tbody').addEventListener('click', (e) => {
                 const target = e.target.closest('.delete-admin-button');
                 if(!target) return;
@@ -1910,12 +2013,12 @@
           loadAdminData();
           break;
         case 'users':
-          loadAdminData();
+          // ⭐️ (อัปเดต) โหลดข้อมูลทั้งหมด และแสดงผลตามฟิลเตอร์
+          loadAdminData().then(() => filterAndSearchUsers()); 
           break;
         case 'settings':
           loadVoteTime();
           loadAnnouncement(); 
-          // ⭐️ (ย้ายออก) loadAdminAccounts();
           break;
         case 'accounts': // ⭐️ (เพิ่มใหม่)
           loadAdminAccounts();
