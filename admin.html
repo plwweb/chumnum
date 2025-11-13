@@ -118,9 +118,9 @@
       font-weight: 500;
       color: var(--text-primary);
       font-size: 14px;
-      /* ⭐️⭐️⭐️ (นี่คือโค้ดที่แก้ไข) ⭐️⭐️⭐️ */
-      word-wrap: break-word;     /*- สำหรับ IE/Edge เก่า */
-      overflow-wrap: break-word; /*- มาตรฐานใหม่ (บังคับตัดคำ) */
+      /* ⭐️⭐️⭐️ (แก้ไข 1) บังคับตัดคำใน Label ⭐️⭐️⭐️ */
+      word-wrap: break-word;
+      overflow-wrap: break-word;
     }
     .form-group input,
     .form-group select,
@@ -141,6 +141,12 @@
       outline: none;
       border-color: var(--primary-color);
       box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+    }
+    /* ⭐️⭐️⭐️ (แก้ไข 2) บังคับ input ที่มีปัญหาให้พอดี ⭐️⭐️⭐️ */
+    .form-group input[type="datetime-local"],
+    .form-group input[type="file"] {
+        max-width: 100%;
+        box-sizing: border-box; 
     }
     .modal {
       display: none;
@@ -271,7 +277,7 @@
     .dashboard-container {
       display: flex;
       height: 100vh; /* Fallback */
-      height: 100dvh; /* ⭐️ (แก้ไข 1) */
+      height: 100dvh; /* ⭐️ (แก้ไข 3) ใช้ 100dvh */
       overflow: hidden;
     }
     .sidebar {
@@ -717,7 +723,7 @@
         position: fixed;
         left: -260px;
         height: 100vh; /* Fallback */
-        height: 100dvh; /* ⭐️ (แก้ไข 2) */
+        height: 100dvh; /* ⭐️ (แก้ไข 4) ใช้ 100dvh */
         z-index: 1000;
       }
       .sidebar.active {
@@ -764,7 +770,7 @@
         min-width: auto;
       }
       
-      /* ⭐️⭐️⭐️ (แก้ไข 3) ย้ายโค้ดแก้ปุ่มล้นมาไว้ที่ 768px ⭐️⭐️⭐️ */
+      /* ⭐️⭐️⭐️ (แก้ไข 5) ย้ายโค้ดแก้ปุ่มล้นมาไว้ที่ 768px ⭐️⭐️⭐️ */
       .settings-section .btn-group {
         flex-direction: column; /*- ให้ปุ่มเรียงกันแนวตั้ง */
         align-items: stretch;   /*- ให้ปุ่มยืดเต็มความกว้าง */
