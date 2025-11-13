@@ -1273,6 +1273,37 @@
     </div>
   </div>
 
+  <div class="modal" id="editVoteModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 id="editVoteModalTitle">แก้ไขการโหวต</h2>
+        <button class="modal-close" data-modal="editVoteModal">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      <form id="editVoteForm">
+        <input type="hidden" id="editVoteStudentId">
+        <input type="hidden" id="editVoteOldChoice">
+
+        <div class="form-group">
+          <label>นักเรียน:</label>
+          <input type="text" id="editVoteStudentInfo" readonly style="background-color: var(--bg-tertiary);">
+        </div>
+        
+        <div class="form-group">
+          <label for="newVoteChoiceSelect">เปลี่ยนเป็นโหวต:</label>
+          <select id="newVoteChoiceSelect" required>
+             </select>
+        </div>
+        
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-modal="editVoteModal">Cancel</button>
+          <button type="submit" class="btn btn-primary" id="saveVoteButton">บันทึกการเปลี่ยนแปลง</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
 
   <div class="toast-container" id="toastContainer"></div>
 
@@ -1319,9 +1350,10 @@
     const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbwwJzP_jTHieO4asdyGAJk1hYHxP5gYSIZu2XNp_myLqtAqxmMMsekofM4Xl3GguKlvCQ/exec';
     let currentAdminUser = '';
     
-    // ⭐️ (อัปเดต) เปลี่ยนชื่อตัวแปร ⭐️
+    // ⭐️ (อัปเดต) ⭐️
     let allStudentsData = [];
-    let currentUserView = 'voted'; // ⭐️ (เพิ่มใหม่) สถานะแท็บปัจจุบัน
+    let allVoteDesigns = []; // ⭐️ (เพิ่มใหม่) เก็บรายชื่อแบบเสื้อ
+    let currentUserView = 'voted'; 
 
     async function callApi(action, data = {}) {
         if (currentAdminUser) { data.username = currentAdminUser; } // ⭐️ นี่คือ 'username' ของผู้ดูแลที่ล็อกอินอยู่
@@ -1413,10 +1445,9 @@
         if (result.status === 'success') {
             displayAdminVoteResults(result.votes);
             
-            // ⭐️ (แก้ไข) เก็บข้อมูลนักเรียนทั้งหมด
+            allVoteDesigns = result.votes; // ⭐️ (เพิ่มใหม่) เก็บไว้ใช้ใน Modal
             allStudentsData = result.allStudents; 
             
-            // ⭐️ (แก้ไข) แสดงผลตามแท็บที่เลือกไว้ (ค่าเริ่มต้นคือ 'voted')
             filterAndSearchUsers(); 
             
             displayVoteChart(result.votes);
@@ -1506,6 +1537,8 @@
         users.forEach(row => {
             const tr = document.createElement('tr');
             tr.dataset.studentId = row[0]; // [0] ID
+            tr.dataset.studentName = row[1]; // ⭐️ (เพิ่มใหม่)
+            tr.dataset.voteChoice = row[5]; // ⭐️ (เพิ่มใหม่)
             
             // ⭐️ (อัปเดต) สร้าง HTML ของแถว
             let rowHtml = `
@@ -1514,6 +1547,7 @@
             if (isVotedView) {
                 rowHtml += `
                     <td class="voted-col">${new Date(row[4]).toLocaleString('th-TH')}</td> <td class="voted-col">${row[5]}</td> <td class="voted-col table-actions-cell">
+                        <button class="action-btn edit edit-vote-button" title="Edit Vote"><i class="fas fa-edit"></i></button>
                         <button class="action-btn delete delete-user-button" title="Delete"><i class="fas fa-trash"></i></button>
                     </td>
                 `;
@@ -1892,23 +1926,59 @@
                     Swal.fire({ title: 'สร้างไฟล์สำเร็จ!', html: `<a href="${result.pdfUrl}" target="_blank" rel="noopener noreferrer">คลิกที่นี่เพื่อเปิด PDF</a>`, icon: 'success', showConfirmButton: true });
                 } else { showToast(result.message, 'error'); }
             });
+            
+            // ⭐️ (อัปเดต) เพิ่มปุ่ม "แก้ไข" (edit-vote-button) ⭐️
             document.querySelector('#adminUsersTable tbody').addEventListener('click', async (event) => {
-                const target = event.target.closest('.delete-user-button');
-                if (!target) return;
-                const row = target.closest('tr');
+                const targetButton = event.target.closest('.action-btn');
+                if (!targetButton) return;
+                
+                const row = targetButton.closest('tr');
                 const studentId = row.dataset.studentId;
-                Swal.fire({ title: 'ยืนยันการลบ?', text: `คุณต้องการลบข้อมูลของนักเรียนรหัส '${studentId}' ใช่ไหม? (ระบบจะอัปเดตคะแนนโหวตให้ทันที)`, icon: 'warning', showCancelButton: true, confirmButtonColor: '#d33', cancelButtonColor: '#3085d6', confirmButtonText: 'ใช่, ลบเลย!', cancelButtonText: 'ยกเลิก'
-                }).then(async (result) => {
-                    if (result.isConfirmed) {
-                        const apiResult = await callApi('deleteUser', { studentId: studentId });
-                        if (apiResult.status === 'success') { 
-                            showToast(apiResult.message, 'success'); 
-                            loadAllAdminData(); // ⭐️ (สำคัญ) โหลดใหม่ทั้งหมดเพื่อให้คะแนน Dashboard อัปเดต
-                        } else { 
-                            showToast(apiResult.message, 'error'); 
+
+                // --- ปุ่มลบ (Smart Delete) ---
+                if (targetButton.classList.contains('delete-user-button')) {
+                    Swal.fire({ title: 'ยืนยันการลบ?', text: `คุณต้องการลบข้อมูลของนักเรียนรหัส '${studentId}' ใช่ไหม? (ระบบจะอัปเดตคะแนนโหวตให้ทันที)`, icon: 'warning', showCancelButton: true, confirmButtonColor: '#d33', cancelButtonColor: '#3085d6', confirmButtonText: 'ใช่, ลบเลย!', cancelButtonText: 'ยกเลิก'
+                    }).then(async (result) => {
+                        if (result.isConfirmed) {
+                            showLoading();
+                            const apiResult = await callApi('deleteUser', { studentId: studentId });
+                            hideLoading();
+                            if (apiResult.status === 'success') { 
+                                showToast(apiResult.message, 'success'); 
+                                loadAllAdminData(); // ⭐️ (สำคัญ) โหลดใหม่ทั้งหมดเพื่อให้คะแนน Dashboard อัปเดต
+                            } else { 
+                                showToast(apiResult.message, 'error'); 
+                            }
                         }
-                    }
-                });
+                    });
+                }
+
+                // --- ⭐️ (เพิ่มใหม่) ปุ่มแก้ไขการโหวต ⭐️ ---
+                if (targetButton.classList.contains('edit-vote-button')) {
+                    const studentName = row.dataset.studentName;
+                    const oldVoteChoice = row.dataset.voteChoice;
+
+                    // 1. ตั้งค่าข้อมูลใน Modal
+                    document.getElementById('editVoteStudentInfo').value = `${studentId} - ${studentName}`;
+                    document.getElementById('editVoteStudentId').value = studentId;
+                    document.getElementById('editVoteOldChoice').value = oldVoteChoice;
+
+                    // 2. สร้าง Dropdown ตัวเลือก
+                    const select = document.getElementById('newVoteChoiceSelect');
+                    select.innerHTML = ''; // ล้างของเก่า
+                    allVoteDesigns.forEach(design => {
+                        const option = document.createElement('option');
+                        option.value = design[0]; // [0] = Design ID
+                        option.textContent = `${design[0]} - ${design[1]}`; // [1] = Design Name
+                        if (design[0] === oldVoteChoice) {
+                            option.selected = true; // เลือกโหวตเดิมไว้
+                        }
+                        select.appendChild(option);
+                    });
+                    
+                    // 3. เปิด Modal
+                    openModal('editVoteModal');
+                }
             });
             
             // ⭐️ (หน้า accounts-page) ⭐️
@@ -1986,6 +2056,35 @@
                     showToast(result.message, 'success');
                     closeModal('designModal');
                     loadAdminData();
+                } else {
+                    showToast(result.message, 'error');
+                }
+            });
+            
+            // ⭐️ (เพิ่มใหม่) ฟอร์มใน Modal (สำหรับแก้ไขการโหวต) ⭐️
+            document.getElementById('editVoteForm').addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const studentId = document.getElementById('editVoteStudentId').value;
+                const oldVoteChoice = document.getElementById('editVoteOldChoice').value;
+                const newVoteChoice = document.getElementById('newVoteChoiceSelect').value;
+
+                if (oldVoteChoice === newVoteChoice) {
+                    showToast('คุณยังไม่ได้เปลี่ยนการโหวต', 'warning');
+                    return;
+                }
+                
+                showLoading();
+                const result = await callApi('adminUpdateVote', {
+                    studentId: studentId,
+                    oldVoteChoice: oldVoteChoice,
+                    newVoteChoice: newVoteChoice
+                });
+                hideLoading();
+
+                if (result.status === 'success') {
+                    showToast(result.message, 'success');
+                    closeModal('editVoteModal');
+                    loadAllAdminData(); // ⭐️ โหลดใหม่ทั้งหมด
                 } else {
                     showToast(result.message, 'error');
                 }
