@@ -271,7 +271,7 @@
     .dashboard-container {
       display: flex;
       height: 100vh; /* Fallback */
-      height: 100dvh;
+      height: 100dvh; /* ⭐️ (แก้ไข 1) */
       overflow: hidden;
     }
     .sidebar {
@@ -717,7 +717,7 @@
         position: fixed;
         left: -260px;
         height: 100vh; /* Fallback */
-        height: 100dvh;
+        height: 100dvh; /* ⭐️ (แก้ไข 2) */
         z-index: 1000;
       }
       .sidebar.active {
@@ -764,7 +764,7 @@
         min-width: auto;
       }
       
-      /* ⭐️⭐️⭐️ (แก้ไข) นี่คือ CSS ที่แก้ไขปัญหาปุ่มล้น (ย้ายมาจาก 480px) ⭐️⭐️⭐️ */
+      /* ⭐️⭐️⭐️ (แก้ไข 3) ย้ายโค้ดแก้ปุ่มล้นมาไว้ที่ 768px ⭐️⭐️⭐️ */
       .settings-section .btn-group {
         flex-direction: column; /*- ให้ปุ่มเรียงกันแนวตั้ง */
         align-items: stretch;   /*- ให้ปุ่มยืดเต็มความกว้าง */
@@ -853,7 +853,10 @@
 </head>
 
 <body>
-
+  <img src="https://github.com/KongNontawatDev/Black-Mourning-Ribbon/blob/2150640c0e623c7fbcca07024287b597f7999a84/ribbon_top_right.png?raw=true" 
+     alt="Black mourning ribbon" 
+     style="position:fixed; top:0; right:0; width:80px; opacity:0.9; z-index:9999; pointer-events:none;">
+     
   <div id="login-page">
     <div class="login-box">
         <div class="login-header">
