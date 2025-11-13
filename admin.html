@@ -118,6 +118,9 @@
       font-weight: 500;
       color: var(--text-primary);
       font-size: 14px;
+      /* ⭐️⭐️⭐️ (นี่คือโค้ดที่แก้ไข) ⭐️⭐️⭐️ */
+      word-wrap: break-word;     /*- สำหรับ IE/Edge เก่า */
+      overflow-wrap: break-word; /*- มาตรฐานใหม่ (บังคับตัดคำ) */
     }
     .form-group input,
     .form-group select,
@@ -268,7 +271,7 @@
     .dashboard-container {
       display: flex;
       height: 100vh; /* Fallback */
-      height: 100dvh; /* ⭐️ (แก้ไข 1) */
+      height: 100dvh;
       overflow: hidden;
     }
     .sidebar {
@@ -761,7 +764,7 @@
         min-width: auto;
       }
       
-      /* ⭐️⭐️⭐️ นี่คือ CSS ที่แก้ไขปัญหาปุ่มล้น (ย้ายมาจาก 480px) ⭐️⭐️⭐️ */
+      /* ⭐️⭐️⭐️ (แก้ไข) นี่คือ CSS ที่แก้ไขปัญหาปุ่มล้น (ย้ายมาจาก 480px) ⭐️⭐️⭐️ */
       .settings-section .btn-group {
         flex-direction: column; /*- ให้ปุ่มเรียงกันแนวตั้ง */
         align-items: stretch;   /*- ให้ปุ่มยืดเต็มความกว้าง */
@@ -784,7 +787,6 @@
       .modal-content {
         width: 95%;
       }
-      /* ⭐️ (ย้าย) โค้ด .btn-group ถูกย้ายไปที่ 768px แล้ว */
     }
 
     /* === [ CSS: ส่วนเพิ่มเติมจากระบบเก่า ] === */
