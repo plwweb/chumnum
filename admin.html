@@ -275,7 +275,7 @@
     .dashboard-container {
       display: flex;
       height: 100vh; /* Fallback */
-      height: 100dvh; /* ⭐️ (แก้ไข 3) ใช้ 100dvh */
+      height: 100dvh; 
       overflow: hidden;
     }
     .sidebar {
@@ -306,7 +306,7 @@
       font-weight: 700;
       color: var(--primary-color);
     }
-    .logo img { height: 28px; width: 28px; } /* ปรับแต่งโลโก้ PLW */
+    .logo img { height: 28px; width: 28px; }
     .sidebar.collapsed .logo span {
       display: none;
     }
@@ -367,7 +367,7 @@
       align-items: center;
       gap: 12px;
     }
-    .user-profile i { /* ไอคอน Admin */
+    .user-profile i { 
       width: 40px;
       height: 40px;
       border-radius: 50%;
@@ -707,7 +707,6 @@
         margin-top: 15px;
     }
 
-    /* ⭐️ (เพิ่มใหม่) CSS สำหรับ Tabs ⭐️ */
     .tab-controls {
       display: flex;
       gap: 10px;
@@ -732,7 +731,6 @@
       color: var(--primary-color);
       border-bottom-color: var(--primary-color);
     }
-    /* ⭐️ (จบส่วน CSS ใหม่) ⭐️ */
 
 
     /* === [ CSS: responsive.css (ใหม่) ] === */
@@ -749,7 +747,7 @@
         position: fixed;
         left: -260px;
         height: 100vh; /* Fallback */
-        height: 100dvh; /* ⭐️ (แก้ไข 4) ใช้ 100dvh */
+        height: 100dvh; 
         z-index: 1000;
       }
       .sidebar.active {
@@ -796,14 +794,13 @@
         min-width: auto;
       }
       
-      /* ⭐️⭐️⭐️ (แก้ไข 5) ย้ายโค้ดแก้ปุ่มล้นมาไว้ที่ 768px ⭐️⭐️⭐️ */
       .settings-section .btn-group {
-        flex-direction: column; /*- ให้ปุ่มเรียงกันแนวตั้ง */
-        align-items: stretch;   /*- ให้ปุ่มยืดเต็มความกว้าง */
+        flex-direction: column; 
+        align-items: stretch;   
       }
       .settings-section .btn-group .btn {
-        width: 100%;            /*- ทำให้ปุ่มเต็มความกว้าง */
-        justify-content: center; /*- จัดข้อความในปุ่มให้อยู่กลาง */
+        width: 100%;            
+        justify-content: center; 
       }
     }
     @media (max-width: 480px) {
@@ -956,6 +953,12 @@
             </a>
           </li>
           <li>
+            <a href="#logs" data-page="logs">
+              <i class="fas fa-history"></i>
+              <span>ประวัติการใช้งาน</span>
+            </a>
+          </li>
+          <li>
             <a href="#settings" data-page="settings">
               <i class="fas fa-cog"></i>
               <span>ตั้งค่าระบบ</span>
@@ -1074,7 +1077,8 @@
 
         <div class="page" id="users-page">
           <div class="page-header">
-            <h1>ข้อมูลนักเรียน</h1> <div class="btn-group">
+            <h1>ข้อมูลนักเรียน</h1> 
+            <div class="btn-group">
                 <button class="btn btn-primary" id="exportUsersPdfButton">
                     <i class="fas fa-file-pdf"></i> ส่งออกผู้ใช้งาน (.pdf)
                 </button>
@@ -1118,6 +1122,7 @@
             </table>
           </div>
         </div>
+
         <div class="page" id="settings-page">
           <div class="page-header">
             <h1>ตั้งค่าระบบ</h1>
@@ -1155,8 +1160,8 @@
                     <button class="btn btn-primary" id="saveAnnouncementButton">บันทึกข้อความประกาศ</button>
                 </div>
             </div>
-
-            </div>
+            
+          </div>
         </div>
         
         <div class="page" id="accounts-page">
@@ -1290,6 +1295,29 @@
             </div>
           </div>
         </div>
+        
+        <div class="page" id="logs-page">
+          <div class="page-header">
+            <h1>ประวัติการใช้งาน (Audit Log)</h1>
+            <p>แสดง 100 การกระทำล่าสุดของผู้ดูแลระบบ</p>
+          </div>
+          <div class="settings-section">
+            <div class="table-container">
+                <table class="data-table" id="adminLogsTable">
+                    <thead>
+                        <tr>
+                            <th>เวลา</th>
+                            <th>Username</th>
+                            <th>การกระทำ (Action)</th>
+                            <th>รายละเอียด (Details)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+          </div>
+        </div>
 
       </div>
     </main>
@@ -1348,7 +1376,7 @@
         <div class="form-group">
           <label for="newVoteChoiceSelect">เปลี่ยนเป็นโหวต:</label>
           <select id="newVoteChoiceSelect" required>
-             </select>
+          </select>
         </div>
         
         <div class="modal-footer">
@@ -1405,13 +1433,12 @@
     const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbwwJzP_jTHieO4asdyGAJk1hYHxP5gYSIZu2XNp_myLqtAqxmMMsekofM4Xl3GguKlvCQ/exec';
     let currentAdminUser = '';
     
-    // ⭐️ (อัปเดต) ⭐️
     let allStudentsData = [];
-    let allVoteDesigns = []; // ⭐️ (เพิ่มใหม่) เก็บรายชื่อแบบเสื้อ
+    let allVoteDesigns = []; 
     let currentUserView = 'voted'; 
 
     async function callApi(action, data = {}) {
-        if (currentAdminUser) { data.username = currentAdminUser; } // ⭐️ นี่คือ 'username' ของผู้ดูแลที่ล็อกอินอยู่
+        if (currentAdminUser) { data.username = currentAdminUser; } 
         try {
             const response = await fetch(WEB_APP_URL, {
                 method: 'POST',
@@ -1494,13 +1521,12 @@
         }
     }
 
-    // ⭐️ (อัปเดต) ⭐️
     async function loadAdminData() {
         const result = await callApi('getAdminData');
         if (result.status === 'success') {
             displayAdminVoteResults(result.votes);
             
-            allVoteDesigns = result.votes; // ⭐️ (เพิ่มใหม่) เก็บไว้ใช้ใน Modal
+            allVoteDesigns = result.votes; 
             allStudentsData = result.allStudents; 
             
             filterAndSearchUsers(); 
@@ -1517,8 +1543,8 @@
                 `เวลาโหวต: ${new Date(result.startTime).toLocaleString('th-TH')} - ${new Date(result.endTime).toLocaleString('th-TH')}` :
                 'ยังไม่มีการตั้งเวลาโหวต';
             
-            if (result.startTime) document.getElementById('voteStartTime').value = result.startTime.slice(0, 16); // ปรับ format ให้ตรง
-            if (result.endTime) document.getElementById('voteEndTime').value = result.endTime.slice(0, 16); // ปรับ format ให้ตรง
+            if (result.startTime) document.getElementById('voteStartTime').value = result.startTime.slice(0, 16); 
+            if (result.endTime) document.getElementById('voteEndTime').value = result.endTime.slice(0, 16); 
         }
     }
     
@@ -1546,6 +1572,34 @@
             });
         }
     }
+    
+    /* ⭐️ (เพิ่มใหม่) ⭐️ */
+    async function loadAdminLogs() {
+        showLoading();
+        const result = await callApi('getAdminLogs');
+        hideLoading();
+        
+        const tbody = document.querySelector('#adminLogsTable tbody');
+        tbody.innerHTML = '';
+        
+        if (result.status === 'success' && result.logs.length > 0) {
+            result.logs.forEach(log => {
+                const tr = document.createElement('tr');
+                const timestamp = new Date(log[0]).toLocaleString('th-TH'); 
+                tr.innerHTML = `
+                    <td>${timestamp}</td>
+                    <td>${log[1]}</td>
+                    <td>${log[2]}</td>
+                    <td>${log[3]}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        } else if (result.status === 'success') {
+            tbody.innerHTML = '<tr><td colspan="4">ยังไม่มีประวัติการใช้งาน</td></tr>';
+        } else {
+            tbody.innerHTML = `<tr><td colspan="4">เกิดข้อผิดพลาด: ${result.message}</td></tr>`;
+        }
+    }
 
     function displayAdminVoteResults(votes) {
         const tbody = document.querySelector('#adminVoteResultsTable tbody');
@@ -1569,16 +1623,13 @@
         });
     }
 
-    // ⭐️ (อัปเดต) ฟังก์ชันแสดงผลข้อมูลนักเรียน ⭐️
     function displayAdminUsers(users) {
         const tbody = document.querySelector('#adminUsersTable tbody');
         const table = document.getElementById('adminUsersTable');
         tbody.innerHTML = '';
         
-        // [6] คือ hasVoted (boolean)
         const isVotedView = currentUserView === 'voted'; 
 
-        // ⭐️ (ใหม่) สลับการแสดงผลคอลัมน์
         table.querySelectorAll('.voted-col').forEach(col => {
             col.style.display = isVotedView ? '' : 'none';
         });
@@ -1591,17 +1642,22 @@
 
         users.forEach(row => {
             const tr = document.createElement('tr');
-            tr.dataset.studentId = row[0]; // [0] ID
-            tr.dataset.studentName = row[1]; // ⭐️ (เพิ่มใหม่)
-            tr.dataset.voteChoice = row[5]; // ⭐️ (เพิ่มใหม่)
+            tr.dataset.studentId = row[0]; 
+            tr.dataset.studentName = row[1]; 
+            tr.dataset.voteChoice = row[5]; 
             
-            // ⭐️ (อัปเดต) สร้าง HTML ของแถว
             let rowHtml = `
-                <td>${row[0]}</td> <td>${row[1]}</td> <td>${row[2]}</td> <td>${row[3]}</td> `;
+                <td>${row[0]}</td>
+                <td>${row[1]}</td>
+                <td>${row[2]}</td>
+                <td>${row[3]}</td>
+            `;
 
             if (isVotedView) {
                 rowHtml += `
-                    <td class="voted-col">${new Date(row[4]).toLocaleString('th-TH')}</td> <td class="voted-col">${row[5]}</td> <td class="voted-col table-actions-cell">
+                    <td class="voted-col">${new Date(row[4]).toLocaleString('th-TH')}</td>
+                    <td class="voted-col">${row[5]}</td>
+                    <td class="voted-col table-actions-cell">
                         <button class="action-btn edit edit-vote-button" title="Edit Vote"><i class="fas fa-edit"></i></button>
                         <button class="action-btn delete delete-user-button" title="Delete"><i class="fas fa-trash"></i></button>
                     </td>
@@ -1613,30 +1669,24 @@
         });
     }
     
-    // ⭐️ (อัปเดต) ฟังก์ชันฟิลเตอร์ ⭐️
     function filterAndSearchUsers() {
         const selectedGrade = gradeFilterSelect.value;
         const searchTerm = userSearchInput.value.toLowerCase().trim();
         const isVoted = currentUserView === 'voted';
 
-        // 1. กรองจากข้อมูลทั้งหมด
         const filteredUsers = allStudentsData.filter(user => {
-            // [6] คือ hasVoted (boolean)
             const statusMatch = user[6] === isVoted; 
             const gradeMatch = selectedGrade === 'all' || user[2] === selectedGrade;
-            // [0] ID, [1] Name
             const searchMatch = user[0].toLowerCase().includes(searchTerm) || user[1].toLowerCase().includes(searchTerm); 
             
             return statusMatch && gradeMatch && searchMatch;
         });
 
-        // 2. อัปเดตยอดรวม
         const votedCount = allStudentsData.filter(user => user[6] === true).length;
         const unvotedCount = allStudentsData.filter(user => user[6] === false).length;
         document.getElementById('voted-count').textContent = votedCount;
         document.getElementById('unvoted-count').textContent = unvotedCount;
 
-        // 3. แสดงผลลัพธ์
         displayAdminUsers(filteredUsers);
     }
 
@@ -1669,15 +1719,12 @@
                 loginMessage.textContent = 'เข้าสู่ระบบสำเร็จ!';
                 loginMessage.className = 'message success';
                 
-                // อัปเดตชื่อ Admin
                 document.getElementById('admin-profile-name').textContent = result.fullName || username;
                 document.getElementById('welcome-message').textContent = `ยินดีต้อนรับคุณ ${result.fullName || username}!`;
 
-                // ซ่อนหน้า Login และแสดง Dashboard
                 setTimeout(() => {
                     loginPage.style.display = 'none';
                     mainDashboard.style.display = 'flex';
-                    // เริ่มต้นการทำงานของ Dashboard
                     initializeApp();
                 }, 1000);
             } else {
@@ -1782,21 +1829,17 @@
                 loadAllAdminData().then(() => showToast('ข้อมูลอัปเดตแล้ว!', 'success'));
             });
             
-            // ⭐️ (อัปเดต) Event Listeners สำหรับหน้า Users ⭐️
             gradeFilterSelect.addEventListener('change', filterAndSearchUsers);
             userSearchInput.addEventListener('input', filterAndSearchUsers);
             document.getElementById('userTabs').addEventListener('click', (e) => {
                 const target = e.target.closest('.tab-btn');
                 if (!target) return;
                 
-                // 1. อัปเดตสถานะ
                 currentUserView = target.dataset.status;
 
-                // 2. อัปเดต UI ของแท็บ
                 document.querySelectorAll('#userTabs .tab-btn').forEach(btn => btn.classList.remove('active'));
                 target.classList.add('active');
 
-                // 3. กรองและแสดงผลใหม่
                 filterAndSearchUsers();
             });
             
@@ -1836,7 +1879,7 @@
                 });
             });
 
-            // ⭐️ (หน้า accounts-page) ⭐️
+            // --- (หน้า accounts-page) ---
             document.getElementById('addAdminButton').addEventListener('click', async () => {
                 const username = document.getElementById('newAdminUsername').value.trim();
                 const password = document.getElementById('newAdminPassword').value.trim();
@@ -1864,7 +1907,7 @@
                 }
             });
             
-            // ⭐️ (หน้า tools-page) ⭐️
+            // --- (หน้า tools-page) ---
             document.getElementById('recalculateVotesButton').addEventListener('click', () => {
                 Swal.fire({
                     title: 'ยืนยันการคำนวณคะแนนใหม่?',
@@ -1912,7 +1955,6 @@
                 });
             });
 
-            // ⭐️ (เพิ่มใหม่) ฟอร์มเพิ่ม/แก้ไขนักเรียน (หน้า tools-page) ⭐️
             document.getElementById('student-form').addEventListener('submit', async (e) => {
                 e.preventDefault();
                 const studentId = document.getElementById('manualStudentId').value.trim();
@@ -1938,7 +1980,6 @@
                 }
             });
 
-            // ⭐️ (ย้ายมานี่) โค้ด Import CSV ⭐️
             document.getElementById('uploadCsvButton').addEventListener('click', () => {
                 const fileInput = document.getElementById('csvFile');
                 const file = fileInput.files[0];
@@ -2008,7 +2049,6 @@
                 } else { showToast(result.message, 'error'); }
             });
             
-            // ⭐️ (อัปเดต) เพิ่มปุ่ม "แก้ไข" (edit-vote-button) ⭐️
             document.querySelector('#adminUsersTable tbody').addEventListener('click', async (event) => {
                 const targetButton = event.target.closest('.action-btn');
                 if (!targetButton) return;
@@ -2026,7 +2066,7 @@
                             hideLoading();
                             if (apiResult.status === 'success') { 
                                 showToast(apiResult.message, 'success'); 
-                                loadAllAdminData(); // ⭐️ (สำคัญ) โหลดใหม่ทั้งหมดเพื่อให้คะแนน Dashboard อัปเดต
+                                loadAllAdminData(); 
                             } else { 
                                 showToast(apiResult.message, 'error'); 
                             }
@@ -2174,7 +2214,6 @@
     });
 
     // --- Navigation (จาก app.js) ---
-    // ⭐️ (อัปเดต) แก้ไขฟังก์ชันนำทาง ⭐️
     function navigateToPage(pageName) {
       document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
       const targetPage = document.getElementById(`${pageName}-page`);
@@ -2193,18 +2232,19 @@
           loadAdminData();
           break;
         case 'users':
-          // ⭐️ (อัปเดต) โหลดข้อมูลทั้งหมด และแสดงผลตามฟิลเตอร์
           loadAdminData().then(() => filterAndSearchUsers()); 
           break;
         case 'settings':
           loadVoteTime();
           loadAnnouncement(); 
           break;
-        case 'accounts': // ⭐️ (เพิ่มใหม่)
+        case 'accounts': 
           loadAdminAccounts();
           break;
-        case 'tools': // ⭐️ (เพิ่มใหม่)
-          // หน้านี้ไม่ต้องโหลดอะไรเป็นพิเศษ
+        case 'tools': 
+          break;
+        case 'logs': 
+          loadAdminLogs();
           break;
       }
     }
