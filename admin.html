@@ -17,7 +17,6 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 
   <style>
-    /* === [ CSS: style.css (ใหม่) ] === */
     :root {
       --primary-color: #6366f1;
       --primary-dark: #4f46e5;
@@ -271,11 +270,9 @@
     }
     .hidden { display: none !important; }
     
-    /* === [ CSS: dashboard.css (ใหม่) ] === */
     .dashboard-container {
       display: flex;
-      height: 100vh; /* Fallback */
-      height: 100dvh; 
+      height: 100vh; 
       overflow: hidden;
     }
     .sidebar {
@@ -574,7 +571,7 @@
     }
     .charts-grid {
       display: grid;
-      grid-template-columns: 1fr; /* ปรับเป็น 1 คอลัมน์ */
+      grid-template-columns: 1fr; 
       gap: 20px;
       margin-bottom: 30px;
     }
@@ -682,6 +679,10 @@
     .action-btn.delete:hover {
       color: var(--danger-color);
     }
+    .action-btn.warning:hover {
+      color: var(--warning-color);
+    }
+    
     .settings-container {
       display: grid;
       gap: 20px;
@@ -732,8 +733,6 @@
       border-bottom-color: var(--primary-color);
     }
 
-
-    /* === [ CSS: responsive.css (ใหม่) ] === */
     @media (max-width: 1024px) {
       .stats-grid {
         grid-template-columns: repeat(2, 1fr);
@@ -746,8 +745,7 @@
       .sidebar {
         position: fixed;
         left: -260px;
-        height: 100vh; /* Fallback */
-        height: 100dvh; 
+        height: 100vh; 
         z-index: 1000;
       }
       .sidebar.active {
@@ -818,7 +816,6 @@
       }
     }
 
-    /* === [ CSS: ส่วนเพิ่มเติมจากระบบเก่า ] === */
     .admin-table-image img {
         width: 60px;
         height: auto;
@@ -852,7 +849,6 @@
       font-size: 24px;
       color: var(--text-primary);
     }
-    /* Message styling (จากระบบเก่า) */
     .message {
         padding: 0;
         margin-top: 15px;
@@ -1228,8 +1224,12 @@
                 </p>
                 <form id="student-form">
                     <div class="form-group">
-                        <label for="manualStudentId">รหัสนักเรียน (5 หลัก):</label>
-                        <input type="text" id="manualStudentId" placeholder="เช่น 01234" required maxlength="5">
+                        <label for="manualStudentId">รหัสนักเรียน (Username):</label>
+                        <input type="text" id="manualStudentId" placeholder="เช่น 01234" required>
+                    </div>
+                     <div class="form-group">
+                        <label for="manualPassword">รหัสผ่าน (Password):</label>
+                        <input type="text" id="manualPassword" placeholder="เช่น 1508" required>
                     </div>
                     <div class="form-group">
                         <label for="manualFullName">ชื่อ - นามสกุล:</label>
@@ -1279,11 +1279,11 @@
             <div class="settings-section">
                 <h3><i class="fas fa-file-csv"></i> Import รายชื่อนักเรียน (CSV)</h3>
                 <p style="color: var(--text-secondary); margin-bottom: 15px;">
-                    อัปโหลดไฟล์ `.csv` ที่มีรายชื่อนักเรียนทั้งหมด
+                    อัปโหลดไฟล์ `.csv` ที่มีรายชื่อนักเรียนทั้งหมด (คอลัมน์: StudentID, Password, FullName, Grade, Room)
                     <strong style="color: var(--danger-color);">(คำเตือน: การกระทำนี้จะลบรายชื่อนักเรียนเก่าทั้งหมด)</strong>
                 </p>
                 <div class="form-group">
-                    <label for="csvFile">เลือกไฟล์ .csv (ต้องมี 4 คอลัมน์: StudentID, FullName, Grade, Room)</label>
+                    <label for="csvFile">เลือกไฟล์ .csv</label>
                     <input type="file" id="csvFile" accept=".csv" style="padding: 10px; background-color: var(--bg-tertiary); border-radius: 8px; border: 1px solid var(--border-color); width: 100%;">
                 </div>
                 <div class="btn-group">
@@ -1396,9 +1396,11 @@
 
 
   <script>
-    /* === [ JS: utils.js (ใหม่) ] === */
+    /* === [ JS: utils.js ] === */
     function showToast(message, type = 'info', title = '') {
-      const container = document.getElementById('toastContainer');
+      const container = document.createElement('div');
+      container.className = 'toast-container';
+      document.body.appendChild(container);
       const toast = document.createElement('div');
       toast.className = `toast ${type}`;
       const icons = { success: 'fa-check-circle', error: 'fa-exclamation-circle', warning: 'fa-exclamation-triangle', info: 'fa-info-circle' };
@@ -1410,10 +1412,25 @@
             </div>
             <button class="toast-close" onclick="this.parentElement.remove()"><i class="fas fa-times"></i></button>`;
       container.appendChild(toast);
-      setTimeout(() => { toast.remove(); }, 5000);
+      setTimeout(() => { 
+          toast.remove(); 
+          if(container) container.remove();
+      }, 5000);
     }
-    function showLoading() { document.getElementById('loadingOverlay').classList.add('active'); }
-    function hideLoading() { document.getElementById('loadingOverlay').classList.remove('active'); }
+    function showLoading(show = true) {
+        let overlay = document.getElementById('loadingOverlay');
+        if (show && !overlay) {
+            overlay = document.createElement('div');
+            overlay.id = 'loadingOverlay';
+            overlay.className = 'loading-overlay active';
+            overlay.innerHTML = '<div class="spinner"></div>';
+            document.body.appendChild(overlay);
+        } else if (show && overlay) {
+            overlay.classList.add('active');
+        } else if (!show && overlay) {
+            overlay.classList.remove('active');
+        }
+    }
     const storage = {
       set: (key, value) => { try { localStorage.setItem(key, JSON.stringify(value)); } catch (e) { console.error('Error saving to localStorage', e); } },
       get: (key) => { try { const item = localStorage.getItem(key); return item ? JSON.parse(item) : null; } catch (e) { console.error('Error reading from localStorage', e); return null; } },
@@ -1428,8 +1445,7 @@
         return isValid;
     }
 
-    /* === [ JS: api.js (แทนที่ด้วยระบบเก่า) ] === */
-    // 🚨 (อัปเดตแล้ว!) นี่คือ URL ใหม่ที่คุณเพิ่งให้มา 🚨
+    /* === [ JS: api.js ] === */
     const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbwwJzP_jTHieO4asdyGAJk1hYHxP5gYSIZu2XNp_myLqtAqxmMMsekofM4Xl3GguKlvCQ/exec';
     let currentAdminUser = '';
     
@@ -1454,7 +1470,7 @@
         }
     }
 
-    /* === [ JS: charts.js (แทนที่ด้วยระบบเก่า) ] === */
+    /* === [ JS: charts.js ] === */
     let voteChartInstance = null;
     function displayVoteChart(votes) {
         const ctx = document.getElementById('voteChart')?.getContext('2d');
@@ -1474,7 +1490,7 @@
         });
     }
 
-    /* === [ JS: dashboard.js / users.js (รวมและดัดแปลงจากระบบเก่า) ] === */
+    /* === [ JS: main data loading functions ] === */
     const dashboardSummaryDiv = document.getElementById('dashboard-summary');
     const gradeFilterSelect = document.getElementById('gradeFilter');
     const userSearchInput = document.getElementById('userSearchInput');
@@ -1573,7 +1589,6 @@
         }
     }
     
-    /* ⭐️ (เพิ่มใหม่) ⭐️ */
     async function loadAdminLogs() {
         showLoading();
         const result = await callApi('getAdminLogs');
@@ -1604,7 +1619,7 @@
     function displayAdminVoteResults(votes) {
         const tbody = document.querySelector('#adminVoteResultsTable tbody');
         tbody.innerHTML = '';
-        votes.sort((a, b) => b[2] - a[2]); // Sort by vote count desc
+        votes.sort((a, b) => b[2] - a[2]);
         votes.forEach(row => {
             const tr = document.createElement('tr');
             tr.dataset.designId = row[0];
@@ -1659,7 +1674,7 @@
                     <td class="voted-col">${row[5]}</td>
                     <td class="voted-col table-actions-cell">
                         <button class="action-btn edit edit-vote-button" title="Edit Vote"><i class="fas fa-edit"></i></button>
-                        <button class="action-btn delete delete-user-button" title="Delete"><i class="fas fa-trash"></i></button>
+                        <button class="action-btn warning reset-user-button" title="Reset Vote"><i class="fas fa-undo"></i></button>
                     </td>
                 `;
             }
@@ -1690,7 +1705,7 @@
         displayAdminUsers(filteredUsers);
     }
 
-    /* === [ JS: app.js (ดัดแปลง) + auth.js (รวม) + Logic เก่า ] === */
+    /* === [ JS: app.js ] === */
     document.addEventListener('DOMContentLoaded', () => {
         const loginPage = document.getElementById('login-page');
         const mainDashboard = document.getElementById('main-dashboard');
@@ -1698,7 +1713,6 @@
         const loginButton = document.getElementById('loginButton');
         const loginMessage = document.getElementById('login-message');
 
-        // --- 1. ระบบ Login (จาก auth.js + ระบบเก่า) ---
         loginForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             const username = document.getElementById('adminUsername').value;
@@ -1720,8 +1734,7 @@
                 loginMessage.className = 'message success';
                 
                 document.getElementById('admin-profile-name').textContent = result.fullName || username;
-                document.getElementById('welcome-message').textContent = `ยินดีต้อนรับคุณ ${result.fullName || username}!`;
-
+                
                 setTimeout(() => {
                     loginPage.style.display = 'none';
                     mainDashboard.style.display = 'flex';
@@ -1734,23 +1747,18 @@
             }
         });
 
-        // --- 2. ฟังก์ชันเริ่มต้นการทำงาน (จาก app.js) ---
         function initializeApp() {
-            // โหลดข้อมูลทั้งหมดเป็นครั้งแรก
             loadAllAdminData();
 
-            // Sidebar toggle
             const sidebarToggle = document.getElementById('sidebarToggle');
             const sidebar = document.getElementById('sidebar');
             if (sidebarToggle && sidebar) {
                 sidebarToggle.addEventListener('click', () => sidebar.classList.toggle('collapsed'));
             }
-            // Mobile toggle
             const mobileToggle = document.getElementById('mobileToggle');
             if (mobileToggle && sidebar) {
                 mobileToggle.addEventListener('click', () => sidebar.classList.toggle('active'));
             }
-            // Theme toggle
             const themeToggle = document.getElementById('themeToggle');
             if (themeToggle) {
                 themeToggle.addEventListener('click', () => {
@@ -1769,7 +1777,6 @@
                     if (savedTheme === 'dark') { icon.classList.remove('fa-moon'); icon.classList.add('fa-sun'); }
                 }
             }
-            // User dropdown
             const userMenu = document.querySelector('.user-menu .user-avatar');
             const userDropdown = document.getElementById('userDropdown');
             const userMenuContainer = document.querySelector('.user-menu');
@@ -1783,7 +1790,6 @@
                     if (!userMenuContainer.contains(e.target)) { userDropdown.classList.remove('active'); }
                 });
             }
-            // Logout Button
             const logoutBtn = document.getElementById('logoutBtn');
             if (logoutBtn) {
                 logoutBtn.addEventListener('click', (e) => {
@@ -1797,7 +1803,6 @@
                     loginButton.disabled = false;
                 });
             }
-            // Navigation links
             document.querySelectorAll('[data-page]').forEach(link => {
                 link.addEventListener('click', (e) => {
                     e.preventDefault();
@@ -1805,7 +1810,6 @@
                     navigateToPage(pageName);
                 });
             });
-            // Modal close buttons
             document.querySelectorAll('[data-modal]').forEach(btn => {
                 btn.addEventListener('click', () => closeModal(btn.getAttribute('data-modal')));
             });
@@ -1814,7 +1818,6 @@
                     if (e.target === modal) { modal.classList.remove('active'); }
                 });
             });
-            // Close sidebar on mobile when clicking outside
             document.addEventListener('click', (e) => {
                 if (window.innerWidth <= 768) {
                     if (sidebar && mobileToggle && !sidebar.contains(e.target) && !mobileToggle.contains(e.target)) {
@@ -1823,28 +1826,22 @@
                 }
             });
 
-            // --- 3. เชื่อมต่อ Event Listeners (จากระบบเก่า) ---
             document.getElementById('refreshDataButton').addEventListener('click', () => {
                 showToast('กำลังรีเฟรชข้อมูล...', 'info');
+                clearAllCache(); 
                 loadAllAdminData().then(() => showToast('ข้อมูลอัปเดตแล้ว!', 'success'));
             });
-            
             gradeFilterSelect.addEventListener('change', filterAndSearchUsers);
             userSearchInput.addEventListener('input', filterAndSearchUsers);
             document.getElementById('userTabs').addEventListener('click', (e) => {
                 const target = e.target.closest('.tab-btn');
                 if (!target) return;
-                
                 currentUserView = target.dataset.status;
-
                 document.querySelectorAll('#userTabs .tab-btn').forEach(btn => btn.classList.remove('active'));
                 target.classList.add('active');
-
                 filterAndSearchUsers();
             });
             
-            
-            // --- ตั้งค่าระบบ (Settings Page) ---
             
             document.getElementById('setVoteTimeButton').addEventListener('click', async () => {
                 const startTime = document.getElementById('voteStartTime').value;
@@ -1879,7 +1876,6 @@
                 });
             });
 
-            // --- (หน้า accounts-page) ---
             document.getElementById('addAdminButton').addEventListener('click', async () => {
                 const username = document.getElementById('newAdminUsername').value.trim();
                 const password = document.getElementById('newAdminPassword').value.trim();
@@ -1907,7 +1903,6 @@
                 }
             });
             
-            // --- (หน้า tools-page) ---
             document.getElementById('recalculateVotesButton').addEventListener('click', () => {
                 Swal.fire({
                     title: 'ยืนยันการคำนวณคะแนนใหม่?',
@@ -1958,23 +1953,24 @@
             document.getElementById('student-form').addEventListener('submit', async (e) => {
                 e.preventDefault();
                 const studentId = document.getElementById('manualStudentId').value.trim();
+                const password = document.getElementById('manualPassword').value.trim();
                 const fullName = document.getElementById('manualFullName').value.trim();
                 const grade = document.getElementById('manualGrade').value.trim();
                 const room = document.getElementById('manualRoom').value.trim();
 
-                if (!studentId || !fullName) {
-                    showToast('กรุณากรอกรหัสนักเรียนและชื่อ', 'warning');
+                if (!studentId || !fullName || !password) {
+                    showToast('กรุณากรอกรหัส, รหัสผ่าน, และชื่อ', 'warning');
                     return;
                 }
 
                 showLoading();
-                const result = await callApi('addOrUpdateStudent', { studentId, fullName, grade, room });
+                const result = await callApi('addOrUpdateStudent', { studentId, password, fullName, grade, room });
                 hideLoading();
 
                 if (result.status === 'success') {
                     showToast(result.message, 'success');
                     document.getElementById('student-form').reset();
-                    loadAdminData(); // โหลดข้อมูลนักเรียนใหม่
+                    loadAdminData(); 
                 } else {
                     showToast(result.message, 'error');
                 }
@@ -2039,7 +2035,6 @@
                 });
             });
             
-            // --- ข้อมูลผู้โหวต (Users Page) ---
             document.getElementById('exportUsersPdfButton').addEventListener('click', async () => {
                 showLoading();
                 const result = await callApi('exportPdf', { dataType: 'users' });
@@ -2056,13 +2051,21 @@
                 const row = targetButton.closest('tr');
                 const studentId = row.dataset.studentId;
 
-                // --- ปุ่มลบ (Smart Delete) ---
-                if (targetButton.classList.contains('delete-user-button')) {
-                    Swal.fire({ title: 'ยืนยันการลบ?', text: `คุณต้องการลบข้อมูลของนักเรียนรหัส '${studentId}' ใช่ไหม? (ระบบจะอัปเดตคะแนนโหวตให้ทันที)`, icon: 'warning', showCancelButton: true, confirmButtonColor: '#d33', cancelButtonColor: '#3085d6', confirmButtonText: 'ใช่, ลบเลย!', cancelButtonText: 'ยกเลิก'
+                // ⭐️ (อัปเดต) เปลี่ยนเป็นปุ่ม "รีเซ็ต" ⭐️
+                if (targetButton.classList.contains('reset-user-button')) {
+                    Swal.fire({ 
+                        title: 'ยืนยันการรีเซ็ต?',
+                        text: `คุณต้องการรีเซ็ตการโหวตของ '${studentId}' ใช่ไหม? (นักเรียนจะกลับไปสถานะ 'ยังไม่โหวต' และคะแนนจะถูก -1)`,
+                        icon: 'warning', 
+                        showCancelButton: true, 
+                        confirmButtonColor: '#f59e0b', // ⭐️ สีส้ม
+                        cancelButtonColor: '#3085d6', 
+                        confirmButtonText: 'ใช่, รีเซ็ตเลย!', 
+                        cancelButtonText: 'ยกเลิก'
                     }).then(async (result) => {
                         if (result.isConfirmed) {
                             showLoading();
-                            const apiResult = await callApi('deleteUser', { studentId: studentId });
+                            const apiResult = await callApi('resetUserVote', { studentId: studentId }); // ⭐️ (อัปเดต) เรียก Action ใหม่
                             hideLoading();
                             if (apiResult.status === 'success') { 
                                 showToast(apiResult.message, 'success'); 
@@ -2074,35 +2077,30 @@
                     });
                 }
 
-                // --- ⭐️ (เพิ่มใหม่) ปุ่มแก้ไขการโหวต ⭐️ ---
                 if (targetButton.classList.contains('edit-vote-button')) {
                     const studentName = row.dataset.studentName;
                     const oldVoteChoice = row.dataset.voteChoice;
 
-                    // 1. ตั้งค่าข้อมูลใน Modal
                     document.getElementById('editVoteStudentInfo').value = `${studentId} - ${studentName}`;
                     document.getElementById('editVoteStudentId').value = studentId;
                     document.getElementById('editVoteOldChoice').value = oldVoteChoice;
 
-                    // 2. สร้าง Dropdown ตัวเลือก
                     const select = document.getElementById('newVoteChoiceSelect');
-                    select.innerHTML = ''; // ล้างของเก่า
+                    select.innerHTML = ''; 
                     allVoteDesigns.forEach(design => {
                         const option = document.createElement('option');
-                        option.value = design[0]; // [0] = Design ID
-                        option.textContent = `${design[0]} - ${design[1]}`; // [1] = Design Name
+                        option.value = design[0]; 
+                        option.textContent = `${design[0]} - ${design[1]}`; 
                         if (design[0] === oldVoteChoice) {
-                            option.selected = true; // เลือกโหวตเดิมไว้
+                            option.selected = true; 
                         }
                         select.appendChild(option);
                     });
                     
-                    // 3. เปิด Modal
                     openModal('editVoteModal');
                 }
             });
             
-            // ⭐️ (หน้า accounts-page) ⭐️
             document.querySelector('#adminAccountsTable tbody').addEventListener('click', (e) => {
                 const target = e.target.closest('.delete-admin-button');
                 if(!target) return;
@@ -2117,7 +2115,6 @@
                 });
             });
 
-            // --- จัดการแบบเสื้อ (Products Page) ---
             document.getElementById('addDesignBtn').addEventListener('click', () => {
                 document.getElementById('designForm').reset();
                 document.getElementById('designModalTitle').textContent = 'เพิ่มแบบเสื้อใหม่';
@@ -2139,7 +2136,7 @@
                     document.getElementById('editDesignIdHidden').value = designId;
                     
                     document.getElementById('designIdInput').value = designId;
-                    document.getElementById('designIdInput').disabled = true; // ห้ามแก้ ID
+                    document.getElementById('designIdInput').disabled = true; 
                     document.getElementById('designNameInput').value = row.dataset.designName;
                     document.getElementById('designImageUrlInput').value = row.dataset.imageUrl;
                     
@@ -2156,7 +2153,6 @@
                 }
             });
             
-            // ฟอร์มใน Modal (สำหรับ Add/Edit)
             document.getElementById('designForm').addEventListener('submit', async (e) => {
                 e.preventDefault();
                 const isEditMode = document.getElementById('editMode').value === 'true';
@@ -2182,7 +2178,6 @@
                 }
             });
             
-            // ⭐️ (เพิ่มใหม่) ฟอร์มใน Modal (สำหรับแก้ไขการโหวต) ⭐️
             document.getElementById('editVoteForm').addEventListener('submit', async (e) => {
                 e.preventDefault();
                 const studentId = document.getElementById('editVoteStudentId').value;
@@ -2205,7 +2200,7 @@
                 if (result.status === 'success') {
                     showToast(result.message, 'success');
                     closeModal('editVoteModal');
-                    loadAllAdminData(); // ⭐️ โหลดใหม่ทั้งหมด
+                    loadAllAdminData(); 
                 } else {
                     showToast(result.message, 'error');
                 }
@@ -2213,7 +2208,6 @@
         }
     });
 
-    // --- Navigation (จาก app.js) ---
     function navigateToPage(pageName) {
       document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
       const targetPage = document.getElementById(`${pageName}-page`);
@@ -2223,7 +2217,6 @@
       const activeLink = document.querySelector(`[data-page="${pageName}"]`);
       if (activeLink) activeLink.parentElement.classList.add('active');
 
-      // โหลดข้อมูลเฉพาะเมื่อหน้านั้นถูกเปิด
       switch (pageName) {
         case 'dashboard':
           loadDashboardData();
@@ -2248,7 +2241,6 @@
           break;
       }
     }
-    // Modal Functions (จาก app.js)
     function openModal(modalId) {
         const modal = document.getElementById(modalId);
         if (modal) modal.classList.add('active');
