@@ -1,0 +1,1637 @@
+<!DOCTYPE html>
+<html lang="th" data-theme="light">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <title>ระบบโหวตเสื้อกีฬาสี</title>
+    
+    <link rel="icon" href="https://img5.pic.in.th/file/secure-sv1/IMG_602976b5b060daac652b.png" type="image/png">
+    
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
+
+    <style>
+        :root {
+            --primary-color: #6366f1;
+            --primary-dark: #4f46e5;
+            --primary-light: #818cf8;
+            --secondary-color: #8b5cf6;
+            --success-color: #10b981;
+            --warning-color: #f59e0b;
+            --danger-color: #ef4444;
+            --info-color: #3b82f6;
+            
+            --bg-primary: #ffffff;
+            --bg-secondary: #f9fafb; 
+            --bg-tertiary: #f3f4f6;
+
+            --text-primary: #111827;
+            --text-secondary: #6b7280;
+            --text-tertiary: #9ca3af;
+            --border-color: #e5e7eb;
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            --radius-md: 8px;
+            --radius-lg: 12px;
+            --transition: all 0.3s ease;
+            
+            --custom-pink-dark: #D81B60;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Kanit', 'Inter', sans-serif;
+            background: var(--bg-secondary);
+            background-attachment: fixed;
+            color: var(--text-primary);
+            line-height: 1.6;
+            padding: 0;
+        }
+        
+        #voter-login-page {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .login-box {
+            width: 100%;
+            max-width: 450px;
+            padding: 40px;
+            background-color: var(--bg-primary);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-lg);
+            border: 1px solid var(--border-color);
+        }
+        .login-header {
+          text-align: center;
+          margin-bottom: 30px;
+        }
+        .login-header img {
+            width: 70px;
+            margin-bottom: 15px;
+        }
+        .login-header h2 {
+          font-size: 1.8em;
+          color: var(--text-primary);
+        }
+
+        .dashboard-container {
+            display: flex;
+            height: 100vh; 
+            overflow: hidden;
+        }
+        
+        .sidebar {
+            width: 260px;
+            background-color: var(--bg-primary);
+            border-right: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            transition: var(--transition);
+            position: relative;
+            z-index: 100;
+        }
+        .sidebar-header {
+            padding: 20px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+        .sidebar-header img { height: 28px; width: 28px; }
+
+        .sidebar-nav {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px 0;
+        }
+        .sidebar-nav ul {
+            list-style: none;
+        }
+        .sidebar-nav li {
+            margin-bottom: 5px;
+        }
+        .sidebar-nav a {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 20px;
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: var(--transition);
+            border-left: 3px solid transparent;
+        }
+        .sidebar-nav a:hover {
+            background-color: var(--bg-secondary);
+            color: var(--text-primary);
+        }
+        .sidebar-nav li.active a {
+            background-color: rgba(99, 102, 241, 0.1);
+            color: var(--primary-color);
+            border-left-color: var(--primary-color);
+        }
+        .sidebar-nav i {
+            font-size: 18px;
+            width: 20px;
+        }
+        
+        .sidebar-footer {
+            padding: 20px;
+            border-top: 1px solid var(--border-color);
+        }
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .user-profile i { 
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: var(--bg-tertiary);
+            color: var(--primary-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            flex-shrink: 0;
+        }
+        .user-info {
+            display: flex;
+            flex-direction: column;
+            overflow: hidden; 
+        }
+        .user-name {
+            font-weight: 600;
+            font-size: 14px;
+            white-space: nowrap; 
+            text-overflow: ellipsis; 
+            overflow: hidden; 
+        }
+        .user-role {
+            font-size: 12px;
+            color: var(--text-tertiary);
+        }
+
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        .navbar {
+            height: 70px;
+            background-color: var(--bg-primary);
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 30px;
+            flex-shrink: 0; 
+        }
+        .mobile-toggle {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 20px;
+            color: var(--text-primary);
+            cursor: pointer;
+        }
+        .navbar-right {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        
+        .announcement-bar {
+            flex: 1;
+            overflow: hidden;
+            white-space: nowrap;
+            margin: 0 20px;
+        }
+        .scrolling-text {
+            display: inline-block;
+            padding-left: 100%;
+            animation: scroll-left 25s linear infinite;
+            font-weight: 500;
+            color: var(--custom-pink-dark);
+        }
+        @keyframes scroll-left {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-100%); }
+        }
+
+        .content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 30px;
+            background-color: var(--bg-secondary);
+        }
+        .page {
+            display: none;
+        }
+        .page.active {
+            display: block;
+            animation: pageFadeIn 0.5s ease;
+        }
+        @keyframes pageFadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .card {
+            background: var(--bg-primary);
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--border-color);
+            padding: 24px;
+            margin-bottom: 24px;
+        }
+        .card.locked {
+            opacity: 0.6;
+            pointer-events: none;
+            filter: grayscale(50%);
+        }
+        .card.hidden {
+            display: none;
+        }
+        .card.visible {
+            display: block;
+        }
+        
+        .card-header {
+            font-size: 1.5em;
+            font-weight: 600;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--primary-color);
+        }
+        .card-header i {
+            font-size: 0.9em;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-group label {
+            font-weight: 500;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+            display: block;
+            font-size: 1em;
+        }
+        .form-group input[type="text"],
+        .form-group input[type="password"],
+        .form-group textarea,
+        .form-group input[type="number"] {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            font-size: 1em;
+            box-sizing: border-box;
+            transition: all 0.3s ease;
+            font-family: 'Kanit', 'Inter', sans-serif;
+            background-color: var(--bg-tertiary);
+        }
+        .form-group input[type="text"]:focus,
+        .form-group input[type="password"]:focus,
+        .form-group textarea:focus,
+        .form-group input[type="number"]:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+            outline: none;
+            background-color: #ffffff;
+        }
+        .form-group input[readonly] {
+            background-color: #e9ecef;
+            cursor: not-allowed;
+            color: var(--text-secondary);
+        }
+        
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: var(--radius-md);
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            text-decoration: none;
+            width: 100%;
+            max-width: 400px;
+        }
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.2);
+        }
+        .btn-primary:hover {
+            background-color: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(99, 102, 241, 0.3);
+        }
+        
+        .btn-success {
+            background-color: var(--success-color);
+            color: white;
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.2);
+        }
+        .btn-success:hover {
+            background-color: #059669;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(16, 185, 129, 0.3);
+        }
+        .btn:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+            opacity: 0.7;
+        }
+        
+        .message {
+            padding: 0;
+            margin-top: 15px;
+            margin-bottom: 0; 
+            font-weight: 500;
+            font-size: 0.95em;
+            text-align: center;
+        }
+        .message:not(:empty) { padding: 10px 15px; border-radius: 8px; margin-top: 15px; }
+        .message.success { background-color: #d4edda; color: #155724; }
+        .message.error { background-color: #f8d7da; color: #721c24; }
+        .message.loading { background-color: #e2e3e5; color: #383d41; }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+        .stat-box {
+            background-color: var(--bg-primary);
+            padding: 24px;
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-sm);
+            display: flex;
+            gap: 16px;
+            border: 1px solid var(--border-color);
+        }
+        .stat-box .stat-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: white;
+            flex-shrink: 0;
+        }
+        .stat-icon.green { background: linear-gradient(135deg, #10b981 0%, #059669 100%); }
+        .stat-icon.blue { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+        .stat-icon.orange { background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); }
+        
+        .stat-box .stat-content h3 {
+            margin: 0 0 8px 0;
+            font-size: 1em;
+            color: var(--text-secondary);
+        }
+        .stat-box .stat-content p {
+            margin: 0;
+            font-size: 1.8em;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+        
+        .status-message {
+            padding: 15px;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 1.1em;
+            text-align: center;
+        }
+        .status-message.open { background-color: #d4edda; color: #155724; }
+        .status-message.closed { background-color: #f8d7da; color: #721c24; }
+        .status-message i { margin-right: 10px; }
+        
+        #countdown-timer {
+            font-size: 1.4em;
+            font-weight: bold;
+            color: var(--primary-color);
+            margin-top: 15px;
+            text-align: center;
+        }
+        #countdown-timer span { color: var(--custom-pink-dark); }
+
+        .design-options {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 15px;
+        }
+        .design-card {
+            position: relative;
+        }
+        .design-card input[type="radio"] {
+            display: none;
+        }
+        .design-card .design-label {
+            display: block;
+            background-color: var(--bg-tertiary);
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            text-align: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            overflow: hidden; 
+        }
+        .design-card .design-label:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-md);
+            border-color: var(--primary-color);
+        }
+        .design-card img {
+            max-width: 100%;
+            height: 180px;
+            object-fit: cover;
+            display: block;
+            transition: transform 0.3s ease;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .design-info {
+            padding: 15px;
+        }
+        .design-card .design-name {
+            font-size: 1.1em;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 2px;
+        }
+        .design-card .design-id {
+            font-size: 0.9em;
+            color: var(--text-secondary);
+        }
+        .design-card .check-icon {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            width: 30px;
+            height: 30px;
+            background-color: var(--primary-color);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            transform: scale(0);
+            transition: all 0.3s ease;
+        }
+        .design-card input[type="radio"]:checked + .design-label .check-icon {
+            transform: scale(1);
+        }
+        .design-card input[type="radio"]:checked + .design-label {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.3), var(--shadow-md);
+        }
+        
+        .skeleton-card {
+            background-color: #f7f7f7;
+            border: 2px solid #f0f0f0;
+            border-radius: 12px;
+            padding: 20px;
+        }
+        .skeleton-img {
+            height: 180px; 
+            border-radius: 8px;
+            margin-bottom: 15px;
+            background-color: #e0e0e0;
+            animation: pulse 1.5s infinite;
+        }
+        .skeleton-text {
+            height: 25px;
+            width: 85%;
+            margin: 0 auto 5px;
+            border-radius: 4px;
+            background-color: #e0e0e0;
+            animation: pulse 1.5s infinite;
+        }
+        .skeleton-subtext {
+            height: 18px;
+            width: 50%;
+            margin: 0 auto;
+            border-radius: 4px;
+            background-color: #e0e0e0;
+            animation: pulse 1.5s infinite;
+        }
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.6; }
+            100% { opacity: 1; }
+        }
+
+        .chart-container {
+            width: 100%; 
+            max-width: 700px;
+            height: 400px;
+            margin: 25px auto;
+        }
+        .vote-results {
+            margin-top: 30px;
+            text-align: left;
+        }
+        .vote-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px dashed var(--border-color);
+            font-size: 1.05em;
+        }
+        .vote-item:last-child { border-bottom: none; }
+        .vote-item span:first-child { font-weight: 500; color: var(--text-primary); }
+        .vote-count { font-weight: bold; color: var(--text-primary); font-size: 1.2em; }
+        
+        /* ⭐️ (ใหม่) สไตล์หน้า Help Page ⭐️ */
+        .faq-item {
+            margin-bottom: 20px;
+        }
+        .faq-item h4 {
+            font-size: 1.2em;
+            color: var(--text-primary);
+            margin-bottom: 5px;
+        }
+        .faq-item p {
+            color: var(--text-secondary);
+            padding-left: 20px;
+        }
+
+
+        .footer {
+            margin-top: 30px;
+            padding: 25px;
+            text-align: center;
+            color: var(--text-secondary);
+            font-size: 0.9em;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        .footer p { margin: 0; }
+        .footer a { color: var(--primary-color); text-decoration: none; font-weight: 500; }
+        .footer a:hover { text-decoration: underline; }
+        
+        .social-icon { 
+            font-size: 1.5em; 
+            color: #3b5998; 
+            vertical-align: middle; 
+            margin-left: 10px; 
+            opacity: 0.8; 
+            transition: opacity 0.3s ease; 
+        }
+        .social-icon.fa-instagram {
+             color: #E1306C; 
+        }
+        .social-icon:hover { opacity: 1; }
+
+        /* ⭐️ (อัปเดต) Sidebar สำหรับ Mobile (ซ่อนไว้) ⭐️ */
+        .sidebar-nav-mobile {
+            position: fixed;
+            top: 0;
+            left: -300px;
+            width: 300px;
+            height: 100vh;
+            background: var(--bg-primary);
+            box-shadow: var(--shadow-lg);
+            z-index: 1100;
+            transition: left 0.3s ease;
+            display: flex;
+            flex-direction: column;
+        }
+        .sidebar-nav-mobile.active {
+            left: 0;
+        }
+        .sidebar-nav-mobile .sidebar-header {
+            border-bottom: 1px solid var(--border-color);
+        }
+        .sidebar-nav-mobile .sidebar-footer {
+            display: block; 
+            margin-top: auto;
+        }
+
+        .page-header p {
+          color: var(--text-secondary);
+          font-size: 1.1em;
+          margin-top: -5px;
+        }
+
+
+        /* === [ 13. Responsive ] === */
+        @media (max-width: 920px) {
+            .sidebar {
+                display: none; 
+            }
+            .mobile-toggle {
+                display: block; 
+            }
+            .navbar {
+                padding: 0 15px;
+                box-shadow: var(--shadow-sm);
+            }
+            .navbar-right {
+                gap: 10px;
+            }
+            /* ⭐️ (ใหม่) ซ่อนข้อความปุ่ม Logout ในจอมือถือ */
+            .navbar-right .logout-text {
+                display: none;
+            }
+            
+            .announcement-bar {
+                display: none; 
+            }
+            .content { padding: 15px; }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+             .design-options {
+                grid-template-columns: 1fr 1fr;
+             }
+        }
+        
+        @media (max-width: 600px) {
+             .design-options {
+                grid-template-columns: 1fr;
+             }
+             .login-box {
+                padding: 20px;
+             }
+             .stats-grid {
+                grid-template-columns: 1fr;
+             }
+        }
+    </style>
+
+</head>
+
+<body>
+    
+    <div id="voter-login-page">
+        <div class="login-box">
+            <div class="login-header">
+                <img src="https://img5.pic.in.th/file/secure-sv1/IMG_60290ec6a71fd92a13d0.png" alt="โลโก้โรงเรียน">
+                <h2>ระบบโหวตเสื้อกีฬาสี</h2>
+            </div>
+            <form id="voterLoginForm">
+                <div class="form-group">
+                    <label for="studentUsername">Username (รหัสนักเรียน):</label>
+                    <input type="text" id="studentUsername" required placeholder="เช่น 01234">
+                </div>
+                <div class="form-group">
+                    <label for="studentPassword">Password (รหัสลับ):</label>
+                    <input type="password" id="studentPassword" required placeholder="กรอกรหัสผ่านของคุณ">
+                </div>
+                <button type="submit" class="btn btn-primary" id="voterLoginButton" style="width: 100%;">
+                    <i class="fas fa-sign-in-alt"></i> เข้าสู่ระบบ
+                </button>
+                <p id="voter-login-message" class="message"></p>
+            </form>
+        </div>
+    </div>
+    
+    <div id="main-voting-area" class="dashboard-container" style="display: none;">
+
+        <aside class="sidebar-nav-mobile" id="sidebar-mobile-nav">
+        </aside>
+    
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <img src="https://img5.pic.in.th/file/secure-sv1/IMG_60290ec6a71fd92a13d0.png" alt="Logo" class="logo">
+                <span>ระบบโหวต</span>
+            </div>
+        
+            <nav class="sidebar-nav">
+                <ul>
+                    <li class="active">
+                        <a href="#vote" data-page="vote">
+                            <i class="fas fa-vote-yea"></i>
+                            <span>ลงคะแนนโหวต</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#stats" data-page="stats">
+                            <i class="fas fa-chart-line"></i>
+                            <span>สถิติผู้ใช้สิทธิ์</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#results" data-page="results">
+                            <i class="fas fa-chart-bar"></i>
+                            <span>ผลการโหวต</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#password" data-page="password">
+                            <i class="fas fa-key"></i>
+                            <span>เปลี่ยนรหัสผ่าน</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#feedback" data-page="feedback">
+                            <i class="fas fa-comment-dots"></i>
+                            <span>ติดต่อ/เสนอแนะ</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#help" data-page="help">
+                            <i class="fas fa-question-circle"></i>
+                            <span>คู่มือการใช้งาน</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        
+            <div class="sidebar-footer">
+                <div class="user-profile">
+                    <i class="fas fa-user-graduate"></i>
+                    <div class="user-info">
+                        <span class="user-name" id="user-profile-name">...</span>
+                        <span class="user-role" id="user-profile-id">...</span>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <main class="main-content">
+            <header class="navbar">
+                <button class="mobile-toggle" id="mobileToggle">
+                    <i class="fas fa-bars"></i>
+                </button>
+                
+                <div class="announcement-bar" id="announcement-bar" style="display: none;">
+                    <p class="scrolling-text"></p>
+                </div>
+
+                <div class="navbar-right">
+                    <button class="btn btn-danger" id="logoutButton" style="width: auto; padding: 8px 15px; font-size: 14px;">
+                        <i class="fas fa-sign-out-alt"></i>
+                        <span class="logout-text">ออกจากระบบ</span>
+                    </button>
+                </div>
+            </header>
+
+            <div class="content" id="pageContent">
+
+                <div class="page active" id="vote-page">
+                    <form id="voteForm">
+                        <div id="verification-section" class="card locked">
+                            <div class="card-header">
+                                <i class="fas fa-user-check"></i>
+                                <span>ข้อมูลผู้ใช้งาน</span>
+                            </div>
+                            <div class="form-group">
+                                <label for="studentIdDisplay">Username:</label>
+                                <input type="text" id="studentIdDisplay" name="studentIdDisplay" readonly>
+                            </div>
+                            <div class="form-group">
+                                <label for="fullName">ชื่อ - นามสกุล :</label>
+                                <input type="text" id="fullName" name="fullName" readonly>
+                            </div>
+                            <div class="form-group">
+                                <label for="grade">ระดับชั้น :</label>
+                                <input type="text" id="grade" name="grade" readonly>
+                            </div>
+                            <div class="form-group">
+                                <label for="room">ห้อง :</label>
+                                <input type="text" id="room" name="room" readonly>
+                            </div>
+                        </div>
+                        
+                        <div id="voted-confirmation" class="card hidden" style="background-color: var(--bg-tertiary); text-align: center;">
+                            <i class="fas fa-check-circle" style="font-size: 3em; color: var(--success-color);"></i>
+                            <h2 style="margin-top: 15px;">คุณได้ลงคะแนนแล้ว</h2>
+                            <p style="font-size: 1.1em; color: var(--text-secondary);">คุณได้ลงคะแนนให้กับ: <strong id="voted-choice-display" style="color: var(--text-primary);">...</strong></p>
+                        </div>
+
+                        <div id="vote-options-section" class="card hidden">
+                            <div class="card-header">
+                                <i class="fas fa-tshirt"></i>
+                                <span>เลือกแบบเสื้อที่คุณชื่นชอบ</span>
+                            </div>
+                            <div id="design-options" class="design-options">
+                                <div class="skeleton-card"><div class="skeleton-img"></div><div class="skeleton-text"></div><div class="skeleton-subtext"></div></div>
+                                <div class="skeleton-card"><div class="skeleton-img"></div><div class="skeleton-text"></div><div class="skeleton-subtext"></div></div>
+                                <div class="skeleton-card"><div class="skeleton-img"></div><div class="skeleton-text"></div><div class="skeleton-subtext"></div></div>
+                            </div>
+
+                            <button type="submit" id="submitVoteButton" class="btn btn-success" style="max-width: 100%; margin-top: 25px;" disabled>
+                                <i class="fas fa-check-circle"></i> ยืนยันการโหวต
+                            </button>
+                        </div>
+                    </form>
+                </div>
+                
+                <div class="page" id="stats-page">
+                    <div id="vote-status-box" class="card">
+                        <div class="card-header"><i class="fas fa-bullhorn"></i> สถานะ</div>
+                        <div id="voting-status" class="status-message"></div>
+                        <div id="countdown-timer" style="display: none;"></div>
+                    </div>
+
+                    <div id="stats-dashboard" class="stats-grid card" style="display: none; padding: 20px;">
+                        <div class="stat-box">
+                            <div class="stat-icon green"><i class="fas fa-user-check"></i></div>
+                            <div class="stat-content">
+                                <h3>ผู้มาใช้สิทธิ์</h3>
+                                <p id="stat-voted-count">... / ...</p>
+                            </div>
+                        </div>
+                        <div class="stat-box">
+                             <div class="stat-icon blue"><i class="fas fa-chart-pie"></i></div>
+                            <div class="stat-content">
+                                <h3>เปอร์เซ็นต์</h3>
+                                <p id="stat-turnout">...%</p>
+                            </div>
+                        </div>
+                        <div class="stat-box">
+                             <div class="stat-icon orange"><i class="fas fa-trophy"></i></div>
+                            <div class="stat-content">
+                                <h3>ระดับชั้นที่โหวตสูงสุด</h3>
+                                <p id="stat-top-grade" style="font-size: 1.4em;">...</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="page" id="results-page">
+                    <div id="results-section" class="card">
+                        <div class="card-header">
+                             <i class="fas fa-chart-bar"></i>
+                             <span>ผลการโหวต</span>
+                        </div>
+                        <div id="results-content-wrapper">
+                            <div class="chart-container">
+                                <canvas id="voteChart"></canvas>
+                            </div>
+                            <p id="chart-message" class="message"></p>
+                            <div id="vote-results" class="vote-results">
+                                <p>กำลังโหลดผลโหวต...</p>
+                            </div>
+                        </div>
+                        <div id="results-placeholder" style="display: none; text-align: center; padding: 40px;">
+                            <i class="fas fa-lock" style="font-size: 3em; color: var(--text-tertiary);"></i>
+                            <h2 style="margin-top: 20px; color: var(--text-secondary);">จะประกาศผลคะแนนหลังจากปิดระบบโหวตแล้ว</h2>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="page" id="password-page">
+                    <div class="card">
+                        <div class="card-header"><i class="fas fa-key"></i> เปลี่ยนรหัสผ่าน</div>
+                        <form id="passwordChangeForm" style="max-width: 500px;">
+                            <div class="form-group">
+                                <label for="oldPassword">รหัสผ่านเดิม:</label>
+                                <input type="password" id="oldPassword" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="newPassword">รหัสผ่านใหม่:</label>
+                                <input type="password" id="newPassword" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="confirmNewPassword">ยืนยันรหัสผ่านใหม่:</label>
+                                <input type="password" id="confirmNewPassword" required>
+                            </div>
+                            <button type="submit" class="btn btn-primary" style="width: 100%;">
+                                <i class="fas fa-save"></i> บันทึกรหัสผ่านใหม่
+                            </button>
+                            <p id="password-change-msg" class="message"></p>
+                        </form>
+                    </div>
+                </div>
+                
+                <div class="page" id="feedback-page">
+                     <div class="card">
+                        <div class="card-header"><i class="fas fa-comment-dots"></i> ติดต่อ / เสนอแนะ</div>
+                        <form id="feedbackForm" style="max-width: 600px;">
+                            <div class="form-group">
+                                <label for="feedbackText">ข้อความถึงสภานักเรียน:</label>
+                                <textarea id="feedbackText" rows="6" required placeholder="พิมพ์ข้อเสนอแนะ หรือปัญหาที่พบ..."></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-primary" style="width: 100%;">
+                                <i class="fas fa-paper-plane"></i> ส่งข้อความ
+                            </button>
+                            <p id="feedback-msg" class="message"></p>
+                        </form>
+                    </div>
+                </div>
+                
+                <div class="page" id="help-page">
+                     <div class="card">
+                        <div class="card-header"><i class="fas fa-question-circle"></i> คู่มือการใช้งาน</div>
+                        <div class="faq-item">
+                            <h4>Q: Username และ Password คืออะไร?</h4>
+                            <p>A: Username คือ **รหัสนักเรียน 5 หลัก** ของคุณ (เช่น 01234) และ Password คือ **รหัสลับส่วนตัว** ที่คุณได้รับ (เช่น วันเดือนเกิด 4 หลัก หรือ 4 ตัวท้ายบัตร ปชช.)</p>
+                        </div>
+                         <div class="faq-item">
+                            <h4>Q: ลืมรหัสผ่านทำอย่างไร?</h4>
+                            <p>A: กรุณาติดต่อสภานักเรียน หรือ อาจารย์ผู้ดูแลระบบ [คุณสามารถเพิ่มชื่อผู้ติดต่อได้ที่นี่]</p>
+                        </div>
+                        <div class="faq-item">
+                            <h4>Q: เปลี่ยนรหัสผ่านได้ไหม?</h4>
+                            <p>A: สามารถเปลี่ยนได้ที่เมนู "เปลี่ยนรหัสผ่าน" โดยคุณต้องทราบรหัสผ่านเดิมของคุณก่อน</p>
+                        </div>
+                        <div class="faq-item">
+                            <h4>Q: ทำไมฉันถึงโหวตไม่ได้?</h4>
+                            <p>A: อาจเป็นเพราะคุณล็อกอินผิด, โหวตไปแล้ว, หรือระบบปิดรับการโหวตแล้ว กรุณาตรวจสอบสถานะที่หน้า "สถิติผู้ใช้สิทธิ์"</p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </main>
+    </div>
+
+
+    <script>
+        const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbwwJzP_jTHieO4asdyGAJk1hYHxP5gYSIZu2XNp_myLqtAqxmMMsekofM4Xl3GguKlvCQ/exec';
+        
+        // --- ⭐️ DOM Variables ⭐️ ---
+        const voterLoginPage = document.getElementById('voter-login-page');
+        const mainVotingArea = document.getElementById('main-voting-area');
+        const voterLoginForm = document.getElementById('voterLoginForm');
+        const voterLoginButton = document.getElementById('voterLoginButton');
+        const voterLoginMessage = document.getElementById('voter-login-message');
+        
+        const voteForm = document.getElementById('voteForm');
+        const verificationSection = document.getElementById('verification-section');
+        const voteOptionsSection = document.getElementById('vote-options-section');
+        const statsDashboard = document.getElementById('stats-dashboard');
+        
+        const designOptionsDiv = document.getElementById('design-options');
+        
+        const studentUsernameInput = document.getElementById('studentUsername');
+        const studentPasswordInput = document.getElementById('studentPassword');
+        
+        const studentIdDisplay = document.getElementById('studentIdDisplay'); 
+        const fullNameInput = document.getElementById('fullName');
+        const gradeInput = document.getElementById('grade');
+        const roomInput = document.getElementById('room');
+        const submitVoteButton = document.getElementById('submitVoteButton');
+        
+        const voteStatusBox = document.getElementById('vote-status-box');
+        const votingStatusDiv = document.getElementById('voting-status');
+        const countdownTimerDiv = document.getElementById('countdown-timer');
+        
+        const resultsSection = document.getElementById('results-section');
+        const resultsContentWrapper = document.getElementById('results-content-wrapper');
+        const resultsPlaceholder = document.getElementById('results-placeholder');
+        const voteResultsDiv = document.getElementById('vote-results');
+        const chartMessageDiv = document.getElementById('chart-message');
+
+        const mobileToggle = document.getElementById('mobileToggle');
+        const sidebar = document.getElementById('sidebar');
+        const sidebarMobileNav = document.getElementById('sidebar-mobile-nav');
+        const logoutButton = document.getElementById('logoutButton');
+        
+        const passwordChangeForm = document.getElementById('passwordChangeForm');
+        const feedbackForm = document.getElementById('feedbackForm');
+
+        let voteChartInstance = null;
+        let countdownInterval;
+        let currentVerifiedStudentId = null; 
+        let currentVerifiedStudentName = null; 
+        let allVoteDesigns = []; // ⭐️ (ใหม่)
+
+        // --- ⭐️ Utility Functions ⭐️ ---
+        function showToast(message, type = 'info', title = '') {
+            const container = document.createElement('div');
+            container.className = 'toast-container';
+            document.body.appendChild(container);
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            const icons = { success: 'fa-check-circle', error: 'fa-exclamation-circle', warning: 'fa-exclamation-triangle', info: 'fa-info-circle' };
+            toast.innerHTML = `
+                  <i class="fas ${icons[type]}"></i>
+                  <div class="toast-content">
+                      ${title ? `<div class="toast-title">${title}</div>` : ''}
+                      <div class="toast-message">${message}</div>
+                  </div>
+                  <button class="toast-close" onclick="this.parentElement.remove()"><i class="fas fa-times"></i></button>`;
+            container.appendChild(toast);
+            setTimeout(() => { 
+                toast.remove();
+                if(container) container.remove();
+             }, 5000);
+        }
+
+        function showLoading(show = true) {
+            let overlay = document.getElementById('loadingOverlay');
+            if (show && !overlay) {
+                overlay = document.createElement('div');
+                overlay.id = 'loadingOverlay';
+                overlay.className = 'loading-overlay active';
+                overlay.innerHTML = '<div class="spinner"></div>';
+                document.body.appendChild(overlay);
+            } else if (show && overlay) {
+                overlay.classList.add('active');
+            } else if (!show && overlay) {
+                overlay.classList.remove('active');
+            }
+        }
+
+        function showSkeletonLoader() {
+            designOptionsDiv.innerHTML = `
+                <div class="skeleton-card"><div class="skeleton-img"></div><div class="skeleton-text"></div><div class="skeleton-subtext"></div></div>
+                <div class="skeleton-card"><div class="skeleton-img"></div><div class="skeleton-text"></div><div class="skeleton-subtext"></div></div>
+                <div class="skeleton-card"><div class="skeleton-img"></div><div class="skeleton-text"></div><div class="skeleton-subtext"></div></div>
+            `;
+        }
+        
+        // --- ⭐️ API Call Function ⭐️ ---
+        async function callApi(action, data = {}) {
+            if (currentVerifiedStudentId) {
+                data.username = currentVerifiedStudentId;
+            }
+            
+            try {
+                const response = await fetch(WEB_APP_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                    body: JSON.stringify({ action, ...data }),
+                });
+                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                return await response.json();
+            } catch (error) {
+                console.error('Error calling API:', error);
+                showToast('เกิดข้อผิดพลาดในการเชื่อมต่อ: ' + error.message, 'error');
+                return { status: 'error', message: 'เกิดข้อผิดพลาดในการเชื่อมต่อ: ' + error.message };
+            }
+        }
+
+        // --- ⭐️ Login & Logout Logic ⭐️ ---
+        voterLoginForm.addEventListener('submit', async (event) => {
+            event.preventDefault();
+            const username = studentUsernameInput.value.trim();
+            const password = studentPasswordInput.value.trim();
+            
+            if (!username || !password) {
+                voterLoginMessage.textContent = '⚠️ กรุณากรอก Username และ Password';
+                voterLoginMessage.className = 'message error';
+                return;
+            }
+
+            voterLoginMessage.textContent = 'กำลังตรวจสอบข้อมูล...';
+            voterLoginMessage.className = 'message loading';
+            voterLoginButton.disabled = true;
+            
+            const result = await callApi('getStudentDetails', { studentId: username, password: password });
+            
+            voterLoginButton.disabled = false;
+
+            if (result.status === 'success') {
+                voterLoginMessage.textContent = '✅ ยืนยันตัวตนสำเร็จ!';
+                voterLoginMessage.className = 'message success';
+                
+                sessionStorage.setItem('studentId', username);
+                sessionStorage.setItem('fullName', result.fullName);
+                sessionStorage.setItem('grade', result.grade);
+                sessionStorage.setItem('room', result.room);
+                sessionStorage.setItem('hasVoted', result.hasVoted); // ⭐️ (ใหม่)
+                sessionStorage.setItem('voteChoice', result.voteChoice); // ⭐️ (ใหม่)
+                
+                setTimeout(() => {
+                    voterLoginPage.style.display = 'none';
+                    mainVotingArea.style.display = 'flex';
+                    initializeMainApp(); 
+                }, 1000);
+
+            } else {
+                voterLoginMessage.textContent = '❌ ' + result.message;
+                voterLoginMessage.className = 'message error';
+            }
+        });
+
+        function handleLogout() {
+             Swal.fire({
+                title: 'ออกจากระบบ',
+                text: "คุณต้องการออกจากระบบใช่หรือไม่?",
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                confirmButtonText: 'ออกจากระบบ',
+                cancelButtonText: 'ยกเลิก'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    sessionStorage.clear();
+                    location.reload();
+                }
+            });
+        }
+
+        // --- ⭐️ Main App Logic ⭐️ ---
+        
+        function initializeMainApp() {
+            const isLoggedIn = populateUserInfoFromSession();
+            if (!isLoggedIn) return; 
+
+            loadInitialData();
+            bindEventListeners();
+        }
+        
+        function populateUserInfoFromSession() {
+            const studentId = sessionStorage.getItem('studentId');
+            if (!studentId) {
+                voterLoginPage.style.display = 'flex';
+                mainVotingArea.style.display = 'none';
+                return false;
+            }
+            
+            currentVerifiedStudentId = studentId;
+            currentVerifiedStudentName = sessionStorage.getItem('fullName');
+            
+            studentIdDisplay.value = studentId;
+            fullNameInput.value = currentVerifiedStudentName;
+            gradeInput.value = sessionStorage.getItem('grade');
+            roomInput.value = sessionStorage.getItem('room');
+            
+            const desktopSidebar = document.getElementById('sidebar');
+            sidebarMobileNav.innerHTML = desktopSidebar.innerHTML;
+            
+            document.querySelectorAll('#user-profile-name').forEach(el => el.textContent = currentVerifiedStudentName);
+            document.querySelectorAll('#user-profile-id').forEach(el => el.textContent = studentId);
+            
+            return true;
+        }
+
+        async function loadInitialData() {
+            showSkeletonLoader();
+            validateForm();
+            
+            const result = await callApi('getVotePageData');
+
+            if (result.status !== 'success') {
+                Swal.fire('เกิดข้อผิดพลาด', 'ไม่สามารถโหลดข้อมูลหน้าโหวตได้: ' + result.message, 'error');
+                return;
+            }
+
+            loadAnnouncement(result.announcement); 
+            loadPublicStats(result.stats); 
+            
+            if (result.results) {
+                allVoteDesigns = result.results; // ⭐️ (ใหม่)
+                displayDesignOptions(result.results);
+                displayVoteResults(result.results);
+                displayVoteChart(result.results);
+            } else {
+                designOptionsDiv.innerHTML = `<p class="message error">ไม่สามารถโหลดแบบเสื้อได้</p>`;
+            }
+
+            checkVotingStatus(result.voteTime); 
+        }
+
+        function bindEventListeners() {
+            document.querySelectorAll('.sidebar-nav').forEach(nav => {
+                nav.addEventListener('click', (e) => {
+                    const link = e.target.closest('a');
+                    if (link && link.dataset.page) {
+                        e.preventDefault();
+                        const pageName = link.dataset.page;
+                        navigateToPage(pageName);
+                        sidebarMobileNav.classList.remove('active');
+                    }
+                });
+            });
+
+             mobileToggle.addEventListener('click', () => {
+                sidebarMobileNav.classList.toggle('active');
+             });
+             document.addEventListener('click', (e) => {
+                if (window.innerWidth <= 920) {
+                    if (sidebarMobileNav && mobileToggle && !sidebarMobileNav.contains(e.target) && !mobileToggle.contains(e.target)) {
+                        sidebarMobileNav.classList.remove('active');
+                    }
+                }
+            });
+
+            logoutButton.addEventListener('click', handleLogout);
+            
+            sidebarMobileNav.querySelectorAll('.sidebar-footer .user-profile').forEach(el => {
+                el.style.cursor = 'pointer';
+                el.addEventListener('click', handleLogout);
+            });
+
+
+            // --- Form Listeners ---
+            voteForm.addEventListener('submit', handleVoteSubmit);
+            designOptionsDiv.addEventListener('change', () => validateForm());
+            
+            passwordChangeForm.addEventListener('submit', handleChangePassword);
+            feedbackForm.addEventListener('submit', handleSubmitFeedback);
+        }
+        
+        async function handleVoteSubmit(event) {
+            event.preventDefault();
+            
+            const studentId = currentVerifiedStudentId; 
+            const voteChoiceElement = document.querySelector('input[name="voteChoice"]:checked');
+            
+            if (!voteChoiceElement || !studentId) {
+                showToast('ข้อมูลการยืนยันตัวตนไม่ถูกต้อง กรุณารีเฟรช', 'error');
+                return;
+            }
+            
+            const voteChoiceValue = voteChoiceElement.value;
+            const voteChoiceName = document.querySelector(`label[for="design-${voteChoiceValue}"] .design-name`).textContent.trim();
+
+            Swal.fire({
+                title: 'ยืนยันข้อมูลการโหวต',
+                html: `
+                    <p style="font-size: 1.1em; margin-bottom: 15px;">โปรดตรวจสอบข้อมูลก่อนยืนยันการโหวต</p>
+                    <div style="text-align: left; margin: 0 auto; padding: 10px 15px; background-color: #f8f9fa; border-radius: 8px; border: 1px solid #eee; display: inline-block;">
+                        <strong>Username :</strong> ${studentId}<br>
+                        <strong>ชื่อ :</strong> ${fullNameInput.value}<br>
+                        <strong>คุณเลือก :</strong> <span style="font-weight: 600; font-size: 1.1em; color: var(--custom-pink-dark);">${voteChoiceName}</span>
+                    </div>
+                `,
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#28a745',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: 'ยืนยันการโหวต',
+                cancelButtonText: 'แก้ไขข้อมูล'
+            }).then(async (result) => {
+                if (result.isConfirmed) {
+                    showLoading();
+                    const data = { studentId: studentId, voteChoice: voteChoiceValue };
+                    const apiResult = await callApi('registerAndVote', data);
+                    showLoading(false);
+
+                    if (apiResult.status === 'success') {
+                        confetti({ particleCount: 150, spread: 180, origin: { y: 0.6 } });
+                        
+                        // 1. อัปเดตสถานะในเครื่องว่า "โหวตแล้ว" (เพื่อให้หน้าเว็บรู้ว่าโหวตแล้วโดยไม่ต้อง Log out)
+                        sessionStorage.setItem('hasVoted', 'true');
+                        sessionStorage.setItem('voteChoice', voteChoiceValue);
+
+                        // 2. แจ้งเตือนความสำเร็จ
+                        await Swal.fire({ title: 'โหวตสำเร็จ!', text: apiResult.message, icon: 'success', timer: 2500, showConfirmButton: false });
+                        
+                        // 3. รีโหลดหน้าเว็บ (ระบบจะเช็ค sessionStorage แล้วโชว์หน้าสีเขียวว่าโหวตแล้ว)
+                        location.reload(); 
+                    } else {
+                        Swal.fire({ title: 'ผิดพลาด!', text: apiResult.message, icon: 'error' });
+                        if (apiResult.message.includes('โหวตไปแล้ว')) {
+                             sessionStorage.clear();
+                             location.reload();
+                        }
+                    }
+                }
+            });
+        }
+        
+        async function handleChangePassword(event) {
+            event.preventDefault();
+            const msgEl = document.getElementById('password-change-msg');
+            const oldPassword = document.getElementById('oldPassword').value;
+            const newPassword = document.getElementById('newPassword').value;
+            const confirmNewPassword = document.getElementById('confirmNewPassword').value;
+
+            if (newPassword !== confirmNewPassword) {
+                msgEl.textContent = 'รหัสผ่านใหม่ไม่ตรงกัน';
+                msgEl.className = 'message error';
+                return;
+            }
+            if (newPassword.length < 4) {
+                msgEl.textContent = 'รหัสผ่านใหม่ต้องมีอย่างน้อย 4 ตัวอักษร';
+                msgEl.className = 'message error';
+                return;
+            }
+
+            msgEl.textContent = 'กำลังบันทึก...';
+            msgEl.className = 'message loading';
+            showLoading();
+
+            const result = await callApi('changeStudentPassword', { oldPassword, newPassword });
+            showLoading(false);
+
+            if (result.status === 'success') {
+                msgEl.textContent = result.message;
+                msgEl.className = 'message success';
+                passwordChangeForm.reset();
+                showToast('เปลี่ยนรหัสผ่านสำเร็จ!', 'success');
+            } else {
+                msgEl.textContent = result.message;
+                msgEl.className = 'message error';
+            }
+        }
+        
+        async function handleSubmitFeedback(event) {
+            event.preventDefault();
+            const msgEl = document.getElementById('feedback-msg');
+            const feedbackText = document.getElementById('feedbackText').value;
+
+            if (feedbackText.trim() === '') {
+                msgEl.textContent = 'กรุณากรอกข้อความ';
+                msgEl.className = 'message error';
+                return;
+            }
+
+            msgEl.textContent = 'กำลังส่ง...';
+            msgEl.className = 'message loading';
+            showLoading();
+
+            const result = await callApi('submitFeedback', { feedbackText });
+            showLoading(false);
+            
+            if (result.status === 'success') {
+                msgEl.textContent = result.message;
+                msgEl.className = 'message success';
+                feedbackForm.reset();
+                showToast('ส่งข้อเสนอแนะสำเร็จ', 'success');
+            } else {
+                msgEl.textContent = result.message;
+                msgEl.className = 'message error';
+            }
+        }
+
+
+        // --- ⭐️ UI Display Functions ⭐️ ---
+        
+        function navigateToPage(pageName) {
+            document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
+            const targetPage = document.getElementById(`${pageName}-page`);
+            if (targetPage) targetPage.classList.add('active');
+
+            document.querySelectorAll('.sidebar-nav li').forEach(li => li.classList.remove('active'));
+            document.querySelectorAll(`[data-page="${pageName}"]`).forEach(link => {
+                link.parentElement.classList.add('active');
+            });
+            
+            if(pageName === 'results') {
+                checkResultsPageVisibility();
+            }
+        }
+        
+        function validateForm() {
+            const fullName = fullNameInput.value;
+            const choiceRadio = document.querySelector('input[name="voteChoice"]:checked');
+            submitVoteButton.disabled = !(fullName.trim() !== '' && choiceRadio);
+        }
+
+        function loadAnnouncement(text) {
+            const barContainer = document.getElementById('announcement-bar'); 
+            const barContent = barContainer.querySelector('.scrolling-text'); 
+            if (!barContainer || !barContent) return;
+            
+            if (text && text.trim() !== '') {
+                barContent.textContent = text; 
+                barContainer.style.display = 'block'; 
+            } else {
+                barContainer.style.display = 'none';
+            }
+        }
+        
+        function loadPublicStats(stats) {
+            if (stats) {
+                document.getElementById('stat-voted-count').textContent = `${stats.votedCount.toLocaleString()} / ${stats.totalStudents.toLocaleString()}`;
+                document.getElementById('stat-turnout').textContent = `${stats.turnoutPercentage.toFixed(1)}%`;
+                document.getElementById('stat-top-grade').textContent = stats.topGrade;
+                statsDashboard.classList.remove('hidden'); 
+            } else {
+                statsDashboard.classList.add('hidden');
+            }
+        }
+        
+        function displayDesignOptions(designs) {
+            designOptionsDiv.innerHTML = '';
+            if (designs.length === 0) {
+                designOptionsDiv.innerHTML = '<p class="message">ยังไม่มีแบบเสื้อให้โหวต</p>';
+                return;
+            }
+            designs.forEach(design => {
+                const div = document.createElement('div');
+                div.classList.add('design-card');
+                div.innerHTML = `
+                    <input type="radio" id="design-${design.designId}" name="voteChoice" value="${design.designId}" required>
+                    <label for="design-${design.designId}" class="design-label">
+                        <div class="check-icon"><i class="fas fa-check"></i></div>
+                        <img src="${design.imageUrl || 'https://via.placeholder.com/200?text=No+Image'}" alt="${design.designName}">
+                        <div class="design-info">
+                            <div class="design-name">${design.designName}</div>
+                            <div class="design-id">ID: ${design.designId}</div>
+                        </div>
+                    </label>`;
+                designOptionsDiv.appendChild(div);
+            });
+        }
+        
+        function displayVoteResults(results) {
+            const voteResultsDiv = document.getElementById('vote-results');
+            if(!voteResultsDiv) return;
+            voteResultsDiv.innerHTML = '';
+            if (results.length === 0) { 
+                voteResultsDiv.innerHTML = '<p class="message" style="text-align:center;">ยังไม่มีผลการโหวต</p>'; 
+                return; 
+            }
+            results.sort((a, b) => b.voteCount - a.voteCount);
+            results.forEach(item => {
+                const div = document.createElement('div');
+                div.classList.add('vote-item');
+                div.innerHTML = `<span>${item.designName} (${item.designId}):</span><span class="vote-count">${item.voteCount} คะแนน</span>`;
+                voteResultsDiv.appendChild(div);
+            });
+        }
+        
+        function displayVoteChart(votes) {
+            const voteChartCanvas = document.getElementById('voteChart');
+            if(!voteChartCanvas) return;
+            const ctx = voteChartCanvas.getContext('2d');
+            if (votes.length === 0) { 
+                if (voteChartInstance) voteChartInstance.destroy(); 
+                document.getElementById('chart-message').textContent = 'ยังไม่มีข้อมูลสำหรับแสดงกราฟ';
+                return; 
+            }
+            
+            document.getElementById('chart-message').textContent = '';
+            votes.sort((a, b) => b.voteCount - a.voteCount); 
+            
+            const labels = votes.map(v => `${v.designName} (${v.designId})`);
+            const data = votes.map(v => v.voteCount);
+            const backgroundColors = data.map(() => `rgba(${Math.floor(Math.random()*155)+100},${Math.floor(Math.random()*155)+100},${Math.floor(Math.random()*155)+100},0.8)`); 
+            
+            if (voteChartInstance) voteChartInstance.destroy();
+            
+            voteChartInstance = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{ 
+                        label: 'คะแนนโหวต', 
+                        data: data, 
+                        backgroundColor: backgroundColors,
+                        borderColor: backgroundColors.map(c => c.replace('0.8', '1')),
+                        borderWidth: 1,
+                        borderRadius: 5
+                    }]
+                },
+                options: { 
+                    responsive: true, 
+                    maintainAspectRatio: false,
+                    indexAxis: 'y', 
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        x: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        }
+
+        function checkVotingStatus(voteTime) {
+            if (voteTime) {
+                const now = new Date();
+                const startDateTime = voteTime.startTime ? new Date(voteTime.startTime) : null;
+                const endDateTime = voteTime.endTime ? new Date(voteTime.endTime) : null;
+                clearInterval(countdownInterval);
+                countdownTimerDiv.style.display = 'none';
+                
+                let isVotingOpen = voteTime.isVotingOpen;
+                const hasVoted = sessionStorage.getItem('hasVoted') === 'true'; // ⭐️ (ใหม่)
+
+                if (startDateTime && now < startDateTime) {
+                    votingStatusDiv.innerHTML = '<i class="fas fa-clock"></i> ยังไม่ถึงเวลาเปิดโหวต จะเปิดในอีก';
+                    countdownTimerDiv.style.display = 'block';
+                    startCountdown(startDateTime.getTime());
+                } else if (endDateTime && now > endDateTime) {
+                    votingStatusDiv.innerHTML = '<i class="fas fa-times-circle"></i> ปิดรับการโหวตแล้ว';
+                } else {
+                    if (startDateTime && endDateTime) {
+                        votingStatusDiv.innerHTML = '<i class="fas fa-check-circle"></i> เปิดให้โหวตแล้ว จะปิดในอีก';
+                        countdownTimerDiv.style.display = 'block';
+                        startCountdown(endDateTime.getTime());
+                    } else {
+                        votingStatusDiv.innerHTML = '<i class="fas fa-check-circle"></i> เปิดให้โหวตแล้ว';
+                    }
+                }
+
+                if (isVotingOpen) {
+                    statsDashboard.classList.remove('hidden'); 
+                    
+                    if(hasVoted) {
+                        // ⭐️ (ใหม่) ถ้าโหวตแล้ว
+                        const choice = sessionStorage.getItem('voteChoice');
+                        const choiceName = allVoteDesigns.find(d => d[0] === choice)?.[1] || choice;
+                        
+                        document.getElementById('voted-choice-display').textContent = `[${choiceName}]`;
+                        document.getElementById('voted-confirmation').classList.remove('hidden');
+                        voteOptionsSection.classList.add('hidden');
+                    } else {
+                        // ⭐️ (ใหม่) ถ้ายังไม่โหวต
+                        document.getElementById('voted-confirmation').classList.add('hidden');
+                        voteOptionsSection.classList.remove('hidden');
+                    }
+                    
+                    resultsSection.classList.add('hidden'); 
+                    votingStatusDiv.className = 'status-message open';
+                } else {
+                    // (ปิดโหวต)
+                    voteOptionsSection.classList.add('hidden', 'locked'); 
+                    statsDashboard.classList.remove('hidden'); 
+                    document.getElementById('voted-confirmation').classList.add('hidden');
+                    
+                    if (allVoteDesigns.length > 0) {
+                        resultsSection.classList.remove('hidden'); 
+                        resultsPlaceholder.style.display = 'none';
+                        resultsContentWrapper.style.display = 'block';
+                    } else {
+                        resultsSection.classList.add('hidden');
+                    }
+                    
+                    votingStatusDiv.className = 'status-message closed';
+                }
+                voteStatusBox.classList.remove('hidden');
+            }
+        }
+        
+        function checkResultsPageVisibility() {
+            const voteTimeStatus = votingStatusDiv.classList.contains('open'); 
+            
+            if (voteTimeStatus) { // ถ้าโหวตยังเปิด
+                resultsPlaceholder.style.display = 'block';
+                resultsContentWrapper.style.display = 'none';
+            } else { // ถ้าโหวตปิดแล้ว
+                resultsPlaceholder.style.display = 'none';
+                resultsContentWrapper.style.display = 'block';
+            }
+        }
+
+        function startCountdown(targetTime) {
+            clearInterval(countdownInterval);
+            const updateCountdown = () => {
+                const distance = targetTime - new Date().getTime();
+                if (distance < 1000) {
+                    clearInterval(countdownInterval);
+                    countdownTimerDiv.style.display = 'none';
+                    loadInitialData(); 
+                    return;
+                }
+                const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+                countdownTimerDiv.innerHTML = `<span>${days}</span> วัน <span>${hours}</span> ชั่วโมง <span>${minutes}</span> นาที <span>${seconds}</span> วินาที`;
+            };
+            updateCountdown();
+            countdownInterval = setInterval(updateCountdown, 1000);
+        }
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            if (sessionStorage.getItem('studentId')) {
+                voterLoginPage.style.display = 'none';
+                mainVotingArea.style.display = 'flex';
+                initializeMainApp(); 
+            } else {
+                voterLoginPage.style.display = 'flex';
+                mainVotingArea.style.display = 'none';
+                callApi('getVotePageData').then(result => {
+                    if(result.status === 'success') {
+                        loadAnnouncement(result.announcement);
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>
