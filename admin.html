@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="th" data-theme="light">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard - ระบบโหวต</title>
+  
+  <link rel="icon" href="https://img5.pic.in.th/file/secure-sv1/IMG_602976b5b060daac652b.png" type="image/png">
+  
+  <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;700&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="admin.css">
+
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+</head>
+
+<body>
+
+  <div class="dashboard-container" id="main-dashboard">
+    
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <div class="logo">
+          <img src="https://img5.pic.in.th/file/secure-sv1/IMG_60290ec6a71fd92a13d0.png" alt="Logo" id="sidebar-logo">
+          <span>Admin Panel</span>
+        </div>
+        <button class="sidebar-toggle" id="sidebarToggle">
+          <i class="fas fa-bars"></i>
+        </button>
+      </div>
+
+      <nav class="sidebar-nav">
+        <ul>
+          <li class="active"><a href="#" data-page="dashboard"><i class="fas fa-home"></i><span>Dashboard</span></a></li>
+          <li><a href="#" data-page="feedbacks"><i class="fas fa-comment-dots"></i><span>ข้อเสนอแนะ</span></a></li>
+          <li><a href="#" data-page="products"><i class="fas fa-tshirt"></i><span>จัดการแบบเสื้อ</span></a></li>
+          <li><a href="#" data-page="users"><i class="fas fa-users"></i><span>ข้อมูลผู้โหวต</span></a></li>
+          <li><a href="#" data-page="accounts"><i class="fas fa-user-shield"></i><span>จัดการบัญชีผู้ดูแล</span></a></li>
+          <li><a href="#" data-page="tools"><i class="fas fa-tools"></i><span>เครื่องมือผู้ดูแล</span></a></li>
+          <li><a href="#" data-page="settings"><i class="fas fa-cog"></i><span>ตั้งค่าระบบ</span></a></li>
+        </ul>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="user-profile">
+          <i class="fas fa-user-shield"></i>
+          <div class="user-info">
+            <span class="user-name" id="admin-profile-name">Admin</span>
+            <span class="user-role">Administrator</span>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <main class="main-content">
+      <header class="navbar">
+        <div class="navbar-left">
+          <button class="mobile-toggle" id="mobileToggle">
+            <i class="fas fa-bars"></i>
+          </button>
+          <button class="btn btn-secondary" id="refreshDataButton">
+              <i class="fas fa-sync-alt"></i> รีเฟรชข้อมูล
+          </button>
+        </div>
+
+        <div class="navbar-right">
+          <div class="notifications-wrapper" style="position: relative;">
+            <button class="notifications" id="notifToggle">
+              <i class="fas fa-bell"></i>
+              <span class="badge" id="notifBadge" style="display: none;">0</span>
+            </button>
+            <div class="dropdown-menu" id="notifDropdown">
+              <div style="padding: 10px; border-bottom: 1px solid #eee; font-weight: bold;">การแจ้งเตือนล่าสุด</div>
+              <div id="notifList">
+                <div style="padding: 10px; color: #999; text-align: center;">กำลังโหลด...</div>
+              </div>
+            </div>
+          </div>
+
+          <button class="theme-toggle" id="themeToggle">
+            <i class="fas fa-moon"></i>
+          </button>
+
+          <div class="user-menu">
+            <div class="user-avatar">
+                <i class="fas fa-user"></i>
+            </div>
+            <div class="dropdown-menu" id="userDropdown">
+              <a href="#settings" data-page="settings"><i class="fas fa-cog"></i> ตั้งค่าระบบ</a>
+              <a href="#" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Logout</a>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <div class="content" id="pageContent">
+        
+        <div class="page active" id="dashboard-page">
+          <div class="page-header">
+            <div>
+                <h1 id="welcome-message">Dashboard</h1>
+                <p>ภาพรวมสรุปผลการโหวต</p>
+            </div>
+            <div id="liveClock" style="text-align: right; font-size: 1.1em; color: var(--primary-color); font-weight: 500;">
+                กำลังโหลดเวลา...
+            </div>
+          </div>
+          <div class="stats-grid">
+            <div class="stat-card">
+              <div class="stat-icon blue"><i class="fas fa-users"></i></div>
+              <div class="stat-content">
+                <h3>นักเรียนทั้งหมด</h3>
+                <p class="stat-value" id="stat-total-students">0</p>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon orange"><i class="fas fa-percentage"></i></div>
+              <div class="stat-content">
+                <h3>คิดเป็นร้อยละ</h3>
+                <p class="stat-value" id="stat-turnout-percent">0%</p>
+              </div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon purple"><i class="fas fa-vote-yea"></i></div>
+              <div class="stat-content">
+                <h3>คะแนนโหวตรวม</h3>
+                <p class="stat-value" id="stat-total-votes">0</p>
+              </div>
+            </div>
+          </div>
+          <div class="settings-section">
+            <h3><i class="fas fa-chart-pie"></i> Dashboard สรุปผล</h3>
+            <div id="dashboard-summary"><p>กำลังโหลดข้อมูลสรุป...</p></div>
+          </div>
+        </div>
+
+        <div class="page" id="feedbacks-page">
+          <div class="page-header">
+            <h1>ข้อเสนอแนะจากนักเรียน</h1>
+            <button class="btn btn-secondary" onclick="loadFeedbackLogs()"><i class="fas fa-sync-alt"></i> รีเฟรช</button>
+          </div>
+          <div class="settings-section">
+            <div class="table-container">
+                <table class="data-table" id="feedbackTable">
+                    <thead><tr><th style="width: 20%;">เวลา</th><th style="width: 20%;">รหัสนักเรียน</th><th>ข้อความ</th><th style="width: 10%;">อ่าน</th></tr></thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+          </div>
+        </div>
+
+        <div class="page" id="products-page">
+          <div class="page-header">
+            <h1>จัดการแบบเสื้อ</h1>
+            <div class="btn-group">
+                <button class="btn btn-secondary" id="exportVotesPdfButton"><i class="fas fa-file-pdf"></i> ส่งออกผลโหวต (.pdf)</button>
+                <button class="btn btn-primary" id="addDesignBtn"><i class="fas fa-plus"></i> เพิ่มแบบเสื้อใหม่</button>
+            </div>
+          </div>
+          <div class="settings-section">
+            <h3><i class="fas fa-poll"></i> ผลโหวตปัจจุบัน (ตาราง)</h3>
+            <div class="table-container">
+                <table class="data-table" id="adminVoteResultsTable">
+                    <thead><tr><th>Design ID</th><th>Design Name</th><th>Vote Count</th><th>Image</th><th>Actions</th></tr></thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+          </div>
+          <div class="charts-grid">
+            <div class="chart-card">
+              <div class="chart-header"><h3><i class="fas fa-chart-bar"></i> กราฟผลโหวต</h3></div>
+              <canvas id="voteChart"></canvas>
+            </div>
+          </div>
+        </div>
+
+        <div class="page" id="users-page">
+          <div class="page-header">
+            <h1>ข้อมูลนักเรียน</h1> 
+            <div class="btn-group">
+                <button class="btn btn-primary" id="exportUsersPdfButton"><i class="fas fa-file-pdf"></i> ส่งออกผู้ใช้งาน (.pdf)</button>
+            </div>
+          </div>
+          <div class="tab-controls" id="userTabs">
+            <button class="tab-btn active" data-status="voted"><i class="fas fa-user-check"></i> โหวตแล้ว (<span id="voted-count">0</span>)</button>
+            <button class="tab-btn" data-status="unvoted"><i class="fas fa-user-clock"></i> ยังไม่โหวต (<span id="unvoted-count">0</span>)</button>
+          </div>
+          <div class="table-controls">
+            <div class="search-filter">
+              <select id="gradeFilter">
+                <option value="all">กรองตามระดับชั้น (ทั้งหมด)</option>
+                <option value="ม.1">ม.1</option><option value="ม.2">ม.2</option><option value="ม.3">ม.3</option>
+                <option value="ม.4">ม.4</option><option value="ม.5">ม.5</option><option value="ม.6">ม.6</option>
+              </select>
+              <input type="text" id="userSearchInput" placeholder="ค้นหารหัสนักเรียน/ชื่อ...">
+            </div>
+          </div>
+          <div class="table-container">
+            <table class="data-table" id="adminUsersTable">
+                 <thead>
+                   <tr>
+                       <th>Student ID</th>
+                       <th>Full Name</th>
+                       <th>Grade</th>
+                       <th>Room</th>
+                       <th class="voted-col">Timestamp</th>
+                       <th class="voted-col">Vote Choice</th>
+                       <th>Actions</th>
+                   </tr>
+                 </thead>
+                 <tbody></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="page" id="settings-page">
+          <div class="page-header"><h1>ตั้งค่าระบบ</h1></div>
+          <div class="settings-container">
+            <div class="settings-section">
+                <h3><i class="fas fa-clock"></i> ตั้งเวลาเปิด-ปิดการโหวต</h3>
+                <div class="form-group"><label for="voteStartTime">เวลาเริ่มต้น:</label><input type="datetime-local" id="voteStartTime"></div>
+                <div class="form-group"><label for="voteEndTime">เวลาสิ้นสุด:</label><input type="datetime-local" id="voteEndTime"></div>
+                <p id="current-vote-time" style="font-weight: bold; margin-top: 15px; color: var(--text-secondary);"></p>
+                <div class="btn-group">
+                    <button class="btn btn-primary" id="setVoteTimeButton">ตั้งเวลาโหวต</button>
+                    <button class="btn btn-danger" id="closeVotingNowButton">ปิดโหวตทันที</button>
+                </div>
+            </div>
+            <div class="settings-section">
+                <h3><i class="fas fa-bullhorn"></i> ตั้งค่าข้อความประกาศ</h3>
+                <div class="form-group"><label for="announcementText">ข้อความประกาศ:</label><textarea id="announcementText" rows="4" placeholder="เช่น 📣 ปิดโหวตเวลา 16:00 น. นี้!"></textarea></div>
+                <div class="btn-group"><button class="btn btn-primary" id="saveAnnouncementButton">บันทึกข้อความประกาศ</button>
+                </div>
+              </div>
+            <div class="settings-section">
+              <h3><i class="fas fa-book"></i> แก้ไขคู่มือการใช้งาน</h3>
+              <div class="form-group">
+                  <label>เนื้อหาคู่มือ :</label>
+                  <textarea id="helpContentInput" rows="6" placeholder="พิมพ์ข้อความ หรือโค้ด HTML ที่นี่..."></textarea>
+              </div>
+              <button class="btn btn-primary" id="saveHelpContentButton">
+                  <i class="fas fa-save"></i> บันทึกคู่มือ
+              </button>
+            </div>
+            </div>
+          </div>
+        
+        <div class="page" id="accounts-page">
+          <div class="page-header"><h1>จัดการบัญชีผู้ดูแล</h1></div>
+          <div class="settings-container">
+            <div class="settings-section">
+                <h3><i class="fas fa-user-plus"></i> เพิ่มบัญชีผู้ดูแล</h3>
+                <div class="form-group"><label for="newAdminUsername">Username ใหม่:</label><input type="text" id="newAdminUsername" placeholder="username" required></div>
+                <div class="form-group"><label for="newAdminPassword">Password ใหม่:</label><input type="password" id="newAdminPassword" placeholder="password" required></div>
+                <div class="form-group"><label for="newAdminFullName">ชื่อผู้ดูแล:</label><input type="text" id="newAdminFullName" placeholder="ชื่อ-นามสกุล" required></div>
+                <button class="btn btn-primary" id="addAdminButton">เพิ่มบัญชีผู้ดูแล</button>
+                <h3 style="margin-top: 30px;">บัญชีผู้ดูแลที่มีอยู่</h3>
+                <div class="table-container">
+                    <table class="data-table" id="adminAccountsTable"><thead><tr><th>Username</th><th>ชื่อผู้ดูแล</th><th>Actions</th></tr></thead><tbody></tbody></table>
+                </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="page" id="tools-page">
+          <div class="page-header"><h1>เครื่องมือผู้ดูแล</h1></div>
+          <div class="settings-container">
+             <div class="settings-section">
+                <h3><i class="fas fa-tools"></i> เครื่องมือจัดการคะแนน</h3>
+                <div class="btn-group" style="flex-wrap: wrap;">
+                    <button id="recalculateVotesButton" class="btn btn-primary" style="background-color: var(--warning-color); color: white;"><i class="fas fa-calculator"></i> คำนวณคะแนนใหม่</button>
+                    <button id="resetVotesButton" class="btn btn-danger"><i class="fas fa-history"></i> รีเซ็ตคะแนน</button>
+                    <button id="clearUsersButton" class="btn btn-danger"><i class="fas fa-user-times"></i> ล้างข้อมูลผู้ใช้</button>
+                </div>
+            </div>
+            <div class="settings-section">
+                <h3><i class="fas fa-user-edit"></i> เพิ่ม หรือ แก้ไขนักเรียน</h3>
+                <form id="student-form">
+                    <div class="form-group"><label for="manualStudentId">รหัสนักเรียน (5 หลัก):</label><input type="text" id="manualStudentId" placeholder="เช่น 01234" required maxlength="5"></div>
+                    <div class="form-group"><label for="manualPassword">รหัสผ่าน (ถ้าไม่กรอกจะใช้รหัสนักเรียน):</label><input type="text" id="manualPassword" placeholder="กำหนดรหัสผ่าน (เลือกได้)"></div>
+                    <div class="form-group"><label for="manualFullName">ชื่อ - นามสกุล:</label><input type="text" id="manualFullName" placeholder="เช่น เด็กชายรักเรียน เพียรวิชา" required></div>
+                    <div class="form-group"><label for="manualGrade">ระดับชั้น:</label><select id="manualGrade"><option value="">-- เลือกระดับชั้น --</option><option value="ม.1">ม.1</option><option value="ม.2">ม.2</option><option value="ม.3">ม.3</option><option value="ม.4">ม.4</option><option value="ม.5">ม.5</option><option value="ม.6">ม.6</option></select></div>
+                    <div class="form-group"><label for="manualRoom">ห้อง:</label><select id="manualRoom"><option value="">-- เลือกห้อง --</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option><option value="6">6</option><option value="7">7</option><option value="8">8</option><option value="9">9</option><option value="10">10</option><option value="11">11</option><option value="12">12</option></select></div>
+                    <div class="btn-group"><button type="submit" class="btn btn-primary" id="saveStudentButton"><i class="fas fa-save"></i> บันทึกข้อมูลนักเรียน</button></div>
+                </form>
+            </div>
+            <div class="settings-section">
+                <h3><i class="fas fa-file-csv"></i> Import รายชื่อนักเรียน (CSV)</h3>
+                <div class="form-group"><label for="csvFile">เลือกไฟล์ .csv</label><input type="file" id="csvFile" accept=".csv" style="width: 100%;"></div>
+                <div class="btn-group"><button class="btn btn-primary" id="uploadCsvButton" style="background-color: var(--success-color);"><i class="fas fa-upload"></i> Import ข้อมูล (CSV)</button></div>
+                <p id="upload-csv-message" class="message"></p>
+            </div>
+          </div>
+        </div>
+        
+        </div>
+    </main>
+  </div>
+
+  <div class="modal" id="designModal">
+    <div class="modal-content">
+      <div class="modal-header"><h2 id="designModalTitle">จัดการแบบเสื้อ</h2><button class="modal-close" data-modal="designModal"><i class="fas fa-times"></i></button></div>
+      <form id="designForm">
+        <input type="hidden" id="editMode" value="false"><input type="hidden" id="editDesignIdHidden">
+        <div class="form-group"><label for="designIdInput">Design ID:</label><input type="text" id="designIdInput" required></div>
+        <div class="form-group"><label for="designNameInput">ชื่อแบบเสื้อ:</label><input type="text" id="designNameInput" required></div>
+        
+        <div class="form-group">
+            <label>รูปภาพแบบเสื้อ:</label>
+            <div style="display:flex; gap:10px; align-items:center;">
+                <input type="file" id="designImageFile" accept="image/*" style="display:none;" onchange="window.previewImage(this)">
+                <button type="button" class="btn btn-secondary" onclick="document.getElementById('designImageFile').click()">
+                    <i class="fas fa-upload"></i> อัปโหลดรูป
+                </button>
+                <span id="fileNameDisplay" style="font-size:12px; color:#666;">ยังไม่ได้เลือกไฟล์</span>
+            </div>
+            <img id="imagePreview" src="" style="max-width:150px; max-height:150px; margin-top:10px; display:none; border-radius:8px; border:1px solid #ddd;">
+            <input type="hidden" id="designImageUrlInput"> 
+        </div>
+
+        <div class="modal-footer"><button type="button" class="btn btn-secondary" data-modal="designModal">Cancel</button><button type="submit" class="btn btn-primary" id="saveDesignButton">บันทึก</button></div>
+      </form>
+    </div>
+  </div>
+
+  <div class="modal" id="editVoteModal">
+    <div class="modal-content">
+      <div class="modal-header"><h2 id="editVoteModalTitle">แก้ไขการโหวต</h2><button class="modal-close" data-modal="editVoteModal"><i class="fas fa-times"></i></button></div>
+      <form id="editVoteForm">
+        <input type="hidden" id="editVoteStudentId"><input type="hidden" id="editVoteOldChoice">
+        <div class="form-group"><label>นักเรียน:</label><input type="text" id="editVoteStudentInfo" readonly style="background-color: var(--bg-tertiary);"></div>
+        <div class="form-group"><label for="newVoteChoiceSelect">เปลี่ยนเป็นโหวต:</label><select id="newVoteChoiceSelect" required></select></div>
+        <div class="modal-footer"><button type="button" class="btn btn-secondary" data-modal="editVoteModal">Cancel</button><button type="submit" class="btn btn-primary" id="saveVoteButton">บันทึกการเปลี่ยนแปลง</button></div>
+      </form>
+    </div>
+  </div>
+
+  <div class="toast-container" id="toastContainer"></div>
+  <div class="loading-overlay" id="loadingOverlay"><div class="spinner"></div></div>
+
+  <script src="admin.js?v=9999"></script>
+
+</body>
+</html>

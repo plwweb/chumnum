@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="th" data-theme="light">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ระบบโหวตเสื้อกีฬาสี</title>
+    
+    <link rel="icon" href="https://img5.pic.in.th/file/secure-sv1/IMG_602976b5b060daac652b.png" type="image/png">
+    
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/brands.min.css"> 
+    
+    <link rel="stylesheet" href="vote.css">
+    
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
+</head>
+
+<body>
+    
+    <div id="main-voting-area" class="dashboard-container"> 
+        
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <img src="https://img5.pic.in.th/file/secure-sv1/IMG_60290ec6a71fd92a13d0.png" alt="Logo" class="logo" style="width:30px; margin-right:10px;">
+                <span>ระบบโหวต</span>
+            </div>
+        
+            <nav class="sidebar-nav">
+                <ul>
+                    <li><a href="#" data-page="vote"><i class="fas fa-vote-yea"></i><span>ลงคะแนนโหวต</span></a></li>
+                    <li class="active"><a href="#" data-page="stats"><i class="fas fa-chart-line"></i><span>สถิติผู้ใช้สิทธิ์</span></a></li>
+                    <li><a href="#" data-page="results"><i class="fas fa-chart-bar"></i><span>ผลการโหวต</span></a></li>
+                    <li><a href="#" data-page="feedback"><i class="fas fa-comment-dots"></i><span>ติดต่อ/เสนอแนะ</span></a></li>
+                    <li><a href="#" data-page="help"><i class="fas fa-question-circle"></i><span>คู่มือการใช้งาน</span></a></li>
+                </ul>
+            </nav>
+        
+            <div class="sidebar-footer">
+                <div class="user-profile">
+                    <i class="fas fa-user-graduate"></i>
+                    <div class="user-info">
+                        <span class="user-name" id="user-profile-name">...</span>
+                        <span class="user-role" id="user-profile-id">...</span>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <main class="main-content">
+            <header class="navbar">
+                <div class="mobile-logo-container">
+                    <img src="https://img5.pic.in.th/file/secure-sv1/IMG_60290ec6a71fd92a13d0.png" alt="Logo" class="mobile-logo">
+                </div>
+
+                <div class="announcement-bar" id="announcement-bar" style="display: none;">
+                    <p class="scrolling-text"></p>
+                </div>
+
+                <div class="navbar-right">
+                    <button class="btn btn-danger" id="logoutButton" style="width: auto; padding: 8px 15px; font-size: 14px;">
+                        <i class="fas fa-sign-out-alt"></i>
+                        <span class="logout-text">ออกจากระบบ</span>
+                    </button>
+                </div>
+            </header>
+
+            <div class="content" id="pageContent">
+
+                <div class="page" id="vote-page">
+                    <form id="voteForm">
+                        <div id="verification-section" class="card locked">
+                            <div class="card-header"><i class="fas fa-user-check"></i> <span>ข้อมูลผู้ใช้งาน</span></div>
+                            <div class="form-group"><label>Username:</label><input type="text" id="studentIdDisplay" readonly></div>
+                            <div class="form-group"><label>ชื่อ - นามสกุล :</label><input type="text" id="fullName" readonly></div>
+                            <div class="form-group"><label>ระดับชั้น :</label><input type="text" id="grade" readonly></div>
+                            <div class="form-group"><label>ห้อง :</label><input type="text" id="room" readonly></div>
+                        </div>
+                        
+                        <div id="voted-confirmation" class="card hidden" style="text-align: center; padding: 0; background: transparent; box-shadow: none; border: none;">
+                            <div class="ticket-container">
+                                <div class="ticket-header">
+                                    <img src="https://img5.pic.in.th/file/secure-sv1/IMG_60290ec6a71fd92a13d0.png" alt="Logo">
+                                    <h3>บัตรยืนยันการลงคะแนน</h3>
+                                </div>
+                                <div class="ticket-body">
+                                    <div class="ticket-info"><span>ผู้ใช้สิทธิ์:</span><strong id="ticket-student-name">...</strong></div>
+                                    <div class="ticket-choice"><span>คุณเลือกเบอร์:</span><h1 id="voted-choice-display">...</h1></div>
+                                    <div class="ticket-status"><i class="fas fa-check-circle"></i> บันทึกเข้าระบบแล้ว</div>
+                                </div>
+                                <div class="ticket-footer">
+                                    <p>โรงเรียนภูหลวงวิทยา</p>
+                                    <div class="barcode">|| | ||| | || || |||| |||</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="vote-options-section" class="card hidden">
+                            <div class="card-header"><i class="fas fa-tshirt"></i> <span>เลือกแบบเสื้อที่คุณชื่นชอบ</span></div>
+                            <div id="design-options" class="design-options">
+                                <div class="skeleton-card"><div class="skeleton-img"></div><div class="skeleton-text"></div></div>
+                            </div>
+                            <button type="submit" id="submitVoteButton" class="btn btn-success" style="max-width: 100%; margin-top: 25px;" disabled>
+                                <i class="fas fa-check-circle"></i> ยืนยันการโหวต
+                            </button>
+                        </div>
+                    </form>
+                </div>
+                
+                <div class="page active" id="stats-page">
+                    <div id="vote-status-box" class="card">
+                        <div class="card-header"><i class="fas fa-bullhorn"></i> สถานะ</div>
+                        <div id="voting-status" class="status-message"></div>
+                        <div id="countdown-timer" style="display: none;"></div>
+                    </div>
+                    <div id="stats-dashboard" class="stats-grid card" style="display: none; padding: 20px;">
+                        <div class="stat-box"><div class="stat-icon green"><i class="fas fa-user-check"></i></div><div class="stat-content"><h3>ผู้มาใช้สิทธิ์</h3><p id="stat-voted-count">... / ...</p></div></div>
+                        <div class="stat-box"><div class="stat-icon blue"><i class="fas fa-chart-pie"></i></div><div class="stat-content"><h3>เปอร์เซ็นต์</h3><p id="stat-turnout">...%</p></div></div>
+                        <div class="stat-box"><div class="stat-icon orange"><i class="fas fa-trophy"></i></div><div class="stat-content"><h3>ชั้นที่โหวตสูงสุด</h3><p id="stat-top-grade" style="font-size: 1.4em;">...</p></div></div>
+                    </div>
+                </div>
+
+                <div class="page" id="results-page">
+                    <div id="results-section" class="card">
+                        <div class="card-header"><i class="fas fa-chart-bar"></i> <span>ผลการโหวต</span></div>
+                        <div id="results-content-wrapper">
+                            <div class="chart-container"><canvas id="voteChart"></canvas></div>
+                            <div id="vote-results" class="vote-results"><p>กำลังโหลดผลโหวต...</p></div>
+                        </div>
+                        <div id="results-placeholder" style="display: none; text-align: center; padding: 40px;">
+                            <i class="fas fa-lock" style="font-size: 3em; color: var(--text-tertiary);"></i>
+                            <h2 style="margin-top: 20px; color: var(--text-secondary);">จะประกาศผลคะแนนหลังจากปิดระบบโหวตแล้ว</h2>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="page" id="feedback-page">
+                    <div class="card">
+                        <div class="card-header">
+                            <i class="fas fa-address-book"></i> ช่องทางการติดต่อสภานักเรียน
+                        </div>
+                        <div style="text-align: center; padding: 10px;">
+                            <p style="margin-bottom: 25px; color: var(--text-secondary); font-size: 1.1em;">
+                                ติดตามข่าวสาร กิจกรรม และสอบถามข้อมูลเพิ่มเติมได้ที่
+                            </p>
+                            <div style="display: flex; justify-content: center; gap: 30px; flex-wrap: wrap; margin-bottom: 20px;">
+                                <a href="https://www.facebook.com/plwsc.official?" target="_blank" class="social-link">
+                                    <div class="social-icon fb"><i class="fab fa-facebook-f"></i></div>
+                                    <span>Facebook<br>สภานักเรียน</span>
+                                </a>
+                                <a href="https://www.instagram.com/plwpr_official?igsh=Mmd3bGR0Y2lheDU=" target="_blank" class="social-link">
+                                    <div class="social-icon ig"><i class="fab fa-instagram"></i></div>
+                                    <span>Instagram<br>ประชาสัมพันธ์</span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-header"><i class="fas fa-comment-dots"></i> ส่งข้อความเสนอแนะ</div>
+                        <form id="feedbackForm" style="max-width: 600px;">
+                            <div class="form-group"><textarea id="feedbackText" rows="6" required placeholder="พิมพ์ข้อเสนอแนะ..."></textarea></div>
+                            <button type="submit" class="btn btn-primary" style="width: 100%;"><i class="fas fa-paper-plane"></i> ส่งข้อความ</button>
+                        </form>
+                    </div>
+                </div>
+                
+                <div class="page" id="help-page">
+                     <div class="card">
+                        <div class="card-header"><i class="fas fa-question-circle"></i> คู่มือการใช้งาน</div>
+                        <div id="help-content-container"><p class="message loading">กำลังโหลดข้อมูล...</p></div>
+                    </div>
+                </div>
+
+            </div>
+        </main>
+    </div>
+
+    <nav class="mobile-bottom-nav">
+        <a href="#" class="nav-item active" data-page="stats">
+            <i class="fas fa-chart-line"></i>
+            <span>สถิติ</span>
+        </a>
+        <a href="#" class="nav-item" data-page="vote">
+            <i class="fas fa-vote-yea"></i>
+            <span>โหวต</span>
+        </a>
+        <a href="#" class="nav-item" data-page="results">
+            <i class="fas fa-chart-bar"></i>
+            <span>ผลคะแนน</span>
+        </a>
+        <a href="#" class="nav-item" data-page="help">
+            <i class="fas fa-book-open"></i>
+            <span>คู่มือ</span>
+        </a>
+        <a href="#" class="nav-item" data-page="feedback">
+            <i class="fas fa-comment-dots"></i>
+            <span>ติดต่อ</span>
+        </a>
+        <a href="#" class="nav-item" id="mobileLogoutBtn">
+            <i class="fas fa-sign-out-alt"></i>
+            <span>ออก</span>
+        </a>
+    </nav>
+
+    <div class="loading-overlay" id="loadingOverlay"><div class="spinner"></div></div>
+
+    <script src="vote.js?v=Final_Requested"></script>
+</body>
+</html>

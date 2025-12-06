@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PLW GAMES</title>
+    
+    <link rel="icon" href="https://img5.pic.in.th/file/secure-sv1/IMG_602976b5b060daac652b.png" type="image/png">
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;600;700&display=swap" rel="stylesheet">
+  
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body {
+      font-family: 'Sarabun', sans-serif;
+      color: #ffffff;
+    }
+
+    .intro {
+      width: 100%;
+      position: relative; 
+      min-height: 100vh; 
+
+      background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), 
+                  url('https://img5.pic.in.th/file/secure-sv1/IMG_3756d83635c360e99c14.jpeg');
+      
+      background-size: cover;
+      background-position: center center;
+      background-repeat: no-repeat;
+      
+      /* === [ แก้ไขจุดที่ 1 ] === */
+      /* เปลี่ยนจาก fixed เป็น scroll เพื่อแก้บักซูมบนมือถือ */
+      background-attachment: scroll; 
+    }
+
+    .page-wrapper {
+        display: flex;
+        justify-content: center;
+        align-items: center; 
+        min-height: 100vh; 
+        text-align: center;
+        padding: 20px;
+        padding-bottom: 80px; /* เพิ่ม padding เผื่อกรณีเนื้อหายาวในอนาคต */
+    }
+
+    .content {
+      width: 100%;
+      max-width: 600px; 
+      padding: 30px;
+      background-color: rgba(0, 0, 0, 0.3);
+      border-radius: 12px;
+      box-shadow: 0 15px 40px rgba(0, 0, 0, 0.6);
+    }
+
+    .event-title {
+      font-size: 2.8rem;
+      font-weight: 700;
+      color: #f0f0f0; 
+      text-shadow: 0 2px 5px rgba(0,0,0,0.5);
+      margin-bottom: 2.5rem;
+    }
+
+    .main-image img {
+      width: 100%; 
+      height: auto;
+      border-radius: 10px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+      margin-bottom: 3.5rem;
+    }
+
+    .enter {
+      font-family: 'Sarabun', sans-serif;
+      font-size: 1.25rem;
+      font-weight: 600;
+      padding: 16px 60px;
+      background: linear-gradient(145deg, #3d4a8d, #2a2d4d);
+      color: #ffffff;
+      border: 1px solid #5a68b0;
+      border-radius: 50px;
+      cursor: pointer;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+      transition: all 0.3s ease;
+    }
+    .enter:hover {
+      background: linear-gradient(145deg, #4e5cb5, #3d4a8d);
+      border-color: #7c8aff;
+      color: #ffffff;
+      transform: scale(1.03) translateY(-2px);
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+    }
+    .enter:active {
+      transform: scale(0.98);
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+    }
+    body.fade-out {
+      opacity: 0;
+      transition: opacity 1s ease-out;
+    }
+
+    /* หมายเหตุ: โค้ด footer ได้ถูกลบออกไปแล้วตามคำขอก่อนหน้า */
+
+    @media (orientation: landscape) {
+        .intro {
+            background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), 
+                        url('https://img2.pic.in.th/pic/IMG_3756512bf39f2a88cd7d.jpeg');
+            background-size: cover;
+            background-position: center center;
+            background-repeat: no-repeat;
+            
+            /* === [ แก้ไขจุดที่ 2 ] === */
+            background-attachment: scroll; /* แก้ตรงนี้ด้วย */
+        }
+    }
+    @media (max-width: 768px) {
+      .content { max-width: 90%; padding: 25px; }
+      .event-title { font-size: 2.2rem; margin-bottom: 2rem; }
+      .main-image img { margin-bottom: 2.5rem; }
+      .enter { font-size: 1.1rem; padding: 14px 45px; }
+    }
+    @media (max-width: 480px) {
+      .content { padding: 20px; }
+      .event-title { font-size: 1.8rem; margin-bottom: 1.5rem; }
+      .main-image img { margin-bottom: 2rem; }
+      .enter { font-size: 1rem; padding: 12px 35px; }
+    }
+
+  </style>
+</head>
+
+<link rel="icon" href="https://img5.pic.in.th/file/secure-sv1/IMG_602976b5b060daac652b.png" type="image/png">
+  
+<body>
+<div class="intro">
+<div class="page-wrapper">
+<div class="content">
+<div class="main-image"><img src="https://img2.pic.in.th/pic/IMG_382285f3429be8a764f2.jpeg" alt="46TH PLW GAMES" /></div>
+<button class="enter" onclick="enterSite()">เข้าหน้าสู่หลัก</button></div>
+<script>
+    function enterSite() {
+      sessionStorage.setItem('allowAppAccess', 'true');
+      document.body.classList.add('fade-out');
+      setTimeout(() => {
+        window.location.href = "login.html"; 
+      }, 1000);
+    }
+  </script>
+</div>
+</div>
+</body>
+</html>

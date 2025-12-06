@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>เข้าสู่ระบบ - ระบบโหวต</title>
+    
+    <link rel="icon" href="https://img5.pic.in.th/file/secure-sv1/IMG_602976b5b060daac652b.png" type="image/png">
+    
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <style>
+        :root {
+            --primary-color: #6366f1;
+            --text-color: #333;
+            --bg-color: #f3f4f6;
+        }
+
+        body {
+            font-family: 'Kanit', sans-serif;
+            background-color: var(--bg-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+
+        .login-container {
+            background: white;
+            padding: 40px;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 420px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .header img {
+            width: 80px;
+            margin-bottom: 15px;
+        }
+        .header h2 {
+            margin: 0;
+            color: var(--text-color);
+            font-size: 24px;
+        }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            background: #eee;
+            padding: 5px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+        }
+        .tab {
+            flex: 1;
+            text-align: center;
+            padding: 10px;
+            cursor: pointer;
+            border-radius: 8px;
+            font-weight: 500;
+            color: #666;
+            transition: 0.3s;
+        }
+        .tab.active {
+            background: white;
+            color: var(--primary-color);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+
+        /* Form */
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #555;
+        }
+        .form-control {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            box-sizing: border-box;
+            font-family: 'Kanit', sans-serif;
+            font-size: 16px;
+            transition: 0.3s;
+        }
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+        }
+
+        .btn {
+            width: 100%;
+            padding: 14px;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .btn:hover {
+            background-color: #4f46e5;
+            transform: translateY(-1px);
+        }
+
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="login-container">
+        <div class="header">
+            <img src="https://img5.pic.in.th/file/secure-sv1/IMG_602976b5b060daac652b.png" alt="Logo">
+            <h2 id="formTitle">เข้าสู่ระบบ</h2>
+        </div>
+
+        <div class="tabs">
+            <div class="tab active" onclick="switchTab('student')">
+                <i class="fas fa-user-graduate"></i> นักเรียน
+            </div>
+            <div class="tab" onclick="switchTab('admin')">
+                <i class="fas fa-user-shield"></i> ผู้ดูแล
+            </div>
+        </div>
+
+        <form id="studentForm">
+            <div class="form-group">
+                <label>รหัสนักเรียน</label>
+                <input type="text" id="stUser" class="form-control" placeholder="เช่น 12345" required>
+            </div>
+            <div class="form-group">
+                <label>รหัสผ่าน</label>
+                <input type="password" id="stPass" class="form-control" placeholder="ระบุรหัสผ่าน" required>
+            </div>
+            <button type="submit" class="btn">เข้าสู่ระบบโหวต</button>
+        </form>
+
+        <form id="adminForm" class="hidden">
+            <div class="form-group">
+                <label>Username (Admin)</label>
+                <input type="text" id="adUser" class="form-control" placeholder="Admin Username" required>
+            </div>
+            <div class="form-group">
+                <label>Password</label>
+                <input type="password" id="adPass" class="form-control" placeholder="Admin Password" required>
+            </div>
+            <button type="submit" class="btn" style="background-color: #4f46e5;">เข้าสู่ระบบ Admin</button>
+        </form>
+
+    </div>
+
+    <script>
+        // ⚠️ อย่าลืมเปลี่ยน URL นี้ให้เป็นของ Web App คุณ
+        const WEB_APP_URL = 'https://sapaplw.site/api.php';
+
+        function switchTab(type) {
+            // Reset Active Classes
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('form').forEach(f => f.classList.add('hidden'));
+
+            if (type === 'student') {
+                document.querySelector('.tabs .tab:nth-child(1)').classList.add('active');
+                document.getElementById('studentForm').classList.remove('hidden');
+                document.getElementById('formTitle').innerText = 'เข้าสู่ระบบ (นักเรียน)';
+            } else {
+                document.querySelector('.tabs .tab:nth-child(2)').classList.add('active');
+                document.getElementById('adminForm').classList.remove('hidden');
+                document.getElementById('formTitle').innerText = 'เข้าสู่ระบบ (Admin)';
+            }
+        }
+
+        // --- Student Login ---
+        document.getElementById('studentForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const u = document.getElementById('stUser').value.trim();
+            const p = document.getElementById('stPass').value.trim();
+            
+            Swal.fire({ title: 'กำลังตรวจสอบ...', didOpen: () => Swal.showLoading() });
+            
+            try {
+                const res = await fetch(WEB_APP_URL, { 
+                    method: 'POST', 
+                    body: JSON.stringify({ action: 'getStudentDetails', studentId: u, password: p }) 
+                }).then(r => r.json());
+                
+                if(res.status === 'success') {
+                    // บันทึก Session
+                    sessionStorage.setItem('studentId', u);
+                    sessionStorage.setItem('fullName', res.fullName);
+                    sessionStorage.setItem('hasVoted', res.hasVoted);
+                    sessionStorage.setItem('grade', res.grade);
+                    sessionStorage.setItem('room', res.room);
+                    if(res.voteChoice) sessionStorage.setItem('voteChoice', res.voteChoice);
+
+                    Swal.fire({ icon: 'success', title: 'สำเร็จ', timer: 1000, showConfirmButton: false }).then(() => {
+                        // 👉 เปลี่ยนหน้าไป vote
+                        window.location.href = "vote.html";
+                    });
+                } else {
+                    Swal.fire('เข้าสู่ระบบไม่สำเร็จ', res.message, 'error');
+                }
+            } catch(err) { Swal.fire('Error', err.message, 'error'); }
+        });
+
+        // --- Admin Login ---
+        document.getElementById('adminForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const u = document.getElementById('adUser').value;
+            const p = document.getElementById('adPass').value;
+            
+            Swal.fire({ title: 'กำลังเข้าสู่ระบบ...', didOpen: () => Swal.showLoading() });
+
+            try {
+                const res = await fetch(WEB_APP_URL, { 
+                    method: 'POST', 
+                    body: JSON.stringify({ action: 'login', username: u, password: p }) 
+                }).then(r => r.json());
+                
+                if(res.status === 'success') {
+                    // บันทึก Session
+                    sessionStorage.setItem('adminUser', u);
+                    sessionStorage.setItem('adminName', res.fullName);
+                    
+                    Swal.fire({ icon: 'success', title: 'ยินดีต้อนรับ Admin', timer: 1000, showConfirmButton: false }).then(() => {
+                        // 👉 เปลี่ยนหน้าไป admin
+                        window.location.href = "admin.html";
+                    });
+                } else {
+                    Swal.fire('เข้าสู่ระบบไม่สำเร็จ', res.message, 'error');
+                }
+            } catch(err) { Swal.fire('Error', err.message, 'error'); }
+        });
+    </script>
+
+</body>
+</html>
